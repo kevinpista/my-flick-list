@@ -9,15 +9,21 @@ stop_containers:
 		echo "no containers running..."; \
 	fi
 
-
 create_container:
-	docker run --name ${DB_DOCKER_CONTAINER} -p 5433:5432 -e POSTGRES_USER=${USER} -e POSTGRES_PASSWORD=${PASSWORD} -d postgres:12-alpine
+	docker run --name ${DB_DOCKER_CONTAINER} -p 5434:5432 -e POSTGRES_USER=${USER} -e POSTGRES_PASSWORD=${PASSWORD} -d postgres:12-alpine
+# setting our container port to 5434. Postgresql inside container using default 5432 port so we help map it to our intended 5434 local port
 
 create_db:
 	docker exec -it ${DB_DOCKER_CONTAINER} createdb --username=${USER} --owner=${USER} ${DB_NAME}
-# have to run psql -h 127.0.0.1 -p 5433 -U postgres -d my_flick_list_db to connect                                                                  ─╯
+
 start_container:
 	docker start ${DB_DOCKER_CONTAINER}
 
 create_migrations:
 	sqlx migrate add -r init
+
+migrate_up:
+	sqlx migrate run --database-url "postgres://${USER}:${PASSWORD}@${HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
+
+migrate_down:
+	sqlx migrate revert --database-url "postgres://${USER}:${PASSWORD}@${HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
