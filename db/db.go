@@ -4,6 +4,12 @@ import (
 	"fmt"
 	"database/sql"
 	"time"
+
+    _  "github.com/jackc/pgconn"
+    _  "github.com/jackc/pgx/v4"
+    _  "github.com/jackc/pgx/stdlib"
+    _  "github.com/lib/pq"
+	
 )
 
 type DB struct {
@@ -19,7 +25,7 @@ const maxDbLifetime = 5 * time.Minute
 // DSN contains all info about our db such as port, pw etc.
 // Here we open our database, check for any errors, if not
 // we return our DB connection which points to sql.DB
-func ConnectPostgres (dsn string) (*DB, error) {
+func ConnectPostgres(dsn string) (*DB, error) {
 	d, err := sql.Open("pgx", dsn)
 	if err != nil{
 		return nil, err
