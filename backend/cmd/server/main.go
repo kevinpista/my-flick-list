@@ -43,6 +43,14 @@ func main () {
 		Port: os.Getenv("PORT"),
 	}
 
+	dsn := os.Getenv("DSN")
+    dbConn, err := db.ConnectPostgres(dsn)
+    if err != nil {
+        log.Fatal("Cannot connect to database")
+    }
+
+    defer dbConn.DB.Close()
+
 	app := &Application {
 		Config: cfg,
 		// TODO - add models
