@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"net/http"
-	"github.com/kevinpista/my-flick-list/backend/db"
+    "github.com/kevinpista/my-flick-list/backend/db"
 	"github.com/joho/godotenv"
 )
 
