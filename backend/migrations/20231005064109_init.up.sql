@@ -28,9 +28,9 @@ CREATE TABLE movie (
   backdrop_path VARCHAR(255),
   runtime INT, 
   adult BOOLEAN,
-  budget VARCHAR(255),
-  revenue VARCHAR(255),
-  rating NUMERIC(3,1) CHECK (rating >= 0 AND rating <= 10),
+  budget NUMERIC(12,0),
+  revenue NUMERIC(12,0),
+  rating NUMERIC(3,2) CHECK (rating >= 0 AND rating <= 10),
   votes INT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

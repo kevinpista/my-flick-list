@@ -3,6 +3,7 @@ module github.com/kevinpista/my-flick-list/backend
 go 1.21.0
 
 require (
+	github.com/google/uuid v1.3.1
 	github.com/jackc/pgconn v1.14.1
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/jackc/pgx/v4 v4.18.1

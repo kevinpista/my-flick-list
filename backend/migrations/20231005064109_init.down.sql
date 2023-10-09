@@ -1,5 +1,6 @@
 -- Add down migration script here
 -- Add down migration script here
+drop schema public cascade;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS jwt_tokens;
 DROP TABLE IF EXISTS watchlists;
