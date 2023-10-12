@@ -12,7 +12,7 @@ import (
 
 var movie services.Movie
 
-func getAllMovies(w http.ResponseWriter, r *http.Request) {
+func GetAllMovies(w http.ResponseWriter, r *http.Request) {
 	all, err := movie.GetAllMovies()
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
