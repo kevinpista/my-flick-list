@@ -23,7 +23,7 @@ func Routes() http.Handler {
     }))
 
     router.Get("/api/v1/movie", controllers.GetAllMovies)
-    router.Post("/api/v1/coffees/{id}", controllers.CreateMovie)
+    router.Post("/api/v1/movie/{id}", controllers.CreateMovie)
 
 	return router
 }
