@@ -3,11 +3,11 @@ package services
 import (
 	"time"
 	"context"
-	"github.com/google/uuid"
+	// "github.com/google/uuid"
 )
 
 type Movie struct{
-	ID uuid.UUID `json:"id"`
+	ID uint32 `json:"id"`
 	OriginalTitle string `json:"original_title"`
 	Overview string `json:"overview"`
 	Tagline string `json:"tagline"`
