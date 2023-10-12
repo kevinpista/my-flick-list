@@ -1,4 +1,4 @@
-package rout
+package router
 
 import (
 	"net/http"
@@ -21,7 +21,7 @@ func Routes() http.Handler {
         AllowCredentials: true,
         MaxAge: 300,
     }))
-	
+
     router.Get("/api/v1/movie", controllers.GetAllMovies)
     router.Post("/api/v1/coffees/{id}", controllers.CreateMovie)
 
