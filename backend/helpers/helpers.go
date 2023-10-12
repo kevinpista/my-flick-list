@@ -28,7 +28,7 @@ var MessageLogs = &Message{
 }
 
 func ReadJSON(w http.ResponseWriter, r *http.Request, data interface{}) error {
-    maxBytes := 1048576
+    maxBytes := 104857
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 	dec := json.NewDecoder(r.Body) // Creates new JSON decoder to decode the request body
 	err := dec.Decode(data) // Decodes the JSON into the data interface {} we established in services/response.go
