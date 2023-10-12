@@ -56,7 +56,7 @@ func main () {
 
 	app := &Application {
 		Config: cfg,
-        Models: services.New(dbConn.DB),
+        Models: services.New(dbConn.DB), // creates a connection with DB to get the models whenever we want to perform CRUD
 	}
 
 	err = app.Serve()
