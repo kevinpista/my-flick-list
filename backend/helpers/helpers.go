@@ -12,7 +12,7 @@ import (
 )
 // create write, read json methods and functions
 
-type Evenelope map[string] interface {} // help makes Json pretty
+type Envelope map[string] interface {} // help makes Json pretty
 
 type Message struct {
 	InfoLog *log.Logger
