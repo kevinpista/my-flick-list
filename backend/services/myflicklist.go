@@ -11,7 +11,7 @@ type Movie struct{
 	OriginalTitle string `json:"original_title"`
 	Overview string `json:"overview"`
 	Tagline string `json:"tagline"`
-	ReleaseDate time.Time `json:"release_date"`
+	ReleaseDate string `json:"release_date"`
 	PosterPath string `json:"poster_path"`
 	BackdropPath string `json:"backdrop_path"`
 	Runtime uint16 `json:"runtime"`
@@ -43,9 +43,11 @@ func (c * Movie) GetAllMovies() ([]*Movie, error) {
 	for rows.Next() { // for every row we get from our db query
 		var movie Movie	// we create a var called movie with type Movie struct and append it to our movies slice
 		// order should follow the order of your query
+		// scan each row from our query and assigns the column field data from our query to each movie Movie struct field
 		err := rows.Scan(
 			&movie.ID,
 			&movie.OriginalTitle,
+			&movie.Overview,
 			&movie.Tagline,
 			&movie.ReleaseDate,
 			&movie.PosterPath,
@@ -76,7 +78,7 @@ func (c *Movie) CreateMovie(movie Movie) (*Movie, error) {
     // use $ placeholders values to safely pass data from code to SQL queries, preventing SQL injection attacks
 	query := `
 		INSERT INTO movie (id, original_title, overview, tagline, release_date, poster_path, backdrop_path, runtime, adult, budget, revenue, rating, votes, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) return *
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) returning *
 	`
 
 	_, err := db.ExecContext(
@@ -84,6 +86,7 @@ func (c *Movie) CreateMovie(movie Movie) (*Movie, error) {
 		query,
 		movie.ID,
 		movie.OriginalTitle,
+		movie.Overview,
 		movie.Tagline,
 		movie.ReleaseDate,
 		movie.PosterPath,
