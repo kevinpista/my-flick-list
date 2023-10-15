@@ -22,9 +22,16 @@ func Routes() http.Handler {
         MaxAge: 300,
     }))
 
-    router.Get("/api/v1/movies", controllers.GetAllMovies)
-    router.Post("/api/v1/movie/", controllers.CreateMovie)
-    router.Post("/api/v1/movie/{id}", controllers.CreateMovieById)
+    // movie resources
+    router.Get("/api/movies", controllers.GetAllMovies)
+    router.Post("/api/movie/", controllers.CreateMovie)
+    router.Post("/api/movie/{id}", controllers.CreateMovieById)
+
+    // watchlist resources
+    // router.Get("/api/watchlists", controllers.GetAllWatchlists) // GET all watchlists belong to specific user
+    // router.Get("/api/watchlist/{id}", controllers.GetWatchByID) // GET a specific watch 
+    // router.Post("/api/watchlists/", controllers.CreateWatchlist) // POST a watchlist
+    
 
 	return router
 }
