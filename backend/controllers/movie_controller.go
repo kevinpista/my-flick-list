@@ -10,10 +10,10 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// GET/movie
 
 var movie services.Movie
 
+// GET/movies
 func GetAllMovies(w http.ResponseWriter, r *http.Request) {
 	all, err := movie.GetAllMovies()
 	if err != nil {
@@ -23,7 +23,7 @@ func GetAllMovies(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"movies": all})
 }
 
-// POST/movies/movie
+// POST/movie
 func CreateMovie(w http.ResponseWriter, r *http.Request){
 	var movieData services.Movie
 	err := json.NewDecoder(r.Body).Decode(&movieData)
@@ -38,7 +38,7 @@ func CreateMovie(w http.ResponseWriter, r *http.Request){
 	helpers.WriteJSON(w, http.StatusOK, movieCreated)
 }
 
-// POST/movies/movie/{id}
+// POST/movie/{id}
 func CreateMovieById(w http.ResponseWriter, r *http.Request){
 	idStr := chi.URLParam(r, "id")
     id, err := strconv.Atoi(idStr) // parameter will be a string. convert to an int for our Movie struct field

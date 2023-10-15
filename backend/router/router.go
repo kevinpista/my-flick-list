@@ -22,7 +22,7 @@ func Routes() http.Handler {
         MaxAge: 300,
     }))
 
-    router.Get("/api/v1/movie", controllers.GetAllMovies)
+    router.Get("/api/v1/movies", controllers.GetAllMovies)
     router.Post("/api/v1/movie/", controllers.CreateMovie)
     router.Post("/api/v1/movie/{id}", controllers.CreateMovieById)
 
