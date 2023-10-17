@@ -24,13 +24,14 @@ func Routes() http.Handler {
 
     // movie resources
     router.Get("/api/movies", controllers.GetAllMovies)
-    router.Post("/api/movie/", controllers.CreateMovie)
+    router.Post("/api/movie", controllers.CreateMovie)
     router.Post("/api/movie/{id}", controllers.CreateMovieById)
+    // make endpoint for getting a movie by id
 
     // watchlist resources
-    // router.Get("/api/watchlists", controllers.GetAllWatchlists) // GET all watchlists belong to specific user
-    // router.Get("/api/watchlist/{id}", controllers.GetWatchByID) // GET a specific watch 
-    // router.Post("/api/watchlists/", controllers.CreateWatchlist) // POST a watchlist
+    router.Get("/api/watchlists", controllers.GetAllWatchlists) // GET all watchlists belong to specific user
+    router.Get("/api/watchlist/{id}", controllers.GetWatchlistByID) // GET a specific watch by ID
+    router.Post("/api/watchlists", controllers.CreateWatchlists) // POST a watchlist
     
 
 	return router

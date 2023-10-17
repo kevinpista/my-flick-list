@@ -12,6 +12,7 @@ const dbTimeout = time.Second * 3
 
 type Models struct {
 	Movie Movie
+	Watchlist Watchlist
 	JsonResponse JsonResponse
 }
 

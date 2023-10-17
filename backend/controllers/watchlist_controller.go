@@ -23,43 +23,34 @@ func GetAllWatchlists(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlists": all})
 }
 
-
-
-/*
-
-// POST/movie
-func CreateMovie(w http.ResponseWriter, r *http.Request){
-	var movieData services.Movie
-	err := json.NewDecoder(r.Body).Decode(&movieData)
-	if err != nil{
-		helpers.MessageLogs.ErrorLog.Println(err)
-	}
-
-	movieCreated, err := movie.CreateMovie(movieData)
-	if err != nil{
-		helpers.MessageLogs.ErrorLog.Println(err)
-	}
-	helpers.WriteJSON(w, http.StatusOK, movieCreated)
-}
-
-// POST/movie/{id}
-func CreateMovieById(w http.ResponseWriter, r *http.Request){
+// GET/watchlist{id}
+func GetWatchlistByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
-    id, err := strconv.Atoi(idStr) // parameter will be a string. convert to an int for our Movie struct field
+	id, err := strconv.Atoi(idStr) // parameter will be a string. convert to int
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 	}
 
-	var movieData services.Movie
-	err = json.NewDecoder(r.Body).Decode(&movieData) // decodes r.Body and stores it in &movieData by populating the fields of the Movie Data struct we created in services/myflicklist.go
+	watchlistData, watchlistErr := watchlist.GetWatchlistByID(id)
+	if watchlistErr != nil{
+		helpers.MessageLogs.ErrorLog.Println(watchlistErr)
+	}
+
+	helpers.WriteJSON(w, http.StatusOK, watchlistData)
+
+}
+
+// POST/watchlists -- making some without user ID first -- this makes 1 watch list only TODO// make user id required
+func CreateWatchlists(w http.ResponseWriter, r *http.Request){
+	var watchlistData services.Watchlist
+	err := json.NewDecoder(r.Body).Decode(&watchlistData)
 	if err != nil{
 		helpers.MessageLogs.ErrorLog.Println(err)
 	}
 
-	movieCreated, err := movie.CreateMovieById(movieData, id)
+	watchlistCreated, err := watchlist.CreateWatchlist(watchlistData)
 	if err != nil{
 		helpers.MessageLogs.ErrorLog.Println(err)
 	}
-	helpers.WriteJSON(w, http.StatusOK, movieCreated)
+	helpers.WriteJSON(w, http.StatusOK, watchlistCreated)
 }
-*/
