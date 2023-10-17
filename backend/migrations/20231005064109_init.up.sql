@@ -1,7 +1,7 @@
 -- Add up migration script here
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE user (
+CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE, 
@@ -12,7 +12,7 @@ CREATE TABLE user (
 
 CREATE TABLE jwt_token (
   id SERIAL PRIMARY KEY,
-  user_id UUID REFERENCES user(id),
+  users_id UUID REFERENCES users(id),
   jwt_token_key TEXT,
   issued_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   expired_at TIMESTAMP  
@@ -38,7 +38,7 @@ CREATE TABLE movie (
 
 CREATE TABLE watchlist (
   id SERIAL PRIMARY KEY,
-  user_id UUID REFERENCES user(id), 
+  users_id UUID REFERENCES users(id), 
   name VARCHAR(255) NOT NULL,
   description TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
