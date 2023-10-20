@@ -12,23 +12,6 @@ import (
 
 var watchlistItem services.WatchlistItem
 
-// POST/watchlist-item
-func CreateWatchlistItemByWatchlistID(w http.ResponseWriter, r *http.Request) {
-	var watchlistItemData services.WatchlistItem
-
-	err := json.NewDecoder(r.Body).Decode(&watchlistItemData)
-	if err != nil {
-		helpers.MessageLogs.ErrorLog.Println(err)
-	}
-
-	watchlistItemCreated, err := watchlistItemData.CreateWatchlistItemByWatchlistID(watchlistItemData)
-	if err != nil {
-		helpers.MessageLogs.ErrorLog.Println(err)
-	}
-
-	helpers.WriteJSON(w, http.StatusOK, watchlistItemCreated)
-}
-
 // GET/watchlist-items?watchlistID={watchlistID}
 func GetAllWatchlistItemsByWatchListID(w http.ResponseWriter, r *http.Request) {
 	watchlistID := chi.URLParam(r, "watchlistID")
@@ -50,4 +33,21 @@ func GetAllWatchlistItemsByWatchListID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlist-items": all})
+}
+
+// POST/watchlist-item
+func CreateWatchlistItemByWatchlistID(w http.ResponseWriter, r *http.Request) {
+	var watchlistItemData services.WatchlistItem
+
+	err := json.NewDecoder(r.Body).Decode(&watchlistItemData)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+	}
+
+	watchlistItemCreated, err := watchlistItemData.CreateWatchlistItemByWatchlistID(watchlistItemData)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+	}
+
+	helpers.WriteJSON(w, http.StatusOK, watchlistItemCreated)
 }
