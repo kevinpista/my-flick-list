@@ -2,8 +2,9 @@ package services
 
 import (
 	"context"
+	"database/sql"
 	"time"
-	// "github.com/google/uuid"
+
 )
 
 type Movie struct {
@@ -24,37 +25,48 @@ type Movie struct {
 	UpdatedAt     time.Time `json:"updated_at"`
 }
 
-func (c *Movie) CreateMovieById(movie Movie) (*Movie, error) {
+func (c *Movie) GetMovieByID(id int) (*Movie, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
-	query := `
-		INSERT INTO movie (id, original_title, overview, tagline, release_date, poster_path, backdrop_path, runtime, adult, budget, revenue, rating, votes, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) returning *
-	`
-	_, err := db.ExecContext(
-		ctx,
-		query,
-		movie.ID,
-		movie.OriginalTitle,
-		movie.Overview,
-		movie.Tagline,
-		movie.ReleaseDate,
-		movie.PosterPath,
-		movie.BackdropPath,
-		movie.Runtime,
-		movie.Adult,
-		movie.Budget,
-		movie.Revenue,
-		movie.Rating,
-		movie.Votes,
-		time.Now(), // movie.CreatedAt
-		time.Now(), // movie.UpdatedAt
-	)
 
-	if err != nil {
+	query := `
+		SELECT id, original_title, overview, tagline, release_date, poster_path, backdrop_path, runtime, adult, 
+		budget, revenue, rating, votes, created_at, updated_at FROM movie
+		WHERE id = $1
+	`
+
+	row, err := db.QueryContext(ctx, query, id) // ctx is the state of the db, pass in our query
+	if err != nil{
 		return nil, err
 	}
-	return &movie, nil
+	
+	defer row.Close()
+
+	if row.Next() {
+		var movie Movie
+		err = row.Scan(
+			&movie.ID,
+			&movie.OriginalTitle,
+			&movie.Overview,
+			&movie.Tagline,
+			&movie.ReleaseDate,
+			&movie.PosterPath,
+			&movie.BackdropPath,
+			&movie.Runtime,
+			&movie.Adult,
+			&movie.Budget,
+			&movie.Revenue,
+			&movie.Rating,
+			&movie.Votes,
+			&movie.CreatedAt,
+			&movie.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		return &movie, nil
+	}
+	return nil, sql.ErrNoRows // Case where query did not find any matching rows
 }
 
 func (c *Movie) GetAllMovies() ([]*Movie, error) {
@@ -104,4 +116,35 @@ func (c *Movie) GetAllMovies() ([]*Movie, error) {
 	return movies, nil
 }
 
-// TODO get movie by ID
+func (c *Movie) CreateMovieByID(movie Movie) (*Movie, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+	query := `
+		INSERT INTO movie (id, original_title, overview, tagline, release_date, poster_path, backdrop_path, runtime, adult, budget, revenue, rating, votes, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) returning *
+	`
+	_, err := db.ExecContext(
+		ctx,
+		query,
+		movie.ID,
+		movie.OriginalTitle,
+		movie.Overview,
+		movie.Tagline,
+		movie.ReleaseDate,
+		movie.PosterPath,
+		movie.BackdropPath,
+		movie.Runtime,
+		movie.Adult,
+		movie.Budget,
+		movie.Revenue,
+		movie.Rating,
+		movie.Votes,
+		time.Now(), // movie.CreatedAt
+		time.Now(), // movie.UpdatedAt
+	)
+
+	if err != nil {
+		return nil, err
+	}
+	return &movie, nil
+}
