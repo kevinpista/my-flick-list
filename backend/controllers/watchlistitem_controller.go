@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi/v5"
+	// "github.com/go-chi/chi/v5"
 	"github.com/kevinpista/my-flick-list/backend/helpers"
 	"github.com/kevinpista/my-flick-list/backend/services"
 )
@@ -14,7 +14,7 @@ var watchlistItem services.WatchlistItem
 
 // GET/watchlist-items?watchlistID={watchlistID}
 func GetAllWatchlistItemsByWatchListID(w http.ResponseWriter, r *http.Request) {
-	watchlistID := chi.URLParam(r, "watchlistID")
+    watchlistID := r.URL.Query().Get("watchlistID")
 
 	// Check if watchlistID is empty or not provided in the URL
 	if watchlistID == "" {
