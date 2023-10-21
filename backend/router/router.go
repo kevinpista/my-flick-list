@@ -23,10 +23,8 @@ func Routes() http.Handler {
 
 	// movie resources
 	router.Get("/api/movies", controllers.GetAllMovies)
-	router.Post("/api/movie", controllers.CreateMovie)
-	router.Post("/api/movie/{id}", controllers.CreateMovieById) // TODO change endpoint to pass ID through json body
-	// POST, creates a movie using it's unique movie ID
-	// make endpoint for getting a movie by id
+	router.Post("/api/movie", controllers.CreateMovieById)
+    // router.Get("/api/movie/{id}"), controllers.GetMovieByID)
 
 	// watchlist resources
 	router.Get("/api/watchlists", controllers.GetAllWatchlists)     // GET all watchlists belonging to specific user

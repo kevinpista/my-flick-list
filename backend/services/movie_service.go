@@ -24,7 +24,7 @@ type Movie struct {
 	UpdatedAt     time.Time `json:"updated_at"`
 }
 
-func (c *Movie) CreateMovieById(movie Movie, id int) (*Movie, error) {
+func (c *Movie) CreateMovieById(movie Movie) (*Movie, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	query := `
@@ -34,7 +34,7 @@ func (c *Movie) CreateMovieById(movie Movie, id int) (*Movie, error) {
 	_, err := db.ExecContext(
 		ctx,
 		query,
-		id,
+		movie.ID,
 		movie.OriginalTitle,
 		movie.Overview,
 		movie.Tagline,
@@ -54,7 +54,6 @@ func (c *Movie) CreateMovieById(movie Movie, id int) (*Movie, error) {
 	if err != nil {
 		return nil, err
 	}
-	movie.ID = id // manual assignment so we can return &movie as id was a parameter. else it would be default 0 despite it being id in the DB
 	return &movie, nil
 }
 
@@ -105,39 +104,4 @@ func (c *Movie) GetAllMovies() ([]*Movie, error) {
 	return movies, nil
 }
 
-func (c *Movie) CreateMovie(movie Movie) (*Movie, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-	defer cancel()
-
-	// use $ placeholders values to safely pass data from code to SQL queries, preventing SQL injection attacks
-	query := `
-		INSERT INTO movie (id, original_title, overview, tagline, release_date, poster_path, backdrop_path, runtime, adult, budget, revenue, rating, votes, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) returning *
-	`
-
-	_, err := db.ExecContext(
-		ctx,
-		query,
-		movie.ID,
-		movie.OriginalTitle,
-		movie.Overview,
-		movie.Tagline,
-		movie.ReleaseDate,
-		movie.PosterPath,
-		movie.BackdropPath,
-		movie.Runtime,
-		movie.Adult,
-		movie.Budget,
-		movie.Revenue,
-		movie.Rating,
-		movie.Votes,
-		time.Now(), // movie.CreatedAt
-		time.Now(), // movie.UpdatedAt
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &movie, nil // not the movie we'll store db, just the info we'll use to create the movie
-}
+// TODO get movie by ID
