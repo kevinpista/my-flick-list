@@ -5,27 +5,14 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/kevinpista/my-flick-list/backend/models"
 )
 
-type Movie struct {
-	ID            int       `json:"id"`
-	OriginalTitle string    `json:"original_title"`
-	Overview      string    `json:"overview"`
-	Tagline       string    `json:"tagline"`
-	ReleaseDate   string    `json:"release_date"`
-	PosterPath    string    `json:"poster_path"`
-	BackdropPath  string    `json:"backdrop_path"`
-	Runtime       uint16    `json:"runtime"`
-	Adult         bool      `json:"adult"`
-	Budget        uint32    `json:"budget"`
-	Revenue       uint64    `json:"revenue"`
-	Rating        float32   `json:"rating"`
-	Votes         uint32    `json:"votes"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+type MovieService struct {
+	Movie models.Movie
 }
 
-func (c *Movie) GetMovieByID(id int) (*Movie, error) {
+func (c *MovieService) GetMovieByID(id int) (*models.Movie, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -43,7 +30,7 @@ func (c *Movie) GetMovieByID(id int) (*Movie, error) {
 	defer row.Close()
 
 	if row.Next() {
-		var movie Movie
+		var movie models.Movie
 		err = row.Scan(
 			&movie.ID,
 			&movie.OriginalTitle,
@@ -69,7 +56,7 @@ func (c *Movie) GetMovieByID(id int) (*Movie, error) {
 	return nil, sql.ErrNoRows // Case where query did not find any matching rows
 }
 
-func (c *Movie) GetAllMovies() ([]*Movie, error) {
+func (c *MovieService) GetAllMovies() ([]*models.Movie, error) {
 	// point to our movie struct, returning a slice of our movie struct (slice of pointers) and also an error.
 	// ctx is an instance of the context.Context type. provides a way to carry deadlinesm, cancellations, and other request-scoped values
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout) // we set a timeout of val dbTimeout. if query doesn't complete in time it cancels the query
@@ -84,9 +71,9 @@ func (c *Movie) GetAllMovies() ([]*Movie, error) {
 		return nil, err
 	}
 
-	var movies []*Movie // holds multiple movie pointers. a slice called 'movies' holding pointers of type Movie struct
+	var movies []*models.Movie // holds multiple movie pointers. a slice called 'movies' holding pointers of type Movie struct
 	for rows.Next() {   // for every row we get from our db query
-		var movie Movie // we create a var called movie with type Movie struct and append it to our movies slice
+		var movie models.Movie // we create a var called movie with type Movie struct and append it to our movies slice
 		// order should follow the order of your query
 		// scan each row from our query and assigns the column field data from our query to each movie Movie struct field
 		err := rows.Scan(
@@ -116,7 +103,7 @@ func (c *Movie) GetAllMovies() ([]*Movie, error) {
 	return movies, nil
 }
 
-func (c *Movie) CreateMovieByID(movie Movie) (*Movie, error) {
+func (c *MovieService) CreateMovieByID(movie models.Movie) (*models.Movie, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	query := `

@@ -11,8 +11,6 @@ const dbTimeout = time.Second * 3
 // make a models that contains all fields we're going to use
 
 type Models struct {
-	Movie Movie
-	Watchlist Watchlist
 	JsonResponse JsonResponse
 }
 

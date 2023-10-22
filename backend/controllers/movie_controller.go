@@ -14,7 +14,7 @@ import (
 )
 
 
-var movie services.Movie
+var movie services.MovieService
 
 // GET/movies
 func GetAllMovies(w http.ResponseWriter, r *http.Request) {
@@ -50,13 +50,14 @@ func GetMovieByID(w http.ResponseWriter, r *http.Request) {
 
 // POST/movie - id passed through JSON body
 func CreateMovieByID(w http.ResponseWriter, r *http.Request){
-	var movieData services.Movie
-	err := json.NewDecoder(r.Body).Decode(&movieData) // decodes r.Body and stores it in &movieData by populating the fields of the Movie Data struct we created in services/myflicklist.go
+	var movieData services.MovieService
+
+	err := json.NewDecoder(r.Body).Decode(&movieData.Movie)
 	if err != nil{
 		helpers.MessageLogs.ErrorLog.Println(err)
 	}
 
-	movieCreated, err := movie.CreateMovieByID(movieData)
+	movieCreated, err := movie.CreateMovieByID(movieData.Movie)
 	if err != nil{
 		helpers.MessageLogs.ErrorLog.Println(err)
 	}
