@@ -1,19 +1,20 @@
 package controllers
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/kevinpista/my-flick-list/backend/helpers"
 	"github.com/kevinpista/my-flick-list/backend/services"
-	"github.com/go-chi/chi/v5"
 )
 
+var watchlist services.WatchlistService
 
-var watchlist services.Watchlist
-
-// GET/watchlists - this will get all watchlists for testing purposes. will make one specific to the user
+// GET/watchlists - this will get all watchlists for testing purposes
 func GetAllWatchlists(w http.ResponseWriter, r *http.Request) {
 	all, err := watchlist.GetAllWatchlists()
 	if err != nil {
@@ -32,24 +33,28 @@ func GetWatchlistByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	watchlistData, watchlistErr := watchlist.GetWatchlistByID(id)
-	if watchlistErr != nil{
-		helpers.MessageLogs.ErrorLog.Println(watchlistErr)
+	if watchlistErr != nil {
+		if watchlistErr == sql.ErrNoRows {
+			helpers.ErrorJSON(w, errors.New("watchlist not found"), http.StatusNotFound)
+		} else {
+			helpers.ErrorJSON(w, watchlistErr, http.StatusBadRequest)
+		}
+		return
 	}
-
 	helpers.WriteJSON(w, http.StatusOK, watchlistData)
-
 }
 
 // POST/watchlists -- making some without user ID first -- this makes 1 watch list only TODO// make user id required
-func CreateWatchlists(w http.ResponseWriter, r *http.Request){
-	var watchlistData services.Watchlist
-	err := json.NewDecoder(r.Body).Decode(&watchlistData)
-	if err != nil{
+func CreateWatchlists(w http.ResponseWriter, r *http.Request) {
+	var watchlistData services.WatchlistService
+
+	err := json.NewDecoder(r.Body).Decode(&watchlistData.Watchlist)
+	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 	}
 
-	watchlistCreated, err := watchlist.CreateWatchlist(watchlistData)
-	if err != nil{
+	watchlistCreated, err := watchlist.CreateWatchlist(watchlistData.Watchlist)
+	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 	}
 	helpers.WriteJSON(w, http.StatusOK, watchlistCreated)

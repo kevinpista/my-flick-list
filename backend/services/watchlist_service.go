@@ -5,20 +5,15 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/kevinpista/my-flick-list/backend/models"
 )
 
-type Watchlist struct {
-	ID          int       `json:"id"`
-	UserID      uuid.UUID `json:"users_id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+type WatchlistService struct {
+	Watchlist models.Watchlist
 }
 
 // TODO add member_id, ignore for now as USERS resource has not been implemented yet
-func (c *Watchlist) CreateWatchlist(watchlist Watchlist) (*Watchlist, error) {
+func (c *WatchlistService) CreateWatchlist(watchlist models.Watchlist) (*models.Watchlist, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	query := `
@@ -40,7 +35,7 @@ func (c *Watchlist) CreateWatchlist(watchlist Watchlist) (*Watchlist, error) {
 	return &watchlist, nil
 }
 
-func (c *Watchlist) GetAllWatchlists() ([]*Watchlist, error) {
+func (c *WatchlistService) GetAllWatchlists() ([]*models.Watchlist, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	query := `
@@ -48,14 +43,13 @@ func (c *Watchlist) GetAllWatchlists() ([]*Watchlist, error) {
 	`
 
 	rows, err := db.QueryContext(ctx, query)
-
 	if err != nil {
 		return nil, err
 	}
 
-	var watchlists []*Watchlist
+	var watchlists []*models.Watchlist
 	for rows.Next() {
-		var watchlist Watchlist
+		var watchlist models.Watchlist
 		err := rows.Scan(
 			&watchlist.ID,
 			&watchlist.UserID,
@@ -64,7 +58,6 @@ func (c *Watchlist) GetAllWatchlists() ([]*Watchlist, error) {
 			&watchlist.CreatedAt,
 			&watchlist.UpdatedAt,
 		)
-
 		if err != nil {
 			return nil, err
 		}
@@ -75,7 +68,7 @@ func (c *Watchlist) GetAllWatchlists() ([]*Watchlist, error) {
 }
 
 // TODO possibly remove id from query as we don't need that
-func (c *Watchlist) GetWatchlistByID(id int) (*Watchlist, error) {
+func (c *WatchlistService) GetWatchlistByID(id int) (*models.Watchlist, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	query := `
@@ -84,7 +77,6 @@ func (c *Watchlist) GetWatchlistByID(id int) (*Watchlist, error) {
 	`
 
 	row, err := db.QueryContext(ctx, query, id)
-
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +84,7 @@ func (c *Watchlist) GetWatchlistByID(id int) (*Watchlist, error) {
 	defer row.Close()
 
 	if row.Next() {
-		var watchlist Watchlist
+		var watchlist models.Watchlist
 		err = row.Scan(
 			&watchlist.ID,
 			&watchlist.UserID,
