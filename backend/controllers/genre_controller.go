@@ -13,7 +13,7 @@ import (
 	"github.com/kevinpista/my-flick-list/backend/services"
 )
 
-var genre services.Genre
+var genre services.GenreService
 
 // GET/genre/{movieID}
 func GetGenreByMovieID(w http.ResponseWriter, r *http.Request) {
@@ -39,14 +39,14 @@ func GetGenreByMovieID(w http.ResponseWriter, r *http.Request) {
 
 // POST/genre
 func CreateGenreDataByMovieID(w http.ResponseWriter, r *http.Request) {
-	var genreData services.Genre
+	var genreData services.GenreService
 
-	err := json.NewDecoder(r.Body).Decode(&genreData)
+	err := json.NewDecoder(r.Body).Decode(&genreData.Genre)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 	}
 
-	genreDataCreated, err := genreData.CreateGenreDataByMovieID(genreData)
+	genreDataCreated, err := genreData.CreateGenreDataByMovieID(genreData.Genre)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 	}

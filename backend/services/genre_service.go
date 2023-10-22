@@ -3,16 +3,17 @@ package services
 import (
 	"context"
 	"database/sql"
-)
 
-type Genre struct {
-	MovieID int    `json:"movie_id"`
-	GenreID int    `json:"genre_id"`
-	Genre   string `json:"genre"`
+	"github.com/kevinpista/my-flick-list/backend/models"
+
+)
+// custom type that embeds the model of Genre Struct
+type GenreService struct {
+    Genre models.Genre
 }
 
 // TODO - Genre data is taken from 3rd party data base. Handle case where 3rd party DB does not have genre data
-func (c *Genre) GetGenreByMovieID(id int) (*Genre, error) {
+func (c *GenreService) GetGenreByMovieID(id int) (*models.Genre, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	query := `
@@ -28,7 +29,7 @@ func (c *Genre) GetGenreByMovieID(id int) (*Genre, error) {
 	defer row.Close()
 
 	if row.Next() {
-		var genre Genre
+		var genre models.Genre
 		err = row.Scan(
 			&genre.MovieID,
 			&genre.GenreID,
@@ -43,7 +44,7 @@ func (c *Genre) GetGenreByMovieID(id int) (*Genre, error) {
 
 }
 
-func (c *Genre) CreateGenreDataByMovieID(genre Genre) (*Genre, error) {
+func (c *GenreService) CreateGenreDataByMovieID(genre models.Genre) (*models.Genre, error) {
 	/// movie id passed via the json body
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
