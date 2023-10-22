@@ -40,5 +40,8 @@ func Routes() http.Handler {
     router.Post("/api/watchlist-item-note", controllers.CreateWatchlistItemNote) // POST create watchlist item note for a specific watchlist item
     router.Get("/api/watchlist-item-note/{watchlistItemID}", controllers.GetWatchlistItemNoteByWatchlistItemID) // GET fetch the note for a specific watchlist item
 
+	// genre resources
+    router.Post("/api/genre", controllers.CreateGenreDataByMovieID) // POST add genre data for a movie
+    router.Get("/api/genre/{movieID}", controllers.GetGenreByMovieID) // GET the genre data for a movie
 	return router
 }
