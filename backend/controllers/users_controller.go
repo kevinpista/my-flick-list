@@ -1,13 +1,14 @@
 package controllers
 
 import (
-    "encoding/json"
-    "net/http"
 	"database/sql"
+	"encoding/json"
 	"errors"
+	"net/http"
 
-    "github.com/kevinpista/my-flick-list/backend/helpers"
-    "github.com/kevinpista/my-flick-list/backend/services"
+	"github.com/go-chi/chi/v5"
+	"github.com/kevinpista/my-flick-list/backend/helpers"
+	"github.com/kevinpista/my-flick-list/backend/services"
 )
 
 var user services.UserService
@@ -30,20 +31,21 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
     helpers.WriteJSON(w, http.StatusCreated, userCreated)
 }
 
-// GET/user{id} - id passed through body
+// GET/user/{userID}
 func GetUserByID(w http.ResponseWriter, r *http.Request) {
-	var userRequest services.UserService // contains the uuid only
-	err := json.NewDecoder(r.Body).Decode(&userRequest.User)
-	if err != nil{
+	userIDStr := chi.URLParam(r, "userID")
+
+	userID, err := helpers.ConvertStringToUUID(userIDStr)
+	if err !=nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 	}
 
-	userData, err := user.GetUserByID(userRequest.User.ID) // pass in uuid only
-	if err != nil {
-		if err == sql.ErrNoRows {
+	userData, userErr := user.GetUserByID(userID)
+	if userErr != nil {
+		if userErr == sql.ErrNoRows {
 			helpers.ErrorJSON(w, errors.New("user not found"), http.StatusNotFound)
 		} else {
-			helpers.ErrorJSON(w, err, http.StatusBadRequest)
+			helpers.ErrorJSON(w, userErr, http.StatusBadRequest)
 		}
 		return
 	}
