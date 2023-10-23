@@ -43,5 +43,9 @@ func Routes() http.Handler {
 	// genre resources
     router.Post("/api/genre", controllers.CreateGenreDataByMovieID) // POST add genre data for a movie
     router.Get("/api/genre/{movieID}", controllers.GetGenreByMovieID) // GET the genre data for a movie
+
+	// user resources
+    router.Post("/api/user-registration", controllers.RegisterUser) // POST register a user
+    router.Get("/api/user", controllers.GetUserByID)
 	return router
 }
