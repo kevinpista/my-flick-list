@@ -24,6 +24,21 @@ func GetAllWatchlists(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlists": all})
 }
 
+// GET/watchlists/{userID}
+func GetAllWatchlistsByUserID(w http.ResponseWriter, r *http.Request) {
+	userIDStr := chi.URLParam(r, "userID")
+	userID, err := helpers.ConvertStringToUUID(userIDStr) // parameter will be a string. convert to int
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+	}
+	all, err := watchlist.GetAllWatchlistsByUserID(userID)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		return
+	}
+	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlists": all})
+}
+
 // GET/watchlist{id}
 func GetWatchlistByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")

@@ -6,23 +6,24 @@ import (
 	"time"
 
 	"github.com/kevinpista/my-flick-list/backend/models"
+	"github.com/google/uuid"
 )
 
 type WatchlistService struct {
 	Watchlist models.Watchlist
 }
 
-// TODO add member_id, ignore for now as USERS resource has not been implemented yet
 func (c *WatchlistService) CreateWatchlist(watchlist models.Watchlist) (*models.Watchlist, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	query := `
-		INSERT INTO watchlist (name, description, created_at, updated_at)
-		VALUES ($1, $2, $3, $4) returning *
+		INSERT INTO watchlist (users_id, name, description, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5) returning *
 	`
 	_, err := db.ExecContext(
 		ctx,
 		query,
+		watchlist.UserID,
 		watchlist.Name,
 		watchlist.Description,
 		time.Now(), // watchlist.CreatedAt
@@ -64,6 +65,38 @@ func (c *WatchlistService) GetAllWatchlists() ([]*models.Watchlist, error) {
 		watchlists = append(watchlists, &watchlist)
 	}
 
+	return watchlists, nil
+}
+
+func (c *WatchlistService) GetAllWatchlistsByUserID(userID uuid.UUID) ([]*models.Watchlist, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+	query := `
+		SELECT id, users_id, name, description, created_at, updated_at FROM watchlist
+		WHERE users_id = $1
+	`
+
+	rows, err := db.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var watchlists []*models.Watchlist
+	for rows.Next() {
+		var watchlist models.Watchlist
+		err := rows.Scan(
+			&watchlist.ID,
+			&watchlist.UserID,
+			&watchlist.Name,
+			&watchlist.Description,
+			&watchlist.CreatedAt,
+			&watchlist.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		watchlists = append(watchlists, &watchlist)
+	}
 	return watchlists, nil
 }
 
