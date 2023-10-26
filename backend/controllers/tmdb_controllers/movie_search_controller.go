@@ -1,4 +1,4 @@
-package tmdb_controller
+package tmdb_controllers
 
 import (
 	"github.com/joho/godotenv"
