@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/kevinpista/my-flick-list/backend/controllers"
+    "github.com/kevinpista/my-flick-list/backend/controllers/tmdb_controllers"
 )
 
 func Routes() http.Handler {
@@ -48,5 +49,11 @@ func Routes() http.Handler {
 	// user resources
     router.Post("/api/user-registration", controllers.RegisterUser) // POST register a user
     router.Get("/api/user/{userID}", controllers.GetUserByID) // GET user by their user id
+
+    // movie search resources
+    router.Get("/api/search", tmdb_controllers.SearchMovieByKeyWords)
+
+	// expects "?query={keywords+keywords}" query paramter
+
 	return router
 }
