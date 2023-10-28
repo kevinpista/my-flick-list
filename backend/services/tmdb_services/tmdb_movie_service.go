@@ -8,7 +8,7 @@ import (
 )
 
 type TMDBMovieService struct {
-	// Movie models.TMDBMovie // use all but time items
+	
 }
 
 func (c *TMDBMovieService) TMDBGetMovieByID(query string) (*models.TMDBMovie, error) {
