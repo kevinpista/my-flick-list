@@ -15,7 +15,7 @@ func TMDBGetMovieByID(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("query") // user passes movie ID
 
 
-	result, err:= movieResult.TMDBGetMovieByKeywords(query) // will be returned with a formatted JSON of the data we need for search results page
+	result, err:= movieResult.TMDBGetMovieByID(query) // will be returned with a formatted JSON of the data we need for search results page
 
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)

@@ -11,7 +11,7 @@ type TMDBMovieService struct {
 	// Movie models.TMDBMovie // use all but time items
 }
 
-func (c *TMDBMovieService) TMDBGetMovieByKeywords(query string) (*models.TMDBMovie, error) {
+func (c *TMDBMovieService) TMDBGetMovieByID(query string) (*models.TMDBMovie, error) {
 	apiUrl := baseMovieAPIUrl + query + "?api_key=" + APIKey
 	// Send GET request to TMDB
 	resp, err := http.Get(apiUrl)
