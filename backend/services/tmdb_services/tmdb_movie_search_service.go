@@ -8,10 +8,10 @@ import (
 )
 
 type TMDBMovieSearchService struct {
-	MovieSearch models.MovieSearch
+	MovieSearch models.TMDBMovieSearch
 }
 
-func (c *TMDBMovieSearchService) TMDBSearchMovieByKeywords(query string) ([]models.MovieSearch, error) {
+func (c *TMDBMovieSearchService) TMDBSearchMovieByKeywords(query string) (*[]models.TMDBMovieSearch, error) {
 	apiUrl := baseAPIUrl + query + "&api_key=" + APIKey
 	// Send GET request to TMDB
 	resp, err := http.Get(apiUrl)
@@ -22,12 +22,12 @@ func (c *TMDBMovieSearchService) TMDBSearchMovieByKeywords(query string) ([]mode
 
 	// Decode the JSON response into a response struct
 	var response struct {
-		Results []models.MovieSearch
+		Results []models.TMDBMovieSearch
 	}
 	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.Results, nil
+	return &response.Results, nil
 }

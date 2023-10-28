@@ -51,12 +51,12 @@ func Routes() http.Handler {
     router.Get("/api/user/{userID}", controllers.GetUserByID) // GET user by their user id
 
     // TMDB movie search resources
-    router.Get("/api/tmdb-search", tmdb_controllers.SearchMovieByKeyWords)
-    // expects "?query={movie_id}" query paramter
+    router.Get("/api/tmdb-search", tmdb_controllers.TMDBSearchMovieByKeyWords)
+    // expects "?query={keywords+keywords..}" query paramter
 
     // TMDB GET movie resources
-    router.Get("/api/tmdb-movie", tmdb_controllers.TMDBGetMovieByKeywords)
-	// expects "?query={keywords+keywords}" query paramter
+    router.Get("/api/tmdb-movie", tmdb_controllers.TMDBGetMovieByID)
+    // expects "?query={movie_id}" query paramter
 
 	return router
 }

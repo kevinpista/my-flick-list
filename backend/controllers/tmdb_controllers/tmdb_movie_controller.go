@@ -11,7 +11,7 @@ import (
 var movieResult tmdb_services.TMDBMovieService
 
 // GET/search?query={movie_id}
-func TMDBGetMovieByKeywords(w http.ResponseWriter, r *http.Request) {
+func TMDBGetMovieByID(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("query") // user passes movie ID
 
 

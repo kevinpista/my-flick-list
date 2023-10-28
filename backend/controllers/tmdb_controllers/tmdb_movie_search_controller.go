@@ -26,7 +26,7 @@ apiKey := os.Getenv("API_KEY")
 var searchResults tmdb_services.TMDBMovieSearchService
 
 // GET/search?query={keyword+keyword..}
-func SearchMovieByKeyWords(w http.ResponseWriter, r *http.Request) {
+func TMDBSearchMovieByKeyWords(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("query") // user passes it as "harry+potter"
 	// this method will transform it into string of "harry potter" with no + sign
 	// to preserve the + sign, need the user to pass query url as "harry%2Bpotter"

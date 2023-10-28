@@ -2,7 +2,7 @@ package models
 
 // TODO finalize fields we want to fetch from search API to display on our front end as a search
 // results list
-type MovieSearch struct {
+type TMDBMovieSearch struct {
 	Adult          bool     `json:"adult"`
 	BackdropPath   string   `json:"backdrop_path"`
 	GenreIds       []int    `json:"genre_ids"`
