@@ -46,7 +46,7 @@ func SearchMovieByKeyWords(w http.ResponseWriter, r *http.Request) {
 
 	// TODO - when implementing frontend, will need to structure json response
 	// into a format that the frontend can use to display each search result cleanly on a 
-	// search result page based on movie data fields
+	// search result page based on movie 
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"search_results": allResults})
 }
 

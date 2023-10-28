@@ -7,7 +7,7 @@ import (
 )
 
 var baseAPIUrl = "https://api.themoviedb.org/3/search/movie?query="
-var APIKey = "&api_key" // implement API key via .env load
+var APIKey = "null"// implement API key via .env load
 
 type MovieSearchService struct {
 	MovieSearch models.MovieSearch
