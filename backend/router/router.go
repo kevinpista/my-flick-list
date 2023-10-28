@@ -50,9 +50,12 @@ func Routes() http.Handler {
     router.Post("/api/user-registration", controllers.RegisterUser) // POST register a user
     router.Get("/api/user/{userID}", controllers.GetUserByID) // GET user by their user id
 
-    // movie search resources
-    router.Get("/api/search", tmdb_controllers.SearchMovieByKeyWords)
+    // TMDB movie search resources
+    router.Get("/api/tmdb-search", tmdb_controllers.SearchMovieByKeyWords)
+    // expects "?query={movie_id}" query paramter
 
+    // TMDB GET movie resources
+    router.Get("/api/tmdb-movie", tmdb_controllers.TMDBGetMovieByKeywords)
 	// expects "?query={keywords+keywords}" query paramter
 
 	return router
