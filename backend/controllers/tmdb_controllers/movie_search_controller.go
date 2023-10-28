@@ -23,7 +23,7 @@ apiKey := os.Getenv("API_KEY")
 }
 */
 
-var searchResults tmdb_services.MovieSearchService
+var searchResults tmdb_services.TMDBMovieSearchService
 
 // GET/search?query={keyword+keyword..}
 func SearchMovieByKeyWords(w http.ResponseWriter, r *http.Request) {

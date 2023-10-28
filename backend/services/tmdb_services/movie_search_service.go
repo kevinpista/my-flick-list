@@ -1,22 +1,18 @@
 package tmdb_services
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
+
 	"github.com/kevinpista/my-flick-list/backend/models"
 )
 
-var baseAPIUrl = "https://api.themoviedb.org/3/search/movie?query="
-var APIKey = "null"// implement API key via .env load
-
-type MovieSearchService struct {
+type TMDBMovieSearchService struct {
 	MovieSearch models.MovieSearch
 }
 
-
-func (c *MovieSearchService) TMDBSearchMovieByKeywords(query string) ([]models.MovieSearch, error) {
-	apiUrl := baseAPIUrl + query + APIKey
-
+func (c *TMDBMovieSearchService) TMDBSearchMovieByKeywords(query string) ([]models.MovieSearch, error) {
+	apiUrl := baseAPIUrl + query + "&api_key=" + APIKey
 	// Send GET request to TMDB
 	resp, err := http.Get(apiUrl)
 	if err != nil {
