@@ -1,3 +1,20 @@
+import {BrowserRouter, Route, Routes} from 'react-router-dom'; 
+import Home from './components/Home'
+
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route exact ={true} path="/" element={<Home />} />              
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
+/*
 import logo from './logo.svg';
 import './App.css';
 
@@ -26,3 +43,5 @@ function App() {
 }
 
 export default App;
+
+*/

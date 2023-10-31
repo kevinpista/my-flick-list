@@ -1,0 +1,33 @@
+
+.jumbotron {
+    background-color: #8E9CB0;
+    color: #fff;
+    padding: 100px 25px;
+    text-align: center; 
+  }
+  
+  .jumbotron h1 {
+    font-size: 3em;
+  }
+  
+  .btn-primary {
+    background-color: #BFCFE6;
+    border-color: #BFCFE6;
+  }
+  
+  .container {
+    margin-top: 50px;
+  }
+
+  .navbar {
+    background-color: #8E9CB0;
+  }
+  
+  .navbar-brand, 
+  .navbar-nav .nav-link {
+    color: white;
+  }
+  
+  .navbar-nav .nav-link.active {
+    font-weight: bold;
+  }
