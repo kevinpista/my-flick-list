@@ -1,6 +1,8 @@
 // Home.js 
 import { Button, Container, Row, Col } from 'react-bootstrap';
 import '../css/Home.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+// import NavBar from './NavBar';
 
 function Home() {
 

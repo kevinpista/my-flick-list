@@ -1,12 +1,14 @@
 import {BrowserRouter, Route, Routes} from 'react-router-dom'; 
 import Home from './components/Home'
+import Movie from './components/Movie'
 
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route exact ={true} path="/" element={<Home />} />              
+        <Route exact ={true} path="/" element={<Home />} />        
+        <Route exact ={true} path="/movie" element={<Movie />} />         
       </Routes>
     </BrowserRouter>
   );

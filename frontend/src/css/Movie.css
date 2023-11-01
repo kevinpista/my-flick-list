@@ -1,0 +1,32 @@
+/* Movie.css */
+.movie-paper {
+    padding: 16px;
+    margin-top: 16px;
+  }
+  
+  .movie-title {
+    font-size: 24px;
+  }
+  
+  .movie-description {
+    font-size: 16px;
+  }
+  
+  .movie-release-date {
+    font-size: 14px;
+    margin-top: 16px;
+  }
+  
+  .movie-ratings {
+    font-size: 14px;
+  }
+  
+  .movie-rating {
+    /* Add styles flater */
+    font-size: 14px;
+  }
+  
+  .watch-button {
+    /* Add styles later */
+    font-size: 14px;
+  }
