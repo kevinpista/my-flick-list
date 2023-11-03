@@ -3,7 +3,7 @@ import { Container, Paper, Typography, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import NavBar from './NavBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../css/Movie.css';
+import '../css/Movie.css'; // Import the CSS file
 
 // TODO
 // 1. Change AddIcon button and icon to "Added" with CheckMark icon when successfully added to someone's watchlist
@@ -13,7 +13,7 @@ import '../css/Movie.css';
 
 // 3. Move the moive poster image more to the right along with the movie content accordingly-; padding / flex adjustments
 
-const MoviePage = () => {
+const Test = () => {
   return (
     <React.Fragment>
       <NavBar />
@@ -64,4 +64,4 @@ const MoviePage = () => {
     </React.Fragment>
   );
 };
-export default MoviePage;
+export default Test;

@@ -1,32 +1,51 @@
 /* Movie.css */
+.movie-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
 .movie-paper {
-    padding: 16px;
-    margin-top: 16px;
-  }
-  
-  .movie-title {
-    font-size: 24px;
-  }
-  
-  .movie-description {
-    font-size: 16px;
-  }
-  
-  .movie-release-date {
-    font-size: 14px;
-    margin-top: 16px;
-  }
-  
-  .movie-ratings {
-    font-size: 14px;
-  }
-  
-  .movie-rating {
-    /* Add styles flater */
-    font-size: 14px;
-  }
-  
-  .watch-button {
-    /* Add styles later */
-    font-size: 14px;
-  }
+  height: 570px;
+  padding: 40px;
+  max-width: 100%;
+  overflow: auto; 
+  display: flex;
+  align-items: center;
+}
+
+.movie-poster {
+  flex: 1; /* Take up 1/3 of the available space */
+  margin-left: 10px;
+}
+
+.poster-small {
+  max-width: 300px;
+  max-height: 450px;
+  object-fit: contain;
+}
+
+.movie-details {
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: center;
+  padding-left: 40px;
+  overflow: hidden;
+  max-width: 80%;
+}
+
+.movie-tagline {
+  font-style: italic;
+}
+
+.movie-description {
+  margin-bottom: 3px;
+}
+
+.movie-financials {
+  margin-bottom: 15px;
+}
+
+.movie-ratings {
+  margin-bottom: 15px;
+}
