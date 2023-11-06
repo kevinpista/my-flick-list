@@ -69,12 +69,22 @@ func WriteJSON(w http.ResponseWriter, status int, data interface{}, headers...ht
 }
 
 func ErrorJSON(w http.ResponseWriter, err error, status ...int) {
-	statusCode := http.StatusBadRequest
+	statusCode := http.StatusBadRequest // default statusCode
+	// Will override default statusCode is one was passed to func
 	if len(status) > 0 {
 		statusCode = status[0]
 	}
 	var payload services.JsonResponse
 	payload.Error = true
-	payload.Message = err.Error()
+	payload.Message = err.Error() // whatever error was passed, messsage will display that error
 	WriteJSON(w, statusCode, payload)
 }
+/*
+custom helper function to use to set a custom message
+func CustomErrorJSON(w http.ResponseWriter, message string, statusCode int) {
+	var payload services.JsonResponse
+	payload.Error = true
+	payload.Message = message
+	WriteJSON(w, statusCode, payload)
+}
+*/

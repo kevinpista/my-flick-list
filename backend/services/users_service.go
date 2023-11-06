@@ -21,7 +21,7 @@ type RegistrationResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (us *UserService) RegisterUser(user models.User) (*RegistrationResponse, error) {
+func (c *UserService) RegisterUser(user models.User) (*RegistrationResponse, error) {
 	// Hash the user's password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -88,3 +88,37 @@ func (c *UserService) GetUserByID(id uuid.UUID) (*models.User, error) {
 	}
 }
 
+// Get all Users --- testing purposes only
+func (c *UserService) GetAllUsers() ([]*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `
+		SELECT id, name, email, password, created_at, updated_at FROM users
+		`
+	rows, err := db.QueryContext(ctx, query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var users []*models.User
+	for rows.Next() {  
+		var user models.User
+		err := rows.Scan(
+			&user.ID,
+			&user.Name,
+			&user.Email,
+			&user.Password,
+			&user.CreatedAt,
+			&user.UpdatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+
+	return users, nil
+}

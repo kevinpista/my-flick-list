@@ -2,7 +2,8 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import Home from './components/Home'
 import Movie from './components/Movie'
 import Test from './components/Test'
-
+import UserRegistration from './components/UserRegistration'
+import UserLogin from './components/UserLogin'
 
 
 function App() {
@@ -11,7 +12,10 @@ function App() {
       <Routes>
         <Route exact ={true} path="/" element={<Home />} />        
         <Route exact ={true} path="/movie" element={<Movie />} />       
-        <Route exact ={true} path="/test" element={<Test />} />           
+        <Route exact ={true} path="/test" element={<Test />} />  
+        <Route exact ={true} path="/user-registration" element={<UserRegistration />} />                 
+        <Route exact ={true} path="/user-login" element={<UserLogin />} />                    
+   
       </Routes>
     </BrowserRouter>
   );
