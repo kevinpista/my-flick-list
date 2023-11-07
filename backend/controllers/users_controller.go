@@ -6,6 +6,8 @@ import (
 	"errors"
 	"net/http"
 	"regexp"
+	"strings"
+
 
 	"github.com/go-chi/chi/v5"
 	"github.com/kevinpista/my-flick-list/backend/helpers"
@@ -26,22 +28,46 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
     err := json.NewDecoder(r.Body).Decode(&userData.User)
     if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err) // internal log
-		helpers.ErrorJSON(w, errors.New("invalid request data"), 400) // external frontend
+		helpers.ErrorJSON(w, errors.New("invalid request data"), http.StatusBadRequest) // external frontend
         return
     }
     if !isValidEmail(userData.User.Email) {
-		helpers.MessageLogs.ErrorLog.Println("email format invalid interal") // internal log
-		helpers.ErrorJSON(w, errors.New("email format INVALID"), 406) // external
+		helpers.MessageLogs.ErrorLog.Println("user entered an invalid email format")
+		helpers.ErrorJSON(w, errors.New("invalid email format"), http.StatusBadRequest)
         return
     }
-	// TODO AT HERE
+    // Check for empty name field or whitespace-only name
+    if len(strings.TrimSpace(userData.User.Name)) == 0 {
+        helpers.MessageLogs.ErrorLog.Println("empty or whitespace-only name")
+        helpers.ErrorJSON(w, errors.New("name cannot be empty or contain only whitespace"), http.StatusBadRequest)
+        return
+    }
+
+    if userData.User.Password == "" {
+        helpers.MessageLogs.ErrorLog.Println("empty password field")
+        helpers.ErrorJSON(w, errors.New("password field cannot be empty"), http.StatusBadRequest)
+        return
+    }
+    // Check for whitespace in the password
+    if strings.Contains(userData.User.Password, " ") {
+        helpers.MessageLogs.ErrorLog.Println("password contains whitespace")
+        helpers.ErrorJSON(w, errors.New("password cannot contain whitespace"), http.StatusBadRequest)
+        return
+    }
     userCreated, err := user.RegisterUser(userData.User)
-    if err != nil {
+	if err != nil {
+        // Check the error message for "duplicate key value violates unique constraint" and SQLSTATE 23505
+        if strings.Contains(err.Error(), "duplicate key value violates unique constraint") &&
+            strings.Contains(err.Error(), "SQLSTATE 23505") {
+            
+			helpers.MessageLogs.ErrorLog.Println(err)
+			helpers.ErrorJSON(w, errors.New("account with that email already exists"), http.StatusConflict)
+			return
+        }
 		helpers.MessageLogs.ErrorLog.Println(err)
-		helpers.ErrorJSON(w, errors.New("database insertion failed"), 406) // external
-        return
+		helpers.ErrorJSON(w, errors.New("account registration failed"), http.StatusBadRequest)
     }
-    // Respond with the newly created user excluding the password if successful
+    // Respond with the newly created user with new info including ID, but excluding the password
     helpers.WriteJSON(w, http.StatusCreated, userCreated)
 }
 
