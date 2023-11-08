@@ -12,6 +12,8 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { registerUser } from '../api/userRegistrationAPI';
+import * as errorConstants from '../api/errorConstants';
+
 
 
 function Copyright(props) {
@@ -44,40 +46,47 @@ export default function UserRegistration() {
     event.preventDefault();
 
     try {
-        const response = await registerUser(formData);
+        const response = await registerUser(formData); // i believe response var here = the backend json body already
+        // can just access the body like response.name or response.id etc. No need for response.data.name as 
+        // that is handled in the axios code file when returned as response.data
 
-        // Check if the registration was successful
+        // If there's a response with no error code, successful
         if (response) {
-            if (response.error === true) {
-                // Registration failed
-                console.error('Registration failed..1', response.message);
-            } else {
-                // Registration successful
-                console.log('Registration successful')
-                // Redirect here later
-            }
+            console.log('Registration successful!!')
+            // TODO - add action such as logging user in or redirecting
         } 
-        } catch (error) {
-            // Handle network or other errors
-            console.error('Registration failed 2', error);
-        }
+        // If error was thrown by API request
+        // TODO - nice message pop up action, not a console.log()
+        } catch(error) {
+            if (error.message === errorConstants.ERROR_EMAIL_EXISTS) {
+                console.log('Email address is already in use!')
+            } else if (error.message === errorConstants.ERROR_INVALID_EMAIL) {
+                console.log('Email format is not valid!')
+            } else if (error.message === errorConstants.ERROR_PASSWORD_WHITESPACE) {
+                console.log('Password cannot have any whitespace!')
+            } else if (error.message === errorConstants.ERROR_PASSWORD_EMPTY) {
+                console.log('Password cannot be empty!')
+            } else if (error.message === errorConstants.ERROR_INVALID_NAME) {
+                console.log('Name cannot be empty!')
+            } else if (error.message === errorConstants.ERROR_BAD_REQUEST) {
+                console.log('Bad request')
+            } else if (error.message === errorConstants.ERROR_SERVER) {
+                console.log('Server connection error.')
+            } else {
+                console.log("else statement executed")
+            }       
+        } 
     };
 
     const handleInputChange = (e) => {
         const fieldName = e.target.name;
         const fieldValue = e.target.value;
         
-        if (fieldName === "password") {
-            setFormData({
-            ...formData,
-            "-": fieldValue, // Map "password" field to "-" in JSON object
-            });
-        } else {
             setFormData({
             ...formData,
             [fieldName]: fieldValue,
             });
-        }
+        
         };
 
 

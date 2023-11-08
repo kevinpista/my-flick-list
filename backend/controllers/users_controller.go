@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/kevinpista/my-flick-list/backend/helpers"
+	"github.com/kevinpista/my-flick-list/backend/helpers/error_constants"
 	"github.com/kevinpista/my-flick-list/backend/services"
 )
 
@@ -28,30 +29,32 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
     err := json.NewDecoder(r.Body).Decode(&userData.User)
     if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err) // internal log
-		helpers.ErrorJSON(w, errors.New("invalid request data"), http.StatusBadRequest) // external frontend
+		helpers.ErrorJSON(w, errors.New(error_constants.BadRequest), http.StatusBadRequest) // external frontend
         return
     }
+	// Trim leading and trailing white spaces from the email address if any
+	userData.User.Email = strings.TrimSpace(userData.User.Email)
+
     if !isValidEmail(userData.User.Email) {
 		helpers.MessageLogs.ErrorLog.Println("user entered an invalid email format")
-		helpers.ErrorJSON(w, errors.New("invalid email format"), http.StatusBadRequest)
+		helpers.ErrorJSON(w, errors.New(error_constants.InvalidEmail), http.StatusBadRequest)
         return
     }
     // Check for empty name field or whitespace-only name
     if len(strings.TrimSpace(userData.User.Name)) == 0 {
         helpers.MessageLogs.ErrorLog.Println("empty or whitespace-only name")
-        helpers.ErrorJSON(w, errors.New("name cannot be empty or contain only whitespace"), http.StatusBadRequest)
+        helpers.ErrorJSON(w, errors.New(error_constants.InvalidName), http.StatusBadRequest)
         return
     }
-
     if userData.User.Password == "" {
         helpers.MessageLogs.ErrorLog.Println("empty password field")
-        helpers.ErrorJSON(w, errors.New("password field cannot be empty"), http.StatusBadRequest)
+        helpers.ErrorJSON(w, errors.New(error_constants.PasswordEmpty), http.StatusBadRequest)
         return
     }
     // Check for whitespace in the password
     if strings.Contains(userData.User.Password, " ") {
         helpers.MessageLogs.ErrorLog.Println("password contains whitespace")
-        helpers.ErrorJSON(w, errors.New("password cannot contain whitespace"), http.StatusBadRequest)
+        helpers.ErrorJSON(w, errors.New(error_constants.PasswordWhitespace), http.StatusBadRequest)
         return
     }
     userCreated, err := user.RegisterUser(userData.User)
@@ -61,11 +64,12 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
             strings.Contains(err.Error(), "SQLSTATE 23505") {
             
 			helpers.MessageLogs.ErrorLog.Println(err)
-			helpers.ErrorJSON(w, errors.New("account with that email already exists"), http.StatusConflict)
+			helpers.ErrorJSON(w, errors.New(error_constants.EmailExists), http.StatusConflict)
 			return
         }
+		// Other issues related to services/database during account creation
 		helpers.MessageLogs.ErrorLog.Println(err)
-		helpers.ErrorJSON(w, errors.New("account registration failed"), http.StatusBadRequest)
+		helpers.ErrorJSON(w, errors.New(error_constants.BadRequest), http.StatusBadRequest)
     }
     // Respond with the newly created user with new info including ID, but excluding the password
     helpers.WriteJSON(w, http.StatusCreated, userCreated)

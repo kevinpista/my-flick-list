@@ -2,8 +2,8 @@ package services
 
 import (
 	"context"
-	"time"
 	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/kevinpista/my-flick-list/backend/models"
@@ -17,6 +17,7 @@ type UserService struct {
 type RegistrationResponse struct {
 	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
+	Email     string    `json:"email"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -36,7 +37,7 @@ func (c *UserService) RegisterUser(user models.User) (*RegistrationResponse, err
 
 	query := `
         INSERT INTO users (name, email, password, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5) returning id, name, created_at, updated_at
+        VALUES ($1, $2, $3, $4, $5) returning id, name, email, created_at, updated_at
     `
 	var registrationResponse RegistrationResponse
 	queryErr := db.QueryRowContext(
@@ -47,7 +48,7 @@ func (c *UserService) RegisterUser(user models.User) (*RegistrationResponse, err
 		user.Password,
 		time.Now(),
 		time.Now(),
-	).Scan(&registrationResponse.ID, &registrationResponse.Name, &registrationResponse.CreatedAt, &registrationResponse.UpdatedAt) // populates these fields; id and time() handled by DB
+	).Scan(&registrationResponse.ID, &registrationResponse.Name, &registrationResponse.Email, &registrationResponse.CreatedAt, &registrationResponse.UpdatedAt) // populates these fields; id and time() handled by DB
 
 	if queryErr != nil {
 		return nil, queryErr
@@ -83,8 +84,8 @@ func (c *UserService) GetUserByID(id uuid.UUID) (*models.User, error) {
 			return nil, err
 		}
 		return &user, nil
-	} 	else {
-			return nil, sql.ErrNoRows // Case where query did not find any matching rows
+	} else {
+		return nil, sql.ErrNoRows // Case where query did not find any matching rows
 	}
 }
 
@@ -103,7 +104,7 @@ func (c *UserService) GetAllUsers() ([]*models.User, error) {
 	}
 
 	var users []*models.User
-	for rows.Next() {  
+	for rows.Next() {
 		var user models.User
 		err := rows.Scan(
 			&user.ID,
