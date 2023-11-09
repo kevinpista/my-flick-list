@@ -7,13 +7,14 @@ import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import NavBar from './NavBar';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { registerUser } from '../api/userRegistrationAPI';
 import * as errorConstants from '../api/errorConstants';
-
+import * as themeStyles from '../styling/ThemeStyles';
 import Alert from '@mui/material/Alert';
 
 function Copyright(props) {
@@ -30,9 +31,6 @@ function Copyright(props) {
 }
 
 // TODO remove, this demo shouldn't need to reset the theme.
-
-const defaultTheme = createTheme();
-
 
 export default function UserRegistration() {
 
@@ -114,12 +112,14 @@ export default function UserRegistration() {
         };
 
     return (
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider theme={themeStyles.formTheme}>
+                    <NavBar/>
+
             <Container component="main" maxWidth="xs">
             {/* Display alert based on registration status*/}
             {showSuccessAlert && (
                 <Alert severity="success">
-                    <strong>Successful Sign-Up</strong> - Logging you in...
+                    <strong>Successful Sign Up</strong> - Logging you in...
                 </Alert>
                 )}
 
@@ -138,15 +138,14 @@ export default function UserRegistration() {
                 alignItems: 'center',
                 }}
             >
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                <LockOutlinedIcon />
+                <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+                <LockOpenIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
                 Create Account
                 </Typography>
                 <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                 <Grid container spacing={2}>
-
                     <Grid item xs={12}>
                     <TextField
                         required
@@ -184,7 +183,6 @@ export default function UserRegistration() {
                         error={passwordError}
                     />
                     </Grid>
-
                 </Grid>
                 <Button
                     type="submit"
