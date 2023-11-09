@@ -42,6 +42,11 @@ export default function UserRegistration() {
         password: '',
         });
 
+    // State variables for error <Alert> and status for form fields
+    const [nameError, setNameError] = useState(false);
+    const [emailError, setEmailError] = useState(false);
+    const [passwordError, setPasswordError] = useState(false);
+
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
     const [errorAlertMessage, setErrorAlertMessage] = useState('');
 
@@ -55,7 +60,6 @@ export default function UserRegistration() {
 
         // If there's a response with no error code, successful
         if (response) {
-            console.log('Registration successful!!')
             setErrorAlertMessage('');
             setShowSuccessAlert(true);
 
@@ -65,28 +69,25 @@ export default function UserRegistration() {
         // If error was thrown by API request
         } catch(error) {
             if (error.message === errorConstants.ERROR_EMAIL_EXISTS) {
-                console.log('Email address is already in use!')
-                setErrorAlertMessage('Email address is already in use!');
+                setErrorAlertMessage('Email address is already in use.');
+                setEmailError(true);
             } else if (error.message === errorConstants.ERROR_INVALID_EMAIL) {
-                console.log('Email format is not valid!')
-                setErrorAlertMessage('Email format is not valid!');
+                setErrorAlertMessage('Email format is not valid.');
+                setEmailError(true);
             } else if (error.message === errorConstants.ERROR_PASSWORD_WHITESPACE) {
-                console.log('Password cannot have any whitespace!')
-                setErrorAlertMessage('Password cannot have any whitespace!');
+                setErrorAlertMessage('Password cannot have any whitespace.');
+                setPasswordError(true);
             } else if (error.message === errorConstants.ERROR_PASSWORD_EMPTY) {
-                console.log('Password cannot be empty!')
-                setErrorAlertMessage('Password cannot be empty!');
+                setErrorAlertMessage('Password cannot be empty.');
+                setPasswordError(true);
             } else if (error.message === errorConstants.ERROR_INVALID_NAME) {
-                console.log('Name cannot be empty!')
-                setErrorAlertMessage('Name cannot be empty!');
+                setErrorAlertMessage('Name cannot be empty.');
+                setNameError(true);
             } else if (error.message === errorConstants.ERROR_BAD_REQUEST) {
-                console.log('Bad request')
-                setErrorAlertMessage('Bad request');
+                setErrorAlertMessage('Bad request.');
             } else if (error.message === errorConstants.ERROR_SERVER) {
-                console.log('Server connection error.')
                 setErrorAlertMessage('Server connection error.');
             } else {
-                console.log("else statement executed")
                 setErrorAlertMessage('An unexpected error occurred.');
             }       
         } 
@@ -95,6 +96,15 @@ export default function UserRegistration() {
     const handleInputChange = (e) => {
         const fieldName = e.target.name;
         const fieldValue = e.target.value;
+
+        // Reset error state when the user starts typing in a field
+        if (fieldName === 'name') {
+            setNameError(false);
+        } else if (fieldName === 'email') {
+            setEmailError(false);
+        } else if (fieldName === 'password') {
+            setPasswordError(false);
+        }
         
             setFormData({
             ...formData,
@@ -106,7 +116,7 @@ export default function UserRegistration() {
     return (
         <ThemeProvider theme={defaultTheme}>
             <Container component="main" maxWidth="xs">
-                
+            {/* Display alert based on registration status*/}
             {showSuccessAlert && (
                 <Alert severity="success">
                     <strong>Successful Sign-Up</strong> - Logging you in...
@@ -146,6 +156,7 @@ export default function UserRegistration() {
                         name="name"
                         autoComplete="name"
                         onChange={handleInputChange}
+                        error={nameError} // Applying error style conditionally with useState
                     />
                     </Grid>
                     <Grid item xs={12}>
@@ -157,6 +168,7 @@ export default function UserRegistration() {
                         name="email"
                         autoComplete="email"
                         onChange={handleInputChange}
+                        error={emailError}
                     />
                     </Grid>
                     <Grid item xs={12}>
@@ -169,6 +181,7 @@ export default function UserRegistration() {
                         type="password"
                         autoComplete="new-password"
                         onChange={handleInputChange}
+                        error={passwordError}
                     />
                     </Grid>
 
