@@ -14,7 +14,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { registerUser } from '../api/userRegistrationAPI';
 import * as errorConstants from '../api/errorConstants';
 
-
+import Alert from '@mui/material/Alert';
 
 function Copyright(props) {
   return (
@@ -42,6 +42,9 @@ export default function UserRegistration() {
         password: '',
         });
 
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+    const [errorAlertMessage, setErrorAlertMessage] = useState('');
+
     const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -53,27 +56,38 @@ export default function UserRegistration() {
         // If there's a response with no error code, successful
         if (response) {
             console.log('Registration successful!!')
+            setErrorAlertMessage('');
+            setShowSuccessAlert(true);
+
             // TODO - add action such as logging user in or redirecting
         } 
+
         // If error was thrown by API request
-        // TODO - nice message pop up action, not a console.log()
         } catch(error) {
             if (error.message === errorConstants.ERROR_EMAIL_EXISTS) {
                 console.log('Email address is already in use!')
+                setErrorAlertMessage('Email address is already in use!');
             } else if (error.message === errorConstants.ERROR_INVALID_EMAIL) {
                 console.log('Email format is not valid!')
+                setErrorAlertMessage('Email format is not valid!');
             } else if (error.message === errorConstants.ERROR_PASSWORD_WHITESPACE) {
                 console.log('Password cannot have any whitespace!')
+                setErrorAlertMessage('Password cannot have any whitespace!');
             } else if (error.message === errorConstants.ERROR_PASSWORD_EMPTY) {
                 console.log('Password cannot be empty!')
+                setErrorAlertMessage('Password cannot be empty!');
             } else if (error.message === errorConstants.ERROR_INVALID_NAME) {
                 console.log('Name cannot be empty!')
+                setErrorAlertMessage('Name cannot be empty!');
             } else if (error.message === errorConstants.ERROR_BAD_REQUEST) {
                 console.log('Bad request')
+                setErrorAlertMessage('Bad request');
             } else if (error.message === errorConstants.ERROR_SERVER) {
                 console.log('Server connection error.')
+                setErrorAlertMessage('Server connection error.');
             } else {
                 console.log("else statement executed")
+                setErrorAlertMessage('An unexpected error occurred.');
             }       
         } 
     };
@@ -89,11 +103,22 @@ export default function UserRegistration() {
         
         };
 
-
-    // RENDER COMPONENT
     return (
         <ThemeProvider theme={defaultTheme}>
             <Container component="main" maxWidth="xs">
+                
+            {showSuccessAlert && (
+                <Alert severity="success">
+                    <strong>Successful Sign-Up</strong> - Logging you in...
+                </Alert>
+                )}
+
+            {errorAlertMessage && (
+                <Alert severity="error">
+                    <strong>Error</strong> - {errorAlertMessage}
+                </Alert>
+                )}
+
             <CssBaseline />
             <Box
                 sx={{
