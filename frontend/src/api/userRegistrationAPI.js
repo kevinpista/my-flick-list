@@ -1,3 +1,5 @@
+// API requiest to register the user
+
 import axios from 'axios';
 export function registerUser(formData) {
 

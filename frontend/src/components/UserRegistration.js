@@ -49,7 +49,7 @@ export default function UserRegistration() {
     const [errorAlertMessage, setErrorAlertMessage] = useState('');
 
     const handleSubmit = async (event) => {
-    event.preventDefault();
+        event.preventDefault();
 
     try {
         const response = await registerUser(formData); // i believe response var here = the backend json body already
@@ -83,8 +83,6 @@ export default function UserRegistration() {
                 setNameError(true);
             } else if (error.message === errorConstants.ERROR_BAD_REQUEST) {
                 setErrorAlertMessage('Bad request.');
-            } else if (error.message === errorConstants.ERROR_SERVER) {
-                setErrorAlertMessage('Server connection error.');
             } else {
                 setErrorAlertMessage('An unexpected error occurred.');
             }       
@@ -104,19 +102,18 @@ export default function UserRegistration() {
             setPasswordError(false);
         }
         
-            setFormData({
-            ...formData,
-            [fieldName]: fieldValue,
-            });
+        setFormData({
+        ...formData,
+        [fieldName]: fieldValue,
+        });
         
         };
 
     return (
         <ThemeProvider theme={themeStyles.formTheme}>
-                    <NavBar/>
-
+            <NavBar/>
             <Container component="main" maxWidth="xs">
-            {/* Display alert based on registration status*/}
+            {/* Display alert based on registration status */}
             {showSuccessAlert && (
                 <Alert severity="success">
                     <strong>Successful Sign Up</strong> - Logging you in...

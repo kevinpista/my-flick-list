@@ -10,3 +10,5 @@ export const ERROR_PASSWORD_EMPTY = "password_empty";
 export const ERROR_INVALID_NAME = "invalid_name";
 export const ERROR_BAD_REQUEST = "bad_request"; // general
 export const ERROR_SERVER = "server_error";
+export const ERROR_INVALID_LOGIN = "invalid_login";
+

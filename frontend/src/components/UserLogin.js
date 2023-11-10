@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -8,10 +9,16 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import NavBar from './NavBar';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import { loginUser } from '../api/userLoginAPI';
+import * as errorConstants from '../api/errorConstants';
+import * as themeStyles from '../styling/ThemeStyles';
+import Alert from '@mui/material/Alert';
+
 
 function Copyright(props) {
     return (
@@ -26,23 +33,95 @@ function Copyright(props) {
     );
   }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-
-const defaultTheme = createTheme();
-
 export default function UserLogin() {
-  const handleSubmit = (event) => {
+
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [errorAlertMessage, setErrorAlertMessage] = useState('');
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
+
+    if (!formData.email && !formData.password) {
+      setEmailError(true);
+      setPasswordError(true);
+      return;
+    }
+
+    if (!formData.email) {
+      setEmailError(true);
+      return;
+    }
+
+    if (!formData.password) {
+      setPasswordError(true);
+      return;
+    }
+
+    try {
+        const response = await loginUser(formData);
+
+        if (response) {
+          setErrorAlertMessage('');
+          setShowSuccessAlert(true);
+          // TODO: Add logic for successful login (e.g., redirect)
+        }
+    } catch (error) {
+        if (error.message === errorConstants.ERROR_INVALID_EMAIL) {
+          setErrorAlertMessage('Email format not valid.');
+          setEmailError(true);
+      } else if (error.message === errorConstants.ERROR_INVALID_LOGIN) {
+          setErrorAlertMessage('Invalid login credentials');
+          setEmailError(true); // Set error status for both form fields
+          setPasswordError(true);
+      } else {
+          setErrorAlertMessage('An unexpected error occured');
+      }
+    };
+  };
+  
+  const handleInputChange = (e) => {
+    const fieldName = e.target.name;
+    const fieldValue = e.target.value;
+
+    // Reset error state when the user starts typing in a field
+    if (fieldName === 'email') {
+      setEmailError(false);
+    } else if (fieldName === 'password') {
+      setPasswordError(false);
+    }
+
+    setFormData({
+      ...formData,
+      [fieldName]: fieldValue,
     });
+
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={themeStyles.formTheme}>
+      <NavBar/>
       <Container component="main" maxWidth="xs">
+        {/* Display alert based  on login success or error */}
+        {showSuccessAlert && (
+          <Alert severity="success">
+            <strong>Successful Credentials</strong> - Logging you in...
+          </Alert>
+        )}
+
+        {errorAlertMessage && (
+          <Alert severity="error">
+            <strong>Error</strong> - {errorAlertMessage}
+          </Alert>
+        )}
+
         <CssBaseline />
         <Box
           sx={{
@@ -52,8 +131,8 @@ export default function UserLogin() {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
+          <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+            <AccountCircleIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Account Login
@@ -68,16 +147,20 @@ export default function UserLogin() {
               name="email"
               autoComplete="email"
               autoFocus
+              onChange={handleInputChange}
+              error={emailError} // Applying error style conditionally with useState
             />
             <TextField
               margin="normal"
               required
               fullWidth
-              name="password"
-              label="Password"
-              type="password"
               id="password"
+              label="Password"
+              name="password"
+              type="password"
               autoComplete="current-password"
+              onChange={handleInputChange}
+              error={passwordError}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
@@ -105,7 +188,7 @@ export default function UserLogin() {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
+        <Copyright sx={{ mt: 5}} />
       </Container>
     </ThemeProvider>
   );

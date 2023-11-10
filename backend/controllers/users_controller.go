@@ -99,8 +99,8 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	userLogin, err := user.HandleLogin(receivedUserData.User)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err) // if user not found, exact error string from postgresql
-		helpers.ErrorJSON(w, errors.New(error_constants.InvalidLogin), http.StatusUnauthorized) // TODO - this line
-		// is causing a "superfluous response.WriteHeader call"
+		helpers.ErrorJSON(w, errors.New(error_constants.InvalidLogin), http.StatusUnauthorized)
+		return
 	}
 
 	// We will return them with a new JWT token
