@@ -19,7 +19,6 @@ import * as errorConstants from '../api/errorConstants';
 import * as themeStyles from '../styling/ThemeStyles';
 import Alert from '@mui/material/Alert';
 
-
 function Copyright(props) {
     return (
       <Typography variant="body2" color="text.secondary" align="center" {...props}>
