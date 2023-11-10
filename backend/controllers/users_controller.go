@@ -75,6 +75,39 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
     helpers.WriteJSON(w, http.StatusCreated, userCreated)
 }
 
+// POST/user-login
+// TODO - implementing JWT part first 
+func HandleLogin(w http.ResponseWriter, r *http.Request) {
+    var receivedUserData services.UserService
+    err := json.NewDecoder(r.Body).Decode(&receivedUserData.User)
+    if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err) // internal log
+		helpers.ErrorJSON(w, errors.New(error_constants.BadRequest), http.StatusBadRequest) // external frontend
+        return
+    }
+	// Trim leading and trailing white spaces from the email address + passsword if any
+	// Note password field during registration does not allow whitespaces
+	receivedUserData.User.Email = strings.TrimSpace(receivedUserData.User.Email)
+	receivedUserData.User.Password = strings.TrimSpace(receivedUserData.User.Password)
+
+    if !isValidEmail(receivedUserData.User.Email) {
+		helpers.MessageLogs.ErrorLog.Println("user entered an invalid email format")
+		helpers.ErrorJSON(w, errors.New(error_constants.InvalidEmail), http.StatusBadRequest)
+        return
+    }
+
+	userLogin, err := user.HandleLogin(receivedUserData.User)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err) // if user not found, exact error string from postgresql
+		helpers.ErrorJSON(w, errors.New(error_constants.InvalidLogin), http.StatusUnauthorized) // TODO - this line
+		// is causing a "superfluous response.WriteHeader call"
+	}
+
+	// We will return them with a new JWT token
+    // Respond with the newly created user with new info including ID, but excluding the password
+    helpers.WriteJSON(w, http.StatusOK, userLogin) // Will be of the LoginResponse model struct
+}
+
 // GET/user/{userID}
 func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	userIDStr := chi.URLParam(r, "userID")
@@ -95,7 +128,6 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	}
 	helpers.WriteJSON(w, http.StatusOK, userData)
 }
-
 
 // GET/users -- testing purposes only
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {

@@ -48,6 +48,7 @@ func Routes() http.Handler {
 
 	// user resources
     router.Post("/api/user-registration", controllers.RegisterUser) // POST register a user
+	router.Post("/api/user-login", controllers.HandleLogin) // POST user login
     router.Get("/api/user/{userID}", controllers.GetUserByID) // GET user by their user id
 	router.Get("/api/users", controllers.GetAllUsers) // GET all users --- testing purposes only
 

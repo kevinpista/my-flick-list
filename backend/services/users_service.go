@@ -14,6 +14,7 @@ type UserService struct {
 	User models.User
 }
 
+// Add JWT to response
 type RegistrationResponse struct {
 	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
@@ -22,8 +23,17 @@ type RegistrationResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+// Add JWT to response
+type LoginResponse struct {
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 func (c *UserService) RegisterUser(user models.User) (*RegistrationResponse, error) {
-	// Hash the user's password
+	// Hash the user's password. Database will store hashed version
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
@@ -54,6 +64,53 @@ func (c *UserService) RegisterUser(user models.User) (*RegistrationResponse, err
 		return nil, queryErr
 	}
 	return &registrationResponse, nil
+}
+
+func (c *UserService) HandleLogin(receivedUserData models.User) (*LoginResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `
+		SELECT id, name, email, password, created_at, updated_at FROM users
+		WHERE email = $1
+    `
+	var fetchedUserData models.User
+	queryErr := db.QueryRowContext(
+		ctx,
+		query,
+		receivedUserData.Email,
+	).Scan(
+		&fetchedUserData.ID,
+		&fetchedUserData.Name,
+		&fetchedUserData.Email,
+		&fetchedUserData.Password,
+		&fetchedUserData.CreatedAt,
+		&fetchedUserData.UpdatedAt,
+	)
+	if queryErr == sql.ErrNoRows {
+		// User not found
+		return nil, queryErr
+	} else if queryErr != nil {
+		// Other database related error
+		return nil, queryErr
+	}
+
+	// Compare the provided password with the stored hashed password
+	err := bcrypt.CompareHashAndPassword([]byte(fetchedUserData.Password), []byte(receivedUserData.Password))
+	if err != nil {
+		// Incorrect password
+		return nil, err // TODO - Not sure if this returns a true or false as idk what err holds based on comparehashandpassword data
+	}
+
+	// Password matches, return login response
+	loginResponse := LoginResponse {
+		ID:        fetchedUserData.ID,
+		Name:      fetchedUserData.Name,
+		Email:     fetchedUserData.Email,
+		CreatedAt: fetchedUserData.CreatedAt,
+		UpdatedAt: fetchedUserData.UpdatedAt,
+	}
+	return &loginResponse, nil
 }
 
 func (c *UserService) GetUserByID(id uuid.UUID) (*models.User, error) {

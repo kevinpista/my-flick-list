@@ -10,4 +10,5 @@ const (
 	InvalidName        = "invalid_name" // empty or whitespace-only name
 	BadRequest         = "bad_request"  // general
 	Server             = "server_error"
+	InvalidLogin       = "invalid_login"
 )
