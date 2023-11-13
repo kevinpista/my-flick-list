@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/kevinpista/my-flick-list/backend/services"
 
@@ -51,6 +52,7 @@ func WriteJSON(w http.ResponseWriter, status int, data interface{}, headers...ht
 	if err != nil {
 		return err
 	}
+
 	if len(headers) > 0 { // if greater than 0, means we have headers so we want to set those headers
 		for key, value := range headers[0] {
 			w.Header() [key] = value // set the headers of each in the writer if any
@@ -88,3 +90,46 @@ func CustomErrorJSON(w http.ResponseWriter, message string, statusCode int) {
 	WriteJSON(w, statusCode, payload)
 }
 */
+
+// Writes JSON data to the response with an additional JWT token header
+func WriteJSONWithToken(w http.ResponseWriter, status int, data interface{}, token string, headers ...http.Header) error {
+    out, err := json.MarshalIndent(data, "", "\t")
+    if err != nil {
+        return err
+    }
+
+    if len(headers) > 0 {
+        for key, value := range headers[0] {
+            w.Header()[key] = value
+        }
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    w.Header().Set("Authorization", "Bearer "+token) // Include the JWT token in the response headers
+    w.WriteHeader(status)
+    _, err = w.Write(out)
+
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
+// Extract JWT token from user's Authorization header
+func ExtractTokenFromHeader(r *http.Request) string {
+	// Get the Authorization header
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		return ""
+	}
+
+	// Check if the header is in the expected format (Bearer <token>)
+	headerParts := strings.Split(authHeader, " ")
+	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+		return ""
+	}
+
+	// Return the token part
+	return headerParts[1]
+}
