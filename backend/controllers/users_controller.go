@@ -80,6 +80,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
     // Respond with the newly created user with new info including ID,  but excluding the password
+	helpers.MessageLogs.ErrorLog.Println(jwtToken)
 	helpers.WriteJSONWithToken(w, http.StatusCreated, userCreated, jwtToken)
 }
 
@@ -118,6 +119,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
     // Respond with the newly created user with new info including ID,  but excluding the password
+	helpers.MessageLogs.ErrorLog.Println(jwtToken)
 	helpers.WriteJSONWithToken(w, http.StatusCreated, userLogin, jwtToken)
 }
 

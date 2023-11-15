@@ -81,7 +81,7 @@ export default function UserLogin() {
           setEmailError(true); // Set error status for both form fields
           setPasswordError(true);
       } else {
-          setErrorAlertMessage('An unexpected error occured');
+          setErrorAlertMessage('An unexpected error occurred');
       }
     };
   };

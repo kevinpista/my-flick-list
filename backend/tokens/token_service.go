@@ -53,11 +53,13 @@ func ParseToken(tokenString string) (*Claims, error) {
 
 // Verify JWT token
 func VerifyToken(tokenString string) (bool, error) {
+    // TO-DO 1.1 cont, Right now, if a token is expired, this givens err, where err will say something like "token is expired by 3h24m11.441749s"
     claims, err := ParseToken(tokenString)
     if err != nil {
         return false, err
     }
-
+    
+    // TO-DO 1. apparently this doesn't even get checked
     now := time.Now() // Checks if expired
     if now.After(claims.ExpiresAt.Time) {
         return false, jwt.ErrTokenExpired

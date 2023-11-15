@@ -104,6 +104,7 @@ func WriteJSONWithToken(w http.ResponseWriter, status int, data interface{}, tok
         }
     }
 
+    w.Header().Set("Access-Control-Expose-Headers", "Authorization") // Expose the Authorization header, else frontend can't access to extract token
     w.Header().Set("Content-Type", "application/json")
     w.Header().Set("Authorization", "Bearer "+token) // Include the JWT token in the response headers
     w.WriteHeader(status)

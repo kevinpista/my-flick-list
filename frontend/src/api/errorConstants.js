@@ -11,4 +11,6 @@ export const ERROR_INVALID_NAME = "invalid_name";
 export const ERROR_BAD_REQUEST = "bad_request"; // general
 export const ERROR_SERVER = "server_error";
 export const ERROR_INVALID_LOGIN = "invalid_login";
+export const UNAUTHORIZED_REQUEST = "unauthorized_request";
+export const TOKEN_EXPIRED = "token_expired";
 
