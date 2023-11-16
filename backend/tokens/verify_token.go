@@ -37,16 +37,29 @@ func VerifyUserJWT (r *http.Request) error {
 	if err != nil && !verifyToken {
 
 		if err == jwt.ErrSignatureInvalid {
+			helpers.MessageLogs.ErrorLog.Println(err)
 			tokenErr := errors.New(error_constants.UnauthorizedRequest)
-		helpers.MessageLogs.ErrorLog.Println(err)
 		return tokenErr
 		}
 
 		if err == jwt.ErrTokenExpired {
-			tokenErr := errors.New(error_constants.TokenExpired)
 			helpers.MessageLogs.ErrorLog.Println(err)
+			tokenErr := errors.New(error_constants.TokenExpired)
 			return tokenErr
 		}
+
+		if err == jwt.ErrTokenMalformed {
+			helpers.MessageLogs.ErrorLog.Println(err)
+			tokenErr := errors.New(error_constants.UnauthorizedRequest)
+			return tokenErr
+		}
+
+		if err == jwt.ErrTokenInvalidAudience {
+			helpers.MessageLogs.ErrorLog.Println(err)
+			tokenErr := errors.New(error_constants.UnauthorizedRequest)
+			return tokenErr
+		}
+
 		// Other error
 		helpers.MessageLogs.ErrorLog.Println("other JWT error:", err)
 		tokenErr := errors.New(error_constants.UnauthorizedRequest)

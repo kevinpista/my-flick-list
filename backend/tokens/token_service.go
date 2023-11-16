@@ -5,6 +5,7 @@ import (
 
     "github.com/golang-jwt/jwt/v4"
     "github.com/google/uuid"
+
 )
 
 // Custom claims structure
@@ -40,12 +41,30 @@ func ParseToken(tokenString string) (*Claims, error) {
     })
 
     if err != nil {
-        return nil, err
+        if ve, ok := err.(*jwt.ValidationError); ok { // Attempts to convert the value of err to a type jwt.ValidationError
+            // If conversion successful, it will store the value in ve. Set ok variable to true if conversion was successful
+            switch ve.Errors {
+            case jwt.ValidationErrorSignatureInvalid:
+                return nil, jwt.ErrSignatureInvalid
+            case jwt.ValidationErrorExpired:
+                return nil, jwt.ErrTokenExpired
+            case jwt.ValidationErrorMalformed:
+                return nil, jwt.ErrTokenMalformed
+            case jwt.ValidationErrorAudience:
+                return nil, jwt.ErrTokenInvalidAudience
+            default:
+                // Other JWT validation error
+                return nil, err
+            }
+        } else {
+            // Handle any errors not related to validation error
+            return nil, err
+        }
     }
 
     claims, ok := token.Claims.(*Claims) // Extract claims from the parsed *jwt.Token object and store into my Claims struct
     if !ok || !token.Valid { // Invalid if either are True
-        return nil, jwt.ErrSignatureInvalid
+        return nil, jwt.ErrTokenInvalidClaims
     }
 
     return claims, nil // Success
@@ -53,13 +72,11 @@ func ParseToken(tokenString string) (*Claims, error) {
 
 // Verify JWT token
 func VerifyToken(tokenString string) (bool, error) {
-    // TO-DO 1.1 cont, Right now, if a token is expired, this givens err, where err will say something like "token is expired by 3h24m11.441749s"
     claims, err := ParseToken(tokenString)
     if err != nil {
         return false, err
     }
     
-    // TO-DO 1. apparently this doesn't even get checked
     now := time.Now() // Checks if expired
     if now.After(claims.ExpiresAt.Time) {
         return false, jwt.ErrTokenExpired

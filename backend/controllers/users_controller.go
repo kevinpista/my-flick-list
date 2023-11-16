@@ -80,7 +80,6 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
     // Respond with the newly created user with new info including ID,  but excluding the password
-	helpers.MessageLogs.ErrorLog.Println(jwtToken)
 	helpers.WriteJSONWithToken(w, http.StatusCreated, userCreated, jwtToken)
 }
 
@@ -119,7 +118,6 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
     // Respond with the newly created user with new info including ID,  but excluding the password
-	helpers.MessageLogs.ErrorLog.Println(jwtToken)
 	helpers.WriteJSONWithToken(w, http.StatusCreated, userLogin, jwtToken)
 }
 
@@ -151,7 +149,7 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized) // tokenErr will be a errors.New(error_constants) object
 		return
 	}
-	// verifyToken is valid
+	// User's JWT token is valid
 	all, err := user.GetAllUsers()
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
