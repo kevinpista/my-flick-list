@@ -13,8 +13,14 @@ export function extractToken(response) {
 // Set the JWT token in user's cookies
 const COOKIE_NAME = 'jwtToken'; // Key name
 export function setTokenInCookie(token) {
+  const expires = new Date(); // Initialize the expires variable
   expires.setDate(expires.getDate() + 1); // Expiration of 1 for now
   Cookies.set(COOKIE_NAME, token, { expires, secure: true});
+}
+
+// Example getStoredToken function
+export function getJwtTokenFromCookies() {
+  return Cookies.get('jwtToken');
 }
 
 // Redirects user to the login page if backend verifies their JWT token is expired

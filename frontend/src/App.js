@@ -4,6 +4,7 @@ import Movie from './components/Movie'
 import Test from './components/Test'
 import UserRegistration from './components/UserRegistration'
 import UserLogin from './components/UserLogin'
+import JwtTest from './components/JwtTest';
 
 
 function App() {
@@ -14,7 +15,8 @@ function App() {
         <Route exact ={true} path="/movie" element={<Movie />} />       
         <Route exact ={true} path="/test" element={<Test />} />  
         <Route exact ={true} path="/user-registration" element={<UserRegistration />} />                 
-        <Route exact ={true} path="/user-login" element={<UserLogin />} />                    
+        <Route exact ={true} path="/user-login" element={<UserLogin />} />           
+        <Route exact ={true} path="/jwt-test" element={<JwtTest />} />               
    
       </Routes>
     </BrowserRouter>
