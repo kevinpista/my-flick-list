@@ -1,13 +1,13 @@
 // API request to log in the user
 
 import axios from 'axios';
-import { extractToken, setTokenInCookie } from '../utils/authTokenUtils'
+import { extractTokenFromHeader, setTokenInCookie } from '../utils/authTokenUtils'
 
 export function loginUser(formData) {
 return axios.post('http://localhost:8080/api/user-login', formData)
     .then(response => {
         // Set JWT token in user's cookies
-        const token = extractToken(response);
+        const token = extractTokenFromHeader(response);
         setTokenInCookie(token);
         return response.data; // Returning both the JWT and userData 
     })

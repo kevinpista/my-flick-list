@@ -2,7 +2,7 @@
 import Cookies from 'js-cookie';
 
 // Extract user's new JWT token from backend header
-export function extractToken(response) {
+export function extractTokenFromHeader(response) {
     if (response.headers && response.headers.authorization) {
       return response.headers.authorization.split(' ')[1]; // Split because token set like 'Bearer <tokenString>'
     }
@@ -32,7 +32,7 @@ export const handleTokenExpiration = () => {
 };
 
 // Takes in a user's cookie token. Extracts and returns the user_id
-export const fetchUserIDFromToken = (token) => {
+export const fetchUserIdFromToken = (token) => {
   try {
     const [, tokenPayload] = token.split('.'); // Putting 1 ',' means we are ignoring 1st split element and 
     // accessing the 2nd element in the split and storing it in variable 'tokenPayload'

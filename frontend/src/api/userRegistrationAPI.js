@@ -1,13 +1,13 @@
 // API requiest to register the user
 
 import axios from 'axios';
-import { extractToken, setTokenInCookie } from '../utils/authTokenUtils'
+import { extractTokenFromHeader, setTokenInCookie } from '../utils/authTokenUtils'
 
 export function registerUser(formData) {
 return axios.post('http://localhost:8080/api/user-registration', formData)
     .then(response => { // this block of code gets executed of status code is a 2xx code
         // Set JWT token in user's cookies
-        const token = extractToken(response);
+        const token = extractTokenFromHeader(response);
         setTokenInCookie(token);
         return response.data; // the .data is the actual JSON body of keys:values data created by my backend Model structs
     })
