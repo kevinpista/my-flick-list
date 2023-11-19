@@ -35,7 +35,7 @@ func GenerateToken(userID uuid.UUID) (string, error) {
 }
 
 // Parses JWT token string into claims
-func ParseToken(tokenString string) (*Claims, error) {
+func ParseAndValidateToken(tokenString string) (*Claims, error) {
     token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
         return jwtSecret, nil // Call back function provided to verify signature of the token against my jwtSecret key
     })
@@ -72,7 +72,7 @@ func ParseToken(tokenString string) (*Claims, error) {
 
 // Verify JWT token
 func VerifyToken(tokenString string) (bool, error) {
-    claims, err := ParseToken(tokenString)
+    claims, err := ParseAndValidateToken(tokenString)
     if err != nil {
         return false, err
     }
