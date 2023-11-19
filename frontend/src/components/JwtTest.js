@@ -13,7 +13,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { ThemeProvider } from '@mui/material/styles';
-import { getUsers } from '../api/getUsersAPI';
+import { getUsers } from '../api/jwtTestAPI';
 import * as errorConstants from '../api/errorConstants';
 import * as themeStyles from '../styling/ThemeStyles';
 

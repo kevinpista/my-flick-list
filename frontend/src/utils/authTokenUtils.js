@@ -30,3 +30,28 @@ export const handleTokenExpiration = () => {
   // TO-DO double check redirect is correct
   window.location.href = '/user-login';
 };
+
+// Takes in a user's cookie token. Extracts and returns the user_id
+export const fetchUserIDFromToken = (token) => {
+  try {
+    const [, tokenPayload] = token.split('.'); // Putting 1 ',' means we are ignoring 1st split element and 
+    // accessing the 2nd element in the split and storing it in variable 'tokenPayload'
+    const decodedPayload = JSON.parse(atob(tokenPayload)); // Decode and access the user_id
+
+    if (!decodedPayload || !decodedPayload.user_id) {
+      throw new Error('Invalid token: Unable to access user_id');
+    }
+    return decodedPayload.user_id;
+
+  } catch (error) { // catches new Error created above to propogated to function call
+    throw new Error('Error decoding token: ' + error.message);
+  }
+    /*
+    The JWT token string itself is separated into 3 parts by 2 '.'
+    const parts = jwtToken.split('.');
+    console.log(parts[0]); // Header
+    console.log(parts[1]); // Payload -- contains UserId: user_id as assigned in backend token_service.go claims struct
+    console.log(parts[2]); // Signature
+  */
+
+}

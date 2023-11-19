@@ -16,6 +16,10 @@ export function getUsers() {
     
     return axios.get('http://localhost:8080/api/users', {headers})
     .then(response => {
+        const [, payloadBase64] = token.split('.');
+        const decodedPayload = JSON.parse(atob(payloadBase64));
+        console.log(decodedPayload)
+        console.log(decodedPayload.user_id)
         return response.data;
       })
       .catch(error => {
