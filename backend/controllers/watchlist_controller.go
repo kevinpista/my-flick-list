@@ -26,13 +26,20 @@ func GetAllWatchlists(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlists": all})
 }
 
-// GET/watchlists/{userID}
-func GetAllWatchlistsByUserID(w http.ResponseWriter, r *http.Request) {
+// GET/watchlists-by-user-id - user_id fetched from JWT token
+func GetWatchlistsByUserID(w http.ResponseWriter, r *http.Request) {
+	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
+	if tokenErr != nil {
+		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized) // tokenErr will be a errors.New(error_constants) object
+		return
+	}
+	/* When endpoint took in user_id via url parameter instead of from JWT Token
 	userIDStr := chi.URLParam(r, "userID")
 	userID, err := helpers.ConvertStringToUUID(userIDStr) // parameter will be a string. convert to int
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 	}
+	*/
 	all, err := watchlist.GetAllWatchlistsByUserID(userID)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
@@ -41,7 +48,7 @@ func GetAllWatchlistsByUserID(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlists": all})
 }
 
-// GET/watchlist{id}
+// GET/watchlist/{id}
 func GetWatchlistByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr) // parameter will be a string. convert to int
@@ -61,8 +68,7 @@ func GetWatchlistByID(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteJSON(w, http.StatusOK, watchlistData)
 }
 
-// POST/watchlists -- making some without user ID first -- this makes 1 watch list only TODO// make user id required
-// user_id will be fetched from the claims of the JWT token the user sends in 
+// POST/watchlists - user_id fetched from JWT token
 func CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 	var watchlistData services.WatchlistService
 
@@ -77,16 +83,6 @@ func CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized) // tokenErr will be a errors.New(error_constants) object
 		return
 	}
-
-	// TODO- add code to verify JWT token
-	/*
-	// Validate required fields
-	if watchlistData.Watchlist.UserID == uuid.Nil || watchlistData.Watchlist.Name == "" || watchlistData.Watchlist.Description == "" {
-		helpers.MessageLogs.ErrorLog.Println(err)
-		helpers.ErrorJSON(w, errors.New(error_constants.BadRequest), http.StatusBadRequest)
-		return
-	}
-	*/
 
 	watchlistCreated, err := watchlist.CreateWatchlist(userID, watchlistData.Watchlist)
 	if err != nil {

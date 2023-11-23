@@ -29,7 +29,7 @@ func Routes() http.Handler {
 
 	// watchlist resources
 	router.Get("/api/watchlists", controllers.GetAllWatchlists)     // GET ALL watchlists in database for testing purposes only
-    router.Get("/api/watchlists/{userID}", controllers.GetAllWatchlistsByUserID) // GET all watchlists belonging to specific user
+    router.Get("/api/watchlists-by-user-id", controllers.GetWatchlistsByUserID) // GET all watchlists belonging to specific user; user_id in JWT token
 	router.Post("/api/watchlists", controllers.CreateWatchlist)    // POST a watchlist
 	router.Get("/api/watchlist/{id}", controllers.GetWatchlistByID) // GET a specific watch by watchlist ID
 
