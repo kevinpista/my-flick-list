@@ -118,6 +118,5 @@ func VerifyUserJWTAndFetchUserId (r *http.Request) (uuid.UUID, error) {
 	}
 
 	// Valid token, extract the user_id from claims
-	helpers.MessageLogs.ErrorLog.Println("TESTING EXTRACT USER_ID", claims.UserID)
 	return claims.UserID, nil
 }

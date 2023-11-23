@@ -13,27 +13,35 @@ type WatchlistService struct {
 	Watchlist models.Watchlist
 }
 
-func (c *WatchlistService) CreateWatchlist(watchlist models.Watchlist) (*models.Watchlist, error) {
+func (c *WatchlistService) CreateWatchlist(userID uuid.UUID, watchlist models.Watchlist) (*models.Watchlist, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	query := `
 		INSERT INTO watchlist (users_id, name, description, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5) returning *
+		VALUES ($1, $2, $3, $4, $5) returning id, users_id, name, description, created_at, updated_at
 	`
-	_, err := db.ExecContext(
-		ctx,
-		query,
-		watchlist.UserID,
-		watchlist.Name,
-		watchlist.Description,
-		time.Now(), // watchlist.CreatedAt
-		time.Now(), // watchlist.UpdatedAt
+	var insertedWatchlist models.Watchlist
+    queryErr := db.QueryRowContext(
+        ctx,
+        query,
+        userID,
+        watchlist.Name,
+        watchlist.Description,
+        time.Now(),
+        time.Now(),
+    ).Scan(
+		&insertedWatchlist.ID,
+        &insertedWatchlist.UserID,
+        &insertedWatchlist.Name,
+        &insertedWatchlist.Description,
+        &insertedWatchlist.CreatedAt,
+        &insertedWatchlist.UpdatedAt,
 	)
-
-	if err != nil {
-		return nil, err
-	}
-	return &watchlist, nil
+    if queryErr != nil {
+        return nil, queryErr
+    }
+	
+	return &insertedWatchlist, nil
 }
 
 func (c *WatchlistService) GetAllWatchlists() ([]*models.Watchlist, error) {

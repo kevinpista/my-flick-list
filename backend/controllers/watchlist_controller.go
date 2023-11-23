@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"github.com/kevinpista/my-flick-list/backend/helpers"
 	"github.com/kevinpista/my-flick-list/backend/services"
 	"github.com/kevinpista/my-flick-list/backend/tokens"
@@ -73,25 +72,26 @@ func CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 		helpers.ErrorJSON(w, errors.New(error_constants.BadRequest), http.StatusBadRequest)
 	}
 
-	userId, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
+	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
 	if tokenErr != nil {
 		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized) // tokenErr will be a errors.New(error_constants) object
 		return
 	}
 
 	// TODO- add code to verify JWT token
-
+	/*
 	// Validate required fields
 	if watchlistData.Watchlist.UserID == uuid.Nil || watchlistData.Watchlist.Name == "" || watchlistData.Watchlist.Description == "" {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		helpers.ErrorJSON(w, errors.New(error_constants.BadRequest), http.StatusBadRequest)
 		return
 	}
+	*/
 
-
-	watchlistCreated, err := watchlist.CreateWatchlist(watchlistData.Watchlist)
+	watchlistCreated, err := watchlist.CreateWatchlist(userID, watchlistData.Watchlist)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, errors.New(error_constants.BadRequest), http.StatusBadRequest)
 	}
 	helpers.WriteJSON(w, http.StatusOK, watchlistCreated)
 }
