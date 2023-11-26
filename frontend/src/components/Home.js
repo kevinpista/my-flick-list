@@ -2,12 +2,13 @@
 import { Button, Container, Row, Col } from 'react-bootstrap';
 import '../css/Home.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-// import NavBar from './NavBar';
+import NavBar from './NavBar';
 
 function Home() {
 
   return (
     <div className="home">
+      <NavBar/>
 
       {/* Custom Jumbotron */}
       <div className="jumbotron">
