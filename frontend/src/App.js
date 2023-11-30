@@ -5,6 +5,7 @@ import Test from './components/Test'
 import UserRegistration from './components/UserRegistration'
 import UserLogin from './components/UserLogin'
 import JwtTest from './components/JwtTest';
+import Watchlist from './components/watchlist/Watchlist';
 
 
 function App() {
@@ -16,7 +17,9 @@ function App() {
         <Route exact ={true} path="/test" element={<Test />} />  
         <Route exact ={true} path="/user-registration" element={<UserRegistration />} />                 
         <Route exact ={true} path="/user-login" element={<UserLogin />} />           
-        <Route exact ={true} path="/jwt-test" element={<JwtTest />} />               
+        <Route exact ={true} path="/jwt-test" element={<JwtTest />} />        
+        <Route exact ={true} path="/watchlist" element={<Watchlist />} />        
+
    
       </Routes>
     </BrowserRouter>
