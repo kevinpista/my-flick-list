@@ -16,8 +16,9 @@ const Watchlist = () => {
   const movies = [
     {
       id: 1,
-      toWatch: true,
-      title: 'Movie 1',
+      toWatch: false,
+      posterPath:'xfSAoBEm9MNBjmlNcDYLvLSMlnq.jpg', 
+      title: 'Movie 1123123123123123',
       releaseDate: '2022-01-01',
       runtime: 120,
       budget: 50000000,
@@ -26,7 +27,8 @@ const Watchlist = () => {
     {
       id: 2,
       toWatch: true,
-      title: 'Movie 2',
+      posterPath:'xfSAoBEm9MNBjmlNcDYLvLSMlnq.jpg', 
+      title: 'Movie 212312312312312321',
       releaseDate: '2022-01-01',
       runtime: 90,
       budget: 123123,
@@ -35,7 +37,8 @@ const Watchlist = () => {
     {
       id: 3,
       toWatch: true,
-      title: 'Movie 3',
+      posterPath:'xfSAoBEm9MNBjmlNcDYLvLSMlnq.jpg', 
+      title: 'Movie 3123123123123123',
       releaseDate: '2022-01-01',
       runtime: 90,
       budget: 123123,
@@ -44,7 +47,8 @@ const Watchlist = () => {
     {
       id: 4,
       toWatch: true,
-      title: 'Movie 4',
+      posterPath:'xfSAoBEm9MNBjmlNcDYLvLSMlnq.jpg', 
+      title: 'Movie 4123123123123',
       releaseDate: '2022-01-01',
       runtime: 90,
       budget: 123123,
@@ -53,6 +57,7 @@ const Watchlist = () => {
     {
       id: 5,
       toWatch: true,
+      posterPath:'xfSAoBEm9MNBjmlNcDYLvLSMlnq.jpg', 
       title: 'Movie 5',
       releaseDate: '2022-01-01',
       runtime: 90,
@@ -62,7 +67,8 @@ const Watchlist = () => {
     {
       id: 6,
       toWatch: true,
-      title: 'Movie 6',
+      posterPath:'xfSAoBEm9MNBjmlNcDYLvLSMlnq.jpg', 
+      title: 'Movie 6123123123',
       releaseDate: '2022-01-01',
       runtime: 90,
       budget: 123123,
@@ -72,7 +78,8 @@ const Watchlist = () => {
     {
       id: 7,
       toWatch: true,
-      title: 'Movie 7',
+      posterPath:'xfSAoBEm9MNBjmlNcDYLvLSMlnq.jpg', 
+      title: 'Movie 7123123',
       releaseDate: '2022-01-01',
       runtime: 90,
       budget: 123123,
