@@ -103,7 +103,7 @@ func (c *MovieService) GetAllMovies() ([]*models.Movie, error) {
 	return movies, nil
 }
 
-func (c *MovieService) CreateMovieByID(movie models.Movie) (*models.Movie, error) {
+func (c *MovieService) CreateMovie(movie models.Movie) (*models.Movie, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	query := `
@@ -135,3 +135,5 @@ func (c *MovieService) CreateMovieByID(movie models.Movie) (*models.Movie, error
 	}
 	return &movie, nil
 }
+
+// Note currently the CreatedAt & UpdatedAt is default 0:00 time. Did not scan database after it was generated to return in JSON body

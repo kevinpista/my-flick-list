@@ -66,7 +66,7 @@ const MovieTable = ({ movies }) => {
   const rows = movies.map((movie) => ({
     id: movie.id,
     toWatch: movie.toWatch,
-    moviePoster: `https://image.tmdb.org/t/p/w200/${movie.posterPath}`, // Loading 200 width poster from API, resize to 80 width
+    moviePoster: `https://image.tmdb.org/t/p/w200${movie.posterPath}`, // Loading 200 width poster from API, resize to 80 width
     title: movie.title,
     releaseDate: movie.releaseDate,
     runtime: `${movie.runtime} mins`,

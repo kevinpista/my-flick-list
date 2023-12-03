@@ -23,19 +23,21 @@ func Routes() http.Handler {
 	}))
 
 	// movie resources
-	router.Post("/api/movie", controllers.CreateMovieByID)
+	router.Post("/api/movie", controllers.CreateMovie)
     router.Get("/api/movie/{id}", controllers.GetMovieByID)
     router.Get("/api/movies", controllers.GetAllMovies)
 
 	// watchlist resources
 	router.Get("/api/watchlists", controllers.GetAllWatchlists)     // GET ALL watchlists in database for testing purposes only
     router.Get("/api/watchlists-by-user-id", controllers.GetWatchlistsByUserID) // GET all watchlists belonging to specific user; user_id in JWT token
-	router.Post("/api/watchlists", controllers.CreateWatchlist)    // POST a watchlist
-	router.Get("/api/watchlist/{id}", controllers.GetWatchlistByID) // GET a specific watch by watchlist ID
+	router.Post("/api/watchlists", controllers.CreateWatchlist)    // POST a watchlist; user_id retrieved from JWT token
+	router.Get("/api/watchlist/{id}", controllers.GetWatchlistByID) // GET a specific watchlist by watchlist ID
 
 	// watchlist-items resources
 	router.Post("/api/watchlist-item", controllers.CreateWatchlistItemByWatchlistID) // POST create a watchlist item for a specific watchlist
 	router.Get("/api/watchlist-items", controllers.GetAllWatchlistItemsByWatchListID) // GET fetch all watchlist items from a specific watchlist.
+	// expects "?watchlistID={watchlistID}" query paramter
+	router.Get("/api/watchlist-items-with-movies", controllers.GetAllWatchlistItemsWithMoviesByWatchListID) // GET fetch all watchlist items alon giwth full movie data
 	// expects "?watchlistID={watchlistID}" query paramter
 
 	// watchlist-item-note resources

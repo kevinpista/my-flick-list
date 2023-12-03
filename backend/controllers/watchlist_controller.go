@@ -54,6 +54,7 @@ func GetWatchlistByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(idStr) // parameter will be a string. convert to int
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
+		return
 	}
 
 	watchlistData, watchlistErr := watchlist.GetWatchlistByID(id)
@@ -76,6 +77,7 @@ func CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		helpers.ErrorJSON(w, errors.New(error_constants.BadRequest), http.StatusBadRequest)
+		return
 	}
 
 	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
@@ -88,6 +90,7 @@ func CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		helpers.ErrorJSON(w, errors.New(error_constants.BadRequest), http.StatusBadRequest)
+		return
 	}
 	helpers.WriteJSON(w, http.StatusOK, watchlistCreated)
 }

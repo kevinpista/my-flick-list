@@ -12,3 +12,26 @@ type WatchlistItem struct {
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
+
+type WatchlistItemWithMovie struct {
+	ID             int        `json:"id"`
+	WatchlistID    int        `json:"watchlist_id"`
+	MovieID        int        `json:"movie_id"`
+	Checkmarked    bool       `json:"checkmarked"`
+	CreatedAt      time.Time  `json:"created_at"`
+	UpdatedAt      time.Time  `json:"updated_at"`
+	OriginalTitle  string     `json:"original_title"`
+	Overview       string     `json:"overview"`
+	Tagline        string     `json:"tagline"`
+	ReleaseDate    string     `json:"release_date"`
+	PosterPath     string     `json:"poster_path"`
+	BackdropPath   string     `json:"backdrop_path"`
+	Runtime        int        `json:"runtime"`
+	Adult          bool       `json:"adult"`
+	Budget         int        `json:"budget"`
+	Revenue        int        `json:"revenue"`
+	Rating         float64    `json:"rating"`
+	Votes          int        `json:"votes"`
+	MovieCreatedAt time.Time  `json:"movie_created_at"`
+	MovieUpdatedAt time.Time  `json:"movie_updated_at"`
+}

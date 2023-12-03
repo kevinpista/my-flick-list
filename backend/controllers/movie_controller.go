@@ -48,18 +48,22 @@ func GetMovieByID(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteJSON(w, http.StatusOK, movieData)
 }
 
-// POST/movie - id passed through JSON body
-func CreateMovieByID(w http.ResponseWriter, r *http.Request){
+// POST/movie - movie_id mandatory and is passed through JSON body
+func CreateMovie(w http.ResponseWriter, r *http.Request){
 	var movieData services.MovieService
 
 	err := json.NewDecoder(r.Body).Decode(&movieData.Movie)
 	if err != nil{
 		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
 	}
 
-	movieCreated, err := movie.CreateMovieByID(movieData.Movie)
+	movieCreated, err := movie.CreateMovie(movieData.Movie)
 	if err != nil{
 		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
 	}
 	helpers.WriteJSON(w, http.StatusOK, movieCreated)
 }
