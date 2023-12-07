@@ -31,7 +31,7 @@ export const handleTokenExpiration = () => {
   window.location.href = '/user-login';
 };
 
-// Takes in a user's cookie token. Extracts and returns the user_id
+// Parses a user's JWT cookie token. Extracts and returns the user_id from the token
 export const fetchUserIdFromToken = (token) => {
   try {
     const [, tokenPayload] = token.split('.'); // Putting 1 ',' means we are ignoring 1st split element and 

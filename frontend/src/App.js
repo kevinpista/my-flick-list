@@ -18,9 +18,8 @@ function App() {
         <Route exact ={true} path="/user-registration" element={<UserRegistration />} />                 
         <Route exact ={true} path="/user-login" element={<UserLogin />} />           
         <Route exact ={true} path="/jwt-test" element={<JwtTest />} />        
-        <Route exact ={true} path="/watchlist" element={<Watchlist />} />        
+        <Route exact={true} path="/watchlist/:watchlistID" element={<Watchlist />} />        
 
-   
       </Routes>
     </BrowserRouter>
   );
@@ -29,6 +28,9 @@ function App() {
 export default App;
 
 /*
+
+        <Route exact ={true} path="/watchlist" element={<Watchlist />} />
+
 import logo from './logo.svg';
 import './App.css';
 

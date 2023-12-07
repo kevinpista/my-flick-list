@@ -24,9 +24,10 @@ const MovieTable = ({ movies }) => {
   const rowHeight = 140; // Fixed height for each row
 
   const columns = [
+    { field: 'movie_id', headerName: 'Movie ID' },
     {
       field: 'toWatch',
-      headerName: 'To-Watch',
+      headerName: 'Checkmark',
       width: 100,
       headerAlign: 'center',
       align: 'center',
@@ -35,7 +36,7 @@ const MovieTable = ({ movies }) => {
           style={{ textAlign: 'center', cursor: 'pointer' }}
           onClick={(e) => params.row.id && handleToWatchClick(e, params.row)}
         >
-          {params.row.toWatch ? '✔' : ''}
+          {params.row.toWatch ? '✔' : 'X'}
         </div>
       ),
       editable: true,
@@ -62,14 +63,17 @@ const MovieTable = ({ movies }) => {
     { field: 'revenue', headerName: 'Revenue', width: 120, headerAlign: 'center', align: 'center' },
     { field: 'notes', headerName: 'Notes', width: 120, headerAlign: 'center', align: 'center' },
   ];
-
-  const rows = movies.map((movie) => ({
+  
+  // Will likely rename this to watchlist_item instead of "movie"
+  const rows = movies['watchlist-items'].map((movie) => ({
     id: movie.id,
-    toWatch: movie.toWatch,
-    moviePoster: `https://image.tmdb.org/t/p/w200${movie.posterPath}`, // Loading 200 width poster from API, resize to 80 width
-    title: movie.title,
-    releaseDate: movie.releaseDate,
+    movie_id: movie.movie_id,
+    toWatch: movie.checkmarked,
+    moviePoster: `https://image.tmdb.org/t/p/w200${movie.poster_path}`, // Loading 200 width poster from API, resize to 80 width
+    title: movie.original_title,
+    releaseDate: movie.release_date,
     runtime: `${movie.runtime} mins`,
+    rating: movie.rating,
     budget: `$${movie.budget}`,
     revenue: `$${movie.revenue}`,
   }));
