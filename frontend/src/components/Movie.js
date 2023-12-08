@@ -5,7 +5,7 @@ import NavBar from './NavBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/Movie.css';
 import { getMovieDataTMDB } from '../api/movieDataTMDB';
-import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils'; // Adjust the path to match your file structure
+import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
 
 
 // TODO

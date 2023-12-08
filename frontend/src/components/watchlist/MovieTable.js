@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
+import { formatReleaseDate, formatRuntime, formatFinancialData } from '../../utils/formatUtils';
 
 // TODO
 // Movie title link to website.com/movie{id} - should already be added to DB
@@ -71,11 +72,11 @@ const MovieTable = ({ movies }) => {
     toWatch: movie.checkmarked,
     moviePoster: `https://image.tmdb.org/t/p/w200${movie.poster_path}`, // Loading 200 width poster from API, resize to 80 width
     title: movie.original_title,
-    releaseDate: movie.release_date,
-    runtime: `${movie.runtime} mins`,
+    releaseDate: formatReleaseDate(movie.release_date),
+    runtime: formatRuntime(movie.runtime),
     rating: movie.rating,
-    budget: `$${movie.budget}`,
-    revenue: `$${movie.revenue}`,
+    budget: formatFinancialData(movie.budget),
+    revenue: formatFinancialData(movie.revenue),
   }));
 
   return (
