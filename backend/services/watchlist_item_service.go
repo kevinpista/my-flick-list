@@ -123,6 +123,27 @@ func (c *WatchlistItemService) CreateWatchlistItemByWatchlistID(watchlistItem mo
 	return &watchlistItem, nil
 }
 
+// Deletes a watchlist_item with its id
+func (c *WatchlistItemService) DeleteWatchlistItemByID(watchlistItemID int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `
+		DELETE FROM watchlist_item WHERE id = $1
+	`
+	
+	_, err := db.ExecContext(ctx, query, watchlistItemID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+/*
+HELPER FUNCTIONS
+*/
+
 // Check if exisiting watchlist_items within a watchlist contain a movie_id as the one being passed by user
 func (c *WatchlistItemService) CheckIfMovieInWatchlistExists(watchlistID, movieID int) (bool, error) {
     ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
@@ -170,4 +191,19 @@ func (c *WatchlistItemService) GetWatchlistOwnerUserID(watchlistID int) (uuid.UU
 	}
 
 	return watchlistOwnerID, nil
+}
+
+// Get's the watchlist_id of the watchlist_item
+func (c *WatchlistItemService) GetWatchlistItemWatchlistId(watchlistItemID int) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := "SELECT watchlist_id FROM watchlist_item WHERE id = $1"
+	var watchlist_id int
+	err := db.QueryRowContext(ctx, query, watchlistItemID).Scan(&watchlist_id)
+	if err != nil {
+		return 0, err
+	}
+
+	return watchlist_id, nil
 }
