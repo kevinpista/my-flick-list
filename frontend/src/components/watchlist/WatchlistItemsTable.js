@@ -7,8 +7,8 @@ import { formatReleaseDate, formatRuntime, formatFinancialData } from '../../uti
 // My notes icon popup module
 
 
-const MovieTable = ({ movies }) => {
-  // Assuming 'movies' is an array of movie objects
+const WatchlistItemsTable = ({ watchlistItems }) => {
+  // watchlistItems is an array containing individual movie data for each watchlistItem
 
   const [editRowsModel, setEditRowsModel] = useState({});
 
@@ -66,17 +66,17 @@ const MovieTable = ({ movies }) => {
   ];
   
   // Will likely rename this to watchlist_item instead of "movie"
-  const rows = movies['watchlist-items'].map((movie) => ({
-    id: movie.id,
-    movie_id: movie.movie_id,
-    toWatch: movie.checkmarked,
-    moviePoster: `https://image.tmdb.org/t/p/w200${movie.poster_path}`, // Loading 200 width poster from API, resize to 80 width
-    title: movie.original_title,
-    releaseDate: formatReleaseDate(movie.release_date),
-    runtime: formatRuntime(movie.runtime),
-    rating: movie.rating,
-    budget: formatFinancialData(movie.budget),
-    revenue: formatFinancialData(movie.revenue),
+  const rows = watchlistItems['watchlist-items'].map((watchlistItem) => ({
+    id: watchlistItem.id, // watchlist item id
+    movie_id: watchlistItem.movie_id,
+    toWatch: watchlistItem.checkmarked,
+    moviePoster: `https://image.tmdb.org/t/p/w200${watchlistItem.poster_path}`, // Loading 200 width poster from API, resize to 80 width
+    title: watchlistItem.original_title,
+    releaseDate: formatReleaseDate(watchlistItem.release_date),
+    runtime: formatRuntime(watchlistItem.runtime),
+    rating: watchlistItem.rating,
+    budget: formatFinancialData(watchlistItem.budget),
+    revenue: formatFinancialData(watchlistItem.revenue),
   }));
 
   return (
@@ -97,4 +97,4 @@ const MovieTable = ({ movies }) => {
   );
 };
 
-export default MovieTable;
+export default WatchlistItemsTable;

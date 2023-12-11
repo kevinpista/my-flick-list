@@ -6,7 +6,7 @@ import '../../css/Watchlist.css';
 import { fetchWatchlistItems } from '../../api/watchlistAPI.js'
 import * as errorConstants from '../../api/errorConstants';
 
-import MovieTable from './MovieTable';
+import WatchlistItemsTable from './WatchlistItemsTable';
 // import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../../utils/formatUtils'; // Adjust the path to match your file structure
 
 // Individual Watchlist that represents 1 single watchlist and holds up to 20 movies
@@ -18,14 +18,14 @@ import MovieTable from './MovieTable';
 
 const Watchlist = () => {
   const { watchlistID } = useParams(); // Extract watchlistID from the URL params
-  const [movies, setMovies] = useState(null);
+  const [watchlistItems, setWatchlistItems] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetchWatchlistItems(watchlistID);
-        setMovies(response);
+        setWatchlistItems(response);
       } catch (error) {
         setError(error);
         if (error.message === errorConstants.ERROR_BAD_REQUEST) {
@@ -42,12 +42,12 @@ const Watchlist = () => {
   return (
     <React.Fragment>
       <NavBar />
-    <Container maxWidth={"xl"} className="movie-data-grid-container">
+    <Container maxWidth={"xl"} className="watchlist-item-grid-container">
       <h1 className="watchlist-name">My Watchlist</h1>
       {error ? (
         <p> Error loading watchlist: {error.message}</p>
       ) : (
-        movies && <MovieTable className="movie-data-grid-table" movies={movies} />
+        watchlistItems && <WatchlistItemsTable watchlistItems={watchlistItems} />
       )}
     </Container>
     </React.Fragment>
