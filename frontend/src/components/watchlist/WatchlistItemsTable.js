@@ -7,7 +7,7 @@ import { formatReleaseDate, formatRuntime, formatFinancialData } from '../../uti
 // My notes icon popup module
 
 
-const WatchlistItemsTable = ({ watchlistItems }) => {
+const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem }) => {
   // watchlistItems is an array containing individual movie data for each watchlistItem
 
   const [editRowsModel, setEditRowsModel] = useState({});
@@ -18,6 +18,12 @@ const WatchlistItemsTable = ({ watchlistItems }) => {
       ...prev,
       [row.id]: { ...prev[row.id], toWatch: !row.toWatch },
     }));
+  };
+
+  const handleDeleteClick = (event, watchlistItemId) => {
+    event.stopPropagation();
+    console.log("delete button hit inner")
+    onDeleteWatchlistItem(watchlistItemId); // Call this function with the watchlistItemId to be deleted
   };
 
   const getRowId = (row) => row.id;
@@ -63,6 +69,19 @@ const WatchlistItemsTable = ({ watchlistItems }) => {
     { field: 'budget', headerName: 'Budget', width: 120, headerAlign: 'center', align: 'center' },
     { field: 'revenue', headerName: 'Revenue', width: 120, headerAlign: 'center', align: 'center' },
     { field: 'notes', headerName: 'Notes', width: 120, headerAlign: 'center', align: 'center' },
+
+    {
+      field: 'deleteButton',
+      headerName: 'Delete',
+      width: 100,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params) => (
+        <div style={{ textAlign: 'center', cursor: 'pointer' }} onClick={(e) => handleDeleteClick(e, params.row.id)}>
+          ❌
+        </div>
+      ),
+    },
   ];
   
   // Will likely rename this to watchlist_item instead of "movie"

@@ -5,6 +5,8 @@ import NavBar from '../NavBar.js';
 import '../../css/Watchlist.css';
 import { fetchWatchlistItems } from '../../api/watchlistAPI.js'
 import * as errorConstants from '../../api/errorConstants';
+import axios from 'axios';
+import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
 
 import WatchlistItemsTable from './WatchlistItemsTable';
 // import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../../utils/formatUtils'; // Adjust the path to match your file structure
@@ -18,7 +20,7 @@ import WatchlistItemsTable from './WatchlistItemsTable';
 
 const Watchlist = () => {
   const { watchlistID } = useParams(); // Extract watchlistID from the URL params
-  const [watchlistItems, setWatchlistItems] = useState(null);
+  const [watchlistItems, setWatchlistItems] = useState(null); // In JSON object format
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -39,6 +41,34 @@ const Watchlist = () => {
   fetchData();
 }, [watchlistID]);
 
+const handleDeleteWatchlistItem = async (watchlistItemId) => {
+  try {
+    console.log("delete button hit outer")
+    const token = getJwtTokenFromCookies();
+    if (!token) {
+      console.error('Token not available or expired');
+      // For now, will use a Promise.reject method instead of redirect
+      return Promise.reject('Token not available or expired');
+    }
+  
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };    
+    
+    await axios.delete(`http://localhost:8080/api/watchlist-item?id=${watchlistItemId}`, { headers });
+    // Update the watchlist items in the state after a deletion
+    setWatchlistItems((prevItems) => {
+      const currentItems = prevItems && prevItems['watchlist-items']; // Extract the array from the object
+      const updatedItems = Array.isArray(currentItems)
+        ? currentItems.filter((item) => item.id !== watchlistItemId) // Re-render all items not equal to the itemID that was deleted
+        : [];
+      return { 'watchlist-items': updatedItems }; // Maintain JSON object structure
+    });
+  } catch (error) {
+    console.error('Error deleting item:', error);
+  }
+};
+
   return (
     <React.Fragment>
       <NavBar />
@@ -47,7 +77,12 @@ const Watchlist = () => {
       {error ? (
         <p> Error loading watchlist: {error.message}</p>
       ) : (
-        watchlistItems && <WatchlistItemsTable watchlistItems={watchlistItems} />
+        watchlistItems && (
+        <WatchlistItemsTable 
+          watchlistItems={watchlistItems}
+          onDeleteWatchlistItem={handleDeleteWatchlistItem} // onDeleteWatchlistItem function gets passed to component
+        />
+        )
       )}
     </Container>
     </React.Fragment>
