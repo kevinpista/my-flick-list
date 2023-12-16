@@ -10,6 +10,10 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 
+import ClearSharpIcon from '@mui/icons-material/ClearSharp';
+import { ThemeProvider } from '@mui/material/styles';
+import * as themeStyles from '../../styling/ThemeStyles';
+
 // TODO
 // Movie title link to website.com/movie{id} - should already be added to DB
 // My notes icon popup module
@@ -43,7 +47,6 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem }) => {
 
   const handleConfirmDelete = (watchlistItemId) => {
     handleCloseConfirmation();
-    console.log("delete confirmed")
     onDeleteWatchlistItem(watchlistItemId); // Call this function with the watchlistItemId to be deleted
   };
   
@@ -100,7 +103,9 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem }) => {
       align: 'center',
       renderCell: (params) => (
         <div style={{ textAlign: 'center', cursor: 'pointer' }} onClick={(e) => handleDeleteClick(e, params.row.id)}>
-          ❌
+         <ThemeProvider theme={themeStyles.formTheme}>
+            <ClearSharpIcon fontSize="medium"/>
+          </ThemeProvider> 
         </div>
       ),
     },
