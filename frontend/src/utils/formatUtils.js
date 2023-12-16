@@ -3,7 +3,7 @@
 
 // Function to format the release_date data from "YYYY-MM-DD" into "longMonth, numericDay, numericYear" format
 export const formatReleaseDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', options);
 };
