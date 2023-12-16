@@ -2,13 +2,23 @@ import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { formatReleaseDate, formatRuntime, formatFinancialData } from '../../utils/formatUtils';
 
+// MUI Dialog component to confirm watchlist item deletion
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+
 // TODO
 // Movie title link to website.com/movie{id} - should already be added to DB
 // My notes icon popup module
 
-
+// watchlistItems is a JSON object holding 1 array containing individual movie data for each watchlistItem
 const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem }) => {
-  // watchlistItems is an array containing individual movie data for each watchlistItem
+  // Dialog component useState
+  const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [deleteItemId, setDeleteItemId] = useState(null);    
 
   const [editRowsModel, setEditRowsModel] = useState({});
 
@@ -22,9 +32,21 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem }) => {
 
   const handleDeleteClick = (event, watchlistItemId) => {
     event.stopPropagation();
-    console.log("delete button hit inner")
+    setDeleteItemId(watchlistItemId);
+    setOpenConfirmation(true);
+  };
+
+  const handleCloseConfirmation = () => {
+    setOpenConfirmation(false);
+    setDeleteItemId(null);
+  };
+
+  const handleConfirmDelete = (watchlistItemId) => {
+    handleCloseConfirmation();
+    console.log("delete confirmed")
     onDeleteWatchlistItem(watchlistItemId); // Call this function with the watchlistItemId to be deleted
   };
+  
 
   const getRowId = (row) => row.id;
 
@@ -112,6 +134,26 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem }) => {
         getRowId={getRowId}
         rowHeight={rowHeight}
       />
+      {/* Confirmation Dialog for Deletion */}
+      <Dialog
+        open={openConfirmation}
+        onClose={handleCloseConfirmation}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to remove this movie from your watchlist?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmation}>Cancel</Button>
+          <Button onClick={() => handleConfirmDelete(deleteItemId)} autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
