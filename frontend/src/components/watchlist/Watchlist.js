@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Paper, Typography, Button } from '@mui/material';
+import { Container } from '@mui/material';
 import NavBar from '../NavBar.js';
 import '../../css/Watchlist.css';
 import { fetchWatchlistItems } from '../../api/watchlistAPI.js'
@@ -9,7 +9,6 @@ import axios from 'axios';
 import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
 
 import WatchlistItemsTable from './WatchlistItemsTable';
-// import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../../utils/formatUtils'; // Adjust the path to match your file structure
 
 // Individual Watchlist that represents 1 single watchlist and holds up to 20 movies
 // TODO
@@ -80,7 +79,8 @@ const handleDeleteWatchlistItem = async (watchlistItemId) => {
         watchlistItems && (
         <WatchlistItemsTable 
           watchlistItems={watchlistItems}
-          onDeleteWatchlistItem={handleDeleteWatchlistItem} // onDeleteWatchlistItem function gets passed to component
+          onDeleteWatchlistItem={handleDeleteWatchlistItem} // onDeleteWatchlistItem function gets passed to component. When called, it invokes handleDeleteWatchlistItem
+          setWatchlistItems={setWatchlistItems} // Also passed to component
         />
         )
       )}

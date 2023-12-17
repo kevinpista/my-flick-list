@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { formatReleaseDate, formatRuntime, formatFinancialData } from '../../utils/formatUtils';
+import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
+import axios from 'axios';
 
 // MUI Dialog component to confirm watchlist item deletion
 import Dialog from '@mui/material/Dialog';
@@ -14,25 +16,63 @@ import ClearSharpIcon from '@mui/icons-material/ClearSharp';
 import { ThemeProvider } from '@mui/material/styles';
 import * as themeStyles from '../../styling/ThemeStyles';
 
+// MUI Checkbox component for 'checkmarked' state
+import Checkbox from '@mui/material/Checkbox';
+
+
 // TODO
 // Movie title link to website.com/movie{id} - should already be added to DB
 // My notes icon popup module
 
 // watchlistItems is a JSON object holding 1 array containing individual movie data for each watchlistItem
-const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem }) => {
+const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchlistItems }) => {
   // Dialog component useState
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);    
 
   const [editRowsModel, setEditRowsModel] = useState({});
 
-  const handleToWatchClick = (event, row) => {
+  const handleToWatchClick = async (event, row) => {
     event.stopPropagation();
-    setEditRowsModel((prev) => ({
-      ...prev,
-      [row.id]: { ...prev[row.id], toWatch: !row.toWatch },
-    }));
+    try {
+      const token = getJwtTokenFromCookies();
+      if (!token) {
+        console.error('Token not available or expired');
+        return Promise.reject('Token not available or expired');
+      }
+  
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+  
+      const response = await axios.put(
+        `http://localhost:8080/api/watchlist-item-checkmarked?id=${row.id}`, // row.id is the watchlistItemID
+        { checkmarked: !row.toWatch },
+        { headers }
+      );
+  
+      if (response.status === 200) {
+        // Update the state to reflect the new checkmarked status        
+        setWatchlistItems((prevItems) => {
+          const updatedWatchlistItems = prevItems['watchlist-items'].map((watchlistItem) => { // Performs the actual mapping
+            // Create new array of updatedWatchlistItems by taking current old array and creating a copy
+            // once it finds the row of the one that is being updated with if block below, it will only make chnages to that row
+            if (watchlistItem.id === row.id) {
+              return { ...watchlistItem, checkmarked: !row.toWatch }; // Spread operator keeps this original row data the same minus checkmarked field
+            }
+            return watchlistItem; // If row matching watchlistItem.id is not found, returns original state as updatedItems
+          });
+          return { 'watchlist-items': updatedWatchlistItems }; // Sent to Watchlist.js useState function which sets with the updated data
+          // and is then eventually passed back to here to be re-rendered
+        });
+      } else {
+        console.error('Failed to update checkmarked status');
+      }
+    } catch (error) {
+        console.error('Error updating checkmarked status:', error);
+    }
   };
+  
 
   const handleDeleteClick = (event, watchlistItemId) => {
     event.stopPropagation();
@@ -56,7 +96,6 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem }) => {
   const rowHeight = 140; // Fixed height for each row
 
   const columns = [
-    { field: 'movie_id', headerName: 'Movie ID' },
     {
       field: 'toWatch',
       headerName: 'Checkmark',
@@ -64,12 +103,10 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem }) => {
       headerAlign: 'center',
       align: 'center',
       renderCell: (params) => (
-        <div
-          style={{ textAlign: 'center', cursor: 'pointer' }}
-          onClick={(e) => params.row.id && handleToWatchClick(e, params.row)}
-        >
-          {params.row.toWatch ? '✔' : 'X'}
-        </div>
+        <Checkbox
+          checked={params.row.toWatch}
+          onChange={(e) => handleToWatchClick(e, params.row)}
+        />
       ),
       editable: true,
     },
@@ -111,7 +148,6 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem }) => {
     },
   ];
   
-  // Will likely rename this to watchlist_item instead of "movie"
   const rows = watchlistItems['watchlist-items'].map((watchlistItem) => ({
     id: watchlistItem.id, // watchlist item id
     movie_id: watchlistItem.movie_id,
