@@ -40,7 +40,9 @@ func Routes() http.Handler {
 	router.Get("/api/watchlist-items-with-movies", controllers.GetAllWatchlistItemsWithMoviesByWatchListID) // GET fetch all watchlist items along with full movie data
 	// expects "?watchlistID={watchlistID}" query paramter
 	router.Delete("/api/watchlist-item", controllers.DeleteWatchlistItemByID) // DELETE watchlist item via its id
-	// expects "?id={watchlistItemID}" query paramter
+	// expects "?id={watchlistItemID}" query parameter
+	router.Put("/api/watchlist-item-checkmarked", controllers.UpdateCheckmarkedBooleanByWatchlistItemByID) // PUT watchlist item checkmarked boolean update
+	// expects "?id={watchlistItemID}" query parameter + 'checkmarked' field with boolean in the JSON body
 
 	// watchlist-item-note resources
     router.Post("/api/watchlist-item-note", controllers.CreateWatchlistItemNote) // POST create watchlist item note for a specific watchlist item

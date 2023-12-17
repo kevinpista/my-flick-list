@@ -231,7 +231,71 @@ func DeleteWatchlistItemByID(w http.ResponseWriter, r *http.Request) {
 		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized)
 		return
 	}
+	// Get watchlist_id via watchlist_item_id
+	watchlistID, err := watchlistItem.GetWatchlistItemWatchlistId(watchlistItemIDInt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			helpers.MessageLogs.ErrorLog.Println("Watchlist item does not exist")
+			helpers.ErrorJSON(w, errors.New("watchlist item does not exist"), http.StatusBadRequest)
+		} else {
+			helpers.MessageLogs.ErrorLog.Println(err)
+			helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		}
+		return
+	}
+	// Get user_id via the watchlist_id
+	watchlistOwnerID, err := watchlistItem.GetWatchlistOwnerUserID(watchlistID)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+	// Compare watchlistOwnerID vs jwt user_id
+    if userID != watchlistOwnerID {
+        helpers.MessageLogs.ErrorLog.Println("User is not the owner of the watchlist item")
+        helpers.ErrorJSON(w, errors.New(error_constants.UnauthorizedRequest), http.StatusUnauthorized)
+        return
+	}
+	// Service function call to delete watchlist_item
+	err = watchlistItem.DeleteWatchlistItemByID(watchlistItemIDInt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			helpers.MessageLogs.ErrorLog.Println("Watchlist item does not exist")
+			helpers.ErrorJSON(w, errors.New("watchlist item does not exist"), http.StatusBadRequest)
+		} else {
+			helpers.MessageLogs.ErrorLog.Println(err)
+			helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		}
+		return
+	}
 
+	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"message": "Watchlist item deleted successfully"})
+}
+
+
+// PUT /watchlist-item-checkmarked?id={watchlistItemID} -- expects the 'checkmarked' field to be passed through the body with boolean value
+func UpdateCheckmarkedBooleanByWatchlistItemByID(w http.ResponseWriter, r *http.Request) {
+	watchlistItemID := r.URL.Query().Get("id")
+
+	// Check if 'id' is provided in the URL param
+	if watchlistItemID == "" {
+		helpers.MessageLogs.ErrorLog.Println("id not provided for PUT request")
+		http.Error(w, "id parameter is missing", http.StatusBadRequest)
+		return
+	}
+	// Check if URL param is an integer
+	watchlistItemIDInt, err := strconv.Atoi(watchlistItemID)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, errors.New("id parameter must be an integer"), http.StatusBadRequest)
+		return
+	}
+	// Get userID from JWT token
+	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
+	if tokenErr != nil {
+		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized)
+		return
+	}
 	// Get watchlist_id via watchlist_item_id
 	watchlistID, err := watchlistItem.GetWatchlistItemWatchlistId(watchlistItemIDInt)
 	if err != nil {
@@ -260,18 +324,21 @@ func DeleteWatchlistItemByID(w http.ResponseWriter, r *http.Request) {
         return
 	}
 
-	// Service function call to delete watchlist_item
-	err = watchlistItem.DeleteWatchlistItemByID(watchlistItemIDInt)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			helpers.MessageLogs.ErrorLog.Println("Watchlist item does not exist")
-			helpers.ErrorJSON(w, errors.New("watchlist item does not exist"), http.StatusBadRequest)
-		} else {
-			helpers.MessageLogs.ErrorLog.Println(err)
-			helpers.ErrorJSON(w, err, http.StatusBadRequest)
-		}
+	// Unmarshall JSON body which holds only "checkmarked" field
+	var watchlistItemData services.WatchlistItemService
+
+	errDecode := json.NewDecoder(r.Body).Decode(&watchlistItemData.WatchlistItem)
+	if errDecode != nil {
+		helpers.MessageLogs.ErrorLog.Println(errDecode)
+		helpers.ErrorJSON(w, errDecode, http.StatusBadRequest)
 		return
 	}
 
-	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"message": "Watchlist item deleted successfully"})
+	err = watchlistItem.UpdateCheckmarkedBooleanByWatchlistItemByID(watchlistItemIDInt, watchlistItemData.WatchlistItem)
+	if err != nil{
+		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"message": "Checkmarked boolean updated successfully", "new_boolean": watchlistItemData.WatchlistItem.Checkmarked})
 }
