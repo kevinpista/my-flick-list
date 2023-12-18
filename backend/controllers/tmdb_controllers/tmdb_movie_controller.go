@@ -10,22 +10,24 @@ import (
 
 var movieResult tmdb_services.TMDBMovieService
 
-// GET/search?query={movie_id}
+// GET/tmdb-movie?query={movie_id}
 func TMDBGetMovieByID(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("query") // user passes movie ID
 
-
-	result, err:= movieResult.TMDBGetMovieByID(query) // will be returned with a formatted JSON of the data we need for search results page
-
+	result, err:= movieResult.TMDBGetMovieByID(query)
+	// The error return will be in errors.New('error message') already
 	if err != nil {
+		if err.Error() == "TMDB API is unavailable at this time" {
+			helpers.MessageLogs.ErrorLog.Println(err)
+			helpers.ErrorJSON(w, err, http.StatusInternalServerError)
+			return
+		}
 		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
 		return
 	}
-
-	// TODO - when implementing frontend, will need to structure json response
-	// into a format that the frontend can use to display each search result cleanly on a dedicated movie page
 
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"movie": result})
 }
 
-// https://api.themoviedb.org/3/movie/{movie_id}
+// Service function makes request to https://api.themoviedb.org/3/movie/{movie_id}

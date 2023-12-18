@@ -11,8 +11,14 @@ export function getMovieDataTMDB(movie_id) {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        if (error.response) {
+          const errorMessage = error.response.data.message;
+          console.error('Thrown Error:', errorMessage);
+          throw new Error(errorMessage);
+        } else {
+          console.error('Network or other error:', error);
+          throw error;
+        }
       });
-
     }
 

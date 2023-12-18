@@ -22,18 +22,18 @@ func Routes() http.Handler {
 		MaxAge:           300,
 	}))
 
-	// movie resources
+	// Movie resources from internal database
 	router.Post("/api/movie", controllers.CreateMovie)
     router.Get("/api/movie/{id}", controllers.GetMovieByID)
     router.Get("/api/movies", controllers.GetAllMovies)
 
-	// watchlist resources
+	// Watchlist resources
 	router.Get("/api/watchlists", controllers.GetAllWatchlists)     // GET ALL watchlists in database for testing purposes only
     router.Get("/api/watchlists-by-user-id", controllers.GetWatchlistsByUserID) // GET all watchlists belonging to specific user; user_id in JWT token
 	router.Post("/api/watchlists", controllers.CreateWatchlist)    // POST a watchlist; user_id retrieved from JWT token
 	router.Get("/api/watchlist/{id}", controllers.GetWatchlistByID) // GET a specific watchlist by watchlist ID
 
-	// watchlist-items resources
+	// Watchlist-items resources
 	router.Post("/api/watchlist-item", controllers.CreateWatchlistItemByWatchlistID) // POST create a watchlist item for a specific watchlist
 	router.Get("/api/watchlist-items", controllers.GetAllWatchlistItemsByWatchListID) // GET fetch all watchlist items from a specific watchlist.
 	// expects "?watchlistID={watchlistID}" query paramter
@@ -44,15 +44,15 @@ func Routes() http.Handler {
 	router.Put("/api/watchlist-item-checkmarked", controllers.UpdateCheckmarkedBooleanByWatchlistItemByID) // PUT watchlist item checkmarked boolean update
 	// expects "?id={watchlistItemID}" query parameter + 'checkmarked' field with boolean in the JSON body
 
-	// watchlist-item-note resources
+	// Watchlist-item-note resources
     router.Post("/api/watchlist-item-note", controllers.CreateWatchlistItemNote) // POST create watchlist item note for a specific watchlist item
     router.Get("/api/watchlist-item-note/{watchlistItemID}", controllers.GetWatchlistItemNoteByWatchlistItemID) // GET fetch the note for a specific watchlist item
 
-	// genre resources
+	// Genre resources
     router.Post("/api/genre", controllers.CreateGenreDataByMovieID) // POST add genre data for a movie
     router.Get("/api/genre/{movieID}", controllers.GetGenreByMovieID) // GET the genre data for a movie
 
-	// user resources
+	// User resources
     router.Post("/api/user-registration", controllers.RegisterUser) // POST register a user
 	router.Post("/api/user-login", controllers.HandleLogin) // POST user login
     router.Get("/api/user/{userID}", controllers.GetUserByID) // GET user by their user id

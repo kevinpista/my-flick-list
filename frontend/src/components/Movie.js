@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/Movie.css';
 import { getMovieDataTMDB } from '../api/movieDataTMDB';
 import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
-
+import { useParams } from 'react-router-dom';
 
 // TODO
 // 1. Change AddIcon button and icon to "Added" with CheckMark icon when successfully added to someone's watchlist
@@ -33,59 +33,64 @@ const MoviePage = () => {
     const [movieBudget, setMovieBudget] = useState('');
     const [movieVoteAverage, setMovieVoteAverage] = useState(0);
     const [movieVoteCount, setMovieVoteCount] = useState(0);
+    const [validMovie, setValidBMovie] = useState(null);
+
+    const [error, setError] = useState(null);
+    const { movieID } = useParams(); // Extract movieID from the URL params
 
     useEffect(() => {
-      // Hardcoding movieID for now
-      const movieID = '12445';
-  
-      // Axios API call
-      getMovieDataTMDB(movieID)
-        .then(data => {
-          // Extract the movie data from the single JSON response
-          const moviePosterPathFromTMDBAPI = data.movie.poster_path;
-          const movieTitleFromTMDBAPI = data.movie.original_title;
-          // Format the release_date data as it is provided as "YYYY-MM-DD"
-          const movieReleaseDateFromTMDBAPI = data.movie.release_date;
-          const formattedReleaseDate = formatReleaseDate(movieReleaseDateFromTMDBAPI);
+        const fetchData = async () => {
+            try {
+                const data = await getMovieDataTMDB(movieID)
+                // Extract the movie data from the single JSON response
+                const moviePosterPathFromTMDBAPI = data.movie.poster_path;
+                const movieTitleFromTMDBAPI = data.movie.original_title;
+                // Format the release_date data as it is provided as "YYYY-MM-DD"
+                const movieReleaseDateFromTMDBAPI = data.movie.release_date;
+                const formattedReleaseDate = formatReleaseDate(movieReleaseDateFromTMDBAPI);
 
-          // Format the runtime data as it's provided as "minutes"
-          const movieRuntimeFromTMDBAPI = data.movie.runtime;
-          const formattedRuntime = formatRuntime(movieRuntimeFromTMDBAPI);
+                // Format the runtime data as it's provided as "minutes"
+                const movieRuntimeFromTMDBAPI = data.movie.runtime;
+                const formattedRuntime = formatRuntime(movieRuntimeFromTMDBAPI);
 
-          // Format the vote_average data as it's provided in a long decimal number
-          const movieVoteAverageFromTMDBAPI = data.movie.vote_average;
-          const formattedVoteAverage = Math.round(movieVoteAverageFromTMDBAPI * 10) / 10; // Round to one decimal place.
+                // Format the vote_average data as it's provided in a long decimal number
+                const movieVoteAverageFromTMDBAPI = data.movie.vote_average;
+                const formattedVoteAverage = Math.round(movieVoteAverageFromTMDBAPI * 10) / 10; // Round to one decimal place.
 
-          // Format the vote_count data as it's provided as a long integer number
-          const movieVoteCountFromTMDBAPI = data.movie.vote_count;
-          const formattedVoteCount = formatVoteCount(movieVoteCountFromTMDBAPI);
+                // Format the vote_count data as it's provided as a long integer number
+                const movieVoteCountFromTMDBAPI = data.movie.vote_count;
+                const formattedVoteCount = formatVoteCount(movieVoteCountFromTMDBAPI);
 
-          const movieGenresFromTMDBAPI = data.movie.genres.map(genre => genre.name); // Possibly more than 1 genre
-          const movieTaglineFromTMDBAPI = data.movie.tagline;
-          const movieOverviewFromTMDBAPI = data.movie.overview;
+                const movieGenresFromTMDBAPI = data.movie.genres.map(genre => genre.name); // Possibly more than 1 genre
+                const movieTaglineFromTMDBAPI = data.movie.tagline;
+                const movieOverviewFromTMDBAPI = data.movie.overview;
 
-          // Format revenue and budget data
-          const movieRevenueFromTMDBIAPI = data.movie.revenue;
-          const formattedRevenue = formatFinancialData(movieRevenueFromTMDBIAPI);
-          const movieBudgetFromTMDBAPI = data.movie.budget;
-          const formattedBudget = formatFinancialData(movieBudgetFromTMDBAPI);
-          
-          setMoviePosterPath(moviePosterPathFromTMDBAPI);
-          setMovieTitle(movieTitleFromTMDBAPI);
-          setMovieReleaseDate(formattedReleaseDate);
-          setMovieRuntime(formattedRuntime);
-          setMovieVoteCount(formattedVoteCount);
-          setMovieVoteAverage(formattedVoteAverage);
-          setMovieGenres(movieGenresFromTMDBAPI);
-          setMovieTagline(movieTaglineFromTMDBAPI);
-          setMovieOverview(movieOverviewFromTMDBAPI);
-          setMovieRevenue(formattedRevenue);
-          setMovieBudget(formattedBudget);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }, []);
+                // Format revenue and budget data
+                const movieRevenueFromTMDBIAPI = data.movie.revenue;
+                const formattedRevenue = formatFinancialData(movieRevenueFromTMDBIAPI);
+                const movieBudgetFromTMDBAPI = data.movie.budget;
+                const formattedBudget = formatFinancialData(movieBudgetFromTMDBAPI);
+
+                setMoviePosterPath(moviePosterPathFromTMDBAPI);
+                setMovieTitle(movieTitleFromTMDBAPI);
+                setMovieReleaseDate(formattedReleaseDate);
+                setMovieRuntime(formattedRuntime);
+                setMovieVoteCount(formattedVoteCount);
+                setMovieVoteAverage(formattedVoteAverage);
+                setMovieGenres(movieGenresFromTMDBAPI);
+                setMovieTagline(movieTaglineFromTMDBAPI);
+                setMovieOverview(movieOverviewFromTMDBAPI);
+                setMovieRevenue(formattedRevenue);
+                setMovieBudget(formattedBudget);
+                setValidBMovie(true);
+
+            } catch (error) {
+                setError(error);
+            }
+        };
+
+        fetchData();
+        }, [movieID]);
       
     const moviePosterBaseUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2";
 
@@ -94,10 +99,13 @@ const MoviePage = () => {
         <React.Fragment>
         <NavBar />
         <Container maxWidth="fluid">
+            {error ? (
+                <h1 className='error'><u>Error loading movie:</u> {error.message}</h1>
+            ) : ( 
+            validMovie && (
             <Paper elevation={3} className="movie-paper">
-
                 <div className="movie-poster">
-                    <img class="poster-small" src={`${moviePosterBaseUrl}${moviePosterPath}`} alt="Movie Poster" />
+                    <img className="poster-small" src={`${moviePosterBaseUrl}${moviePosterPath}`} alt="Movie Poster" />
                 </div>
 
                 <div className="movie-details">
@@ -144,10 +152,11 @@ const MoviePage = () => {
                         ADD TO WATCHLIST
                     </Button>
                 </div>
-
             </Paper>
-        </Container>
-        </React.Fragment>
+            )
+        )}
+    </Container>
+    </React.Fragment>
   );
 };
 export default MoviePage;

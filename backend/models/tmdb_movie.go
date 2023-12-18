@@ -21,6 +21,7 @@ type TMDBMovie struct {
         OriginCountry string `json:"origin_country"`
     } `json:"production_companies"`
 	*/
+    
 	ID                  int    `json:"id"`
 	OriginalTitle       string `json:"original_title"`
 	ReleaseDate string `json:"release_date"`
@@ -41,4 +42,11 @@ type TMDBMovie struct {
         ID   int    `json:"id"`
         Name string `json:"name"`
     } `json:"genres"`
+}
+
+// If TMDB returns an error status code, decode its response to this model
+type TMDBError struct {
+	Success       bool   `json:"success"`
+	StatusCode    int    `json:"status_code"`
+	StatusMessage string `json:"status_message"`
 }
