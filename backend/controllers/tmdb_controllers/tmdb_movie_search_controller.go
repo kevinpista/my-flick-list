@@ -3,8 +3,9 @@ package tmdb_controllers
 import (
 	// "github.com/joho/godotenv"
 	// "encoding/json"
-	"strings"
+	// "strings"
 	"net/http"
+	"errors"
 
 	"github.com/kevinpista/my-flick-list/backend/helpers"
 	"github.com/kevinpista/my-flick-list/backend/services/tmdb_services"
@@ -27,26 +28,39 @@ var searchResults tmdb_services.TMDBMovieSearchService
 
 // GET/search?query={keyword+keyword..}
 func TMDBSearchMovieByKeyWords(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query().Get("query") // user passes it as "harry+potter"
-	// this method will transform it into string of "harry potter" with no + sign
-	// to preserve the + sign, need the user to pass query url as "harry%2Bpotter"
+	query := r.URL.Query().Get("query") // If the user passes it as "harry+potter"
+	// this method will transform it into string of "harry potter" with no + sign.
+	// FRONTENDS will pass query url as "harry%2Bpotter" with "%2B" between spaces to preserve + sign
 
-	// if you want to add the + manually here -- we will for testing purposes
-    query = strings.Replace(query, " ", "+", -1)
-
-	// regardless, frontend can manipulate ther URI component to the format we want
-	// for now we'll replace the space in query ourselves for the backend
-
-	allResults, err:= searchResults.TMDBSearchMovieByKeywords(query) // will be returned with a formatted JSON of the data we need for search results page
-
-	if err != nil {
-		helpers.MessageLogs.ErrorLog.Println(err)
+	if query == "" {
+		helpers.MessageLogs.ErrorLog.Println("User sent in an empty query")
+		helpers.ErrorJSON(w, errors.New("search query cannot be empty"), http.StatusBadRequest)
 		return
 	}
 
-	// TODO - when implementing frontend, will need to structure json response
-	// into a format that the frontend can use to display each search result cleanly on a 
-	// search result page based on movie 
+    // query = strings.Replace(query, " ", "+", -1)
+	helpers.MessageLogs.ErrorLog.Println(query)
+
+	allResults, err:= searchResults.TMDBSearchMovieByKeywords(query) // will be returned with a formatted JSON of the data we need for search results page
+
+	// The error return will be in errors.New('error message') already
+	if err != nil {
+		if err.Error() == "TMDB API is unavailable at this time" {
+			helpers.MessageLogs.ErrorLog.Println(err)
+			helpers.ErrorJSON(w, err, http.StatusInternalServerError)
+			return
+		}
+		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+
+	// If TMDB API returned no results, return a 204 No Content code along with empty JSON
+	if len(*allResults) == 0 {
+		helpers.MessageLogs.ErrorLog.Println("No movies found with search query")
+		helpers.WriteJSON(w, http.StatusNoContent, helpers.Envelope{}) // returning JSON object optional
+		return
+	}
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"search_results": allResults})
 }
 
