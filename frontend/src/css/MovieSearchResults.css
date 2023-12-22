@@ -1,0 +1,53 @@
+.card .tight {
+    flex-wrap: wrap;
+  }
+  
+  .card {
+    width: 100%;
+    display: flex;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(227, 227, 227, 1);
+    background-color: #fff;
+    height: 140px; /* fixed height */
+  }
+  
+  .card .wrapper {
+    display: flex;
+    width: 100%;
+  }
+  
+  .card .image {
+    flex: 0 0 auto;
+  }
+  
+  .card .poster img {
+    border-radius: 8px 0 0 8px;
+    height: 140px; /* fixed height */
+  }
+  
+  .card .details {
+    flex: 1 1 auto;
+    padding: 16px;
+  }
+  
+  .card .title {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .card h2 {
+    margin: 0;
+  }
+  
+  .card .release_date {
+    margin-left: 8px;
+    color: #000;
+  }
+  
+  .card .overview {
+    margin-top: 8px;
+  }
+  
+  

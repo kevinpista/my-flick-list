@@ -21,3 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+/src/components/Test.js
+/src/components/TestTwo.js
+/src/css/Test.js

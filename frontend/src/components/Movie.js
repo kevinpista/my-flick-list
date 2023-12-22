@@ -33,7 +33,7 @@ const MoviePage = () => {
     const [movieBudget, setMovieBudget] = useState('');
     const [movieVoteAverage, setMovieVoteAverage] = useState(0);
     const [movieVoteCount, setMovieVoteCount] = useState(0);
-    const [validMovie, setValidBMovie] = useState(null);
+    const [validMovie, setValidMovie] = useState(null);
 
     const [error, setError] = useState(null);
     const { movieID } = useParams(); // Extract movieID from the URL params
@@ -82,7 +82,7 @@ const MoviePage = () => {
                 setMovieOverview(movieOverviewFromTMDBAPI);
                 setMovieRevenue(formattedRevenue);
                 setMovieBudget(formattedBudget);
-                setValidBMovie(true);
+                setValidMovie(true);
 
             } catch (error) {
                 setError(error);

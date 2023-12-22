@@ -1,18 +1,14 @@
 import React, { useState, useEffect} from 'react';
-import { Container, Paper, Typography, Button } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import NavBar from './NavBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../css/Test.css';
-import { movieSearchTMDB } from '../api/movieSearchTMDB';
+import '../css/MovieSearchResults.css';
 import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
-import { useParams, useLocation } from 'react-router-dom';
 
 
-const Test = ({ id, title, releaseDate, description, posterURL }) => {
+// Render the movie results. Function by the MovieSearch component
+const MovieSearchResults = ({ id, title, releaseDate, description, posterURL }) => {
 
   return (
-    <div id={`card_movie_${id}`} className="card v4 tight">
+    <div id={`card_movie_${id}`} className="card tight">
       <div className="wrapper">
         <div className="image">
           <div className="poster">
@@ -61,5 +57,4 @@ const Test = ({ id, title, releaseDate, description, posterURL }) => {
     </div>
   );
 };
-
-export default Test;
+export default MovieSearchResults;

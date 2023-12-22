@@ -2,10 +2,12 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import Home from './components/Home'
 import Movie from './components/Movie'
 import Test from './components/Test'
+import TestTwo from './components/TestTwo'
 import UserRegistration from './components/UserRegistration'
 import UserLogin from './components/UserLogin'
 import JwtTest from './components/JwtTest';
 import Watchlist from './components/watchlist/Watchlist';
+import MovieSearch from './components/MovieSearch';
 
 
 function App() {
@@ -14,12 +16,13 @@ function App() {
       <Routes>
         <Route exact ={true} path="/" element={<Home />} />        
         <Route exact ={true} path="/movie/:movieID" element={<Movie />} />       
-        <Route exact ={true} path="/test" element={<Test />} />  
+        <Route path="/test" element={<Test />} />  
+        <Route exact ={true} path="/test-two" element={<TestTwo />} />  
         <Route exact ={true} path="/user-registration" element={<UserRegistration />} />                 
         <Route exact ={true} path="/user-login" element={<UserLogin />} />           
         <Route exact ={true} path="/jwt-test" element={<JwtTest />} />        
         <Route exact={true} path="/watchlist/:watchlistID" element={<Watchlist />} />        
-
+        <Route path="/movie-search" element={<MovieSearch />} />
       </Routes>
     </BrowserRouter>
   );
