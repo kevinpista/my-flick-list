@@ -39,7 +39,7 @@ func TMDBSearchMovieByKeyWords(w http.ResponseWriter, r *http.Request) {
 	}
 
     // query = strings.Replace(query, " ", "+", -1)
-	helpers.MessageLogs.ErrorLog.Println(query)
+	// helpers.MessageLogs.ErrorLog.Println(query)
 
 	allResults, err:= searchResults.TMDBSearchMovieByKeywords(query) // will be returned with a formatted JSON of the data we need for search results page
 
