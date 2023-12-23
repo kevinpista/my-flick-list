@@ -2,11 +2,13 @@ import React, { useState, useEffect} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/MovieSearchResults.css';
 import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
+import no_image_placeholder from '../static/no_image_placeholder.jpg';
 
 
 // Render the movie results. Function by the MovieSearch component
 const MovieSearchResults = ({ id, title, releaseDate, description, posterURL }) => {
-    
+    // posterURL will either be TMDB link or null
+    const finalPosterURL = posterURL ? posterURL : no_image_placeholder;
     const formatedReleaseDate = formatReleaseDate(releaseDate)
 
     return (
@@ -21,8 +23,8 @@ const MovieSearchResults = ({ id, title, releaseDate, description, posterURL }) 
             >
               <img
                 className="poster"
-                src={posterURL}
-                srcSet={`${posterURL} 1x, ${posterURL} 2x`}
+                src={finalPosterURL}
+                srcSet={`${finalPosterURL} 1x, ${finalPosterURL} 2x`}
                 alt={title}
               />
             </a>

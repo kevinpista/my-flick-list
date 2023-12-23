@@ -5,7 +5,6 @@ import NavBar from './NavBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/MovieSearch.css';
 import { movieSearchTMDB } from '../api/movieSearchTMDB';
-import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
 import { useParams, useLocation } from 'react-router-dom';
 
 import MovieSearchResults from './MovieSearchResults';
@@ -50,8 +49,8 @@ const MovieSearch = () => {
                         title = {movie.original_title}
                         releaseDate = {movie.release_date}
                         description = {movie.overview}
-                        posterURL={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${movie.poster_path}`}
-                    />
+                        posterURL={movie.poster_path ? `https://image.tmdb.org/t/p/w300_and_h450_bestv2${movie.poster_path}` : null }
+                        />
                 ))
                 ))}
             </Container>
