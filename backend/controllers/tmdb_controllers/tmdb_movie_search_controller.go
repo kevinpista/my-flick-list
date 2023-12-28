@@ -51,7 +51,7 @@ func TMDBSearchMovieByKeyWords(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		helpers.MessageLogs.ErrorLog.Println(err)
-		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		helpers.ErrorJSON(w, errors.New("error with TMDB API"), http.StatusBadRequest)
 		return
 	}
 

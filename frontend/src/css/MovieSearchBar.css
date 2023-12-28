@@ -1,0 +1,11 @@
+.search-bar {
+    display: flex;
+    align-items: left;
+    gap: 16px;
+    padding: 16px;
+    color: #032541;
+  }
+
+  .search-button {
+    background-color: #032541;
+  }

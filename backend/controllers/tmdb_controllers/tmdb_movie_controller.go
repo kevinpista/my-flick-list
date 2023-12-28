@@ -2,6 +2,7 @@ package tmdb_controllers
 
 import (
 	"net/http"
+	"errors"
 
 	"github.com/kevinpista/my-flick-list/backend/helpers"
 	"github.com/kevinpista/my-flick-list/backend/services/tmdb_services"
@@ -23,7 +24,7 @@ func TMDBGetMovieByID(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		helpers.MessageLogs.ErrorLog.Println(err)
-		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		helpers.ErrorJSON(w, errors.New("error with TMDB API"), http.StatusBadRequest)
 		return
 	}
 
