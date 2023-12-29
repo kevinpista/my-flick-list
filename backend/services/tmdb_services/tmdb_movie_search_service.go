@@ -41,6 +41,5 @@ func (c *TMDBMovieSearchService) TMDBSearchMovieByKeywords(query string, page st
 		return nil, err
 	}
 	// Test for debugging pagination data
-	helpers.MessageLogs.ErrorLog.Println(response.Page)
 	return &response, nil
 }
