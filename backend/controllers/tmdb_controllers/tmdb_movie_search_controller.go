@@ -26,11 +26,12 @@ apiKey := os.Getenv("API_KEY")
 
 var searchResults tmdb_services.TMDBMovieSearchService
 
-// GET/search?query={keyword+keyword..}
+// GET/search?query={keyword+keyword..}&page={pageNumber}
 func TMDBSearchMovieByKeyWords(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("query") // If the user passes it as "harry+potter"
 	// this method will transform it into string of "harry potter" with no + sign.
 	// FRONTENDS will pass query url as "harry%2Bpotter" with "%2B" between spaces to preserve + sign
+    page := r.URL.Query().Get("page")
 
 	if query == "" {
 		helpers.MessageLogs.ErrorLog.Println("User sent in an empty query")
@@ -41,7 +42,7 @@ func TMDBSearchMovieByKeyWords(w http.ResponseWriter, r *http.Request) {
     // query = strings.Replace(query, " ", "+", -1)
 	// helpers.MessageLogs.ErrorLog.Println(query)
 
-	allResults, err:= searchResults.TMDBSearchMovieByKeywords(query) // will be returned with a formatted JSON of the data we need for search results page
+	allResults, err:= searchResults.TMDBSearchMovieByKeywords(query, page) // will be returned with a formatted JSON of the data we need for search results page
 
 	// The error return will be in errors.New('error message') already
 	if err != nil {
@@ -56,12 +57,13 @@ func TMDBSearchMovieByKeyWords(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// If TMDB API returned no results, return a 204 No Content code along with empty JSON
-	if len(*allResults) == 0 {
+	if allResults.TotalResults == 0 {
 		helpers.MessageLogs.ErrorLog.Println("No movies found with search query")
 		helpers.WriteJSON(w, http.StatusNoContent, helpers.Envelope{}) // returning JSON object optional
 		return
 	}
-	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"search_results": allResults})
+
+	helpers.WriteJSON(w, http.StatusOK, allResults)
 }
 
-// https://api.themoviedb.org/3/search/movie?query=Harry+Potter 
+// https://api.themoviedb.org/3/search/movie?query=Harry+Potter&pages=1

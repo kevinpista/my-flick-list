@@ -1,7 +1,5 @@
 package models
 
-// TODO finalize fields we want to fetch from search API to display on our front end as a search
-// results list
 type TMDBMovieSearch struct {
 	Adult          bool     `json:"adult"`
 	BackdropPath   string   `json:"backdrop_path"`
@@ -19,4 +17,10 @@ type TMDBMovieSearch struct {
 	// VoteCount      int      `json:"vote_count"`
 }
 
-// Test for now
+// Include pagination
+type TMDBSearchResponse struct {
+	Page         int               `json:"page"`
+	Results      []TMDBMovieSearch `json:"results"`
+	TotalPages   int               `json:"total_pages"`
+	TotalResults int               `json:"total_results"`
+}

@@ -14,8 +14,8 @@ type TMDBMovieSearchService struct {
 	MovieSearch models.TMDBMovieSearch
 }
 
-func (c *TMDBMovieSearchService) TMDBSearchMovieByKeywords(query string) (*[]models.TMDBMovieSearch, error) {
-	apiUrl := baseAPIUrl + query + "&api_key=" + APIKey
+func (c *TMDBMovieSearchService) TMDBSearchMovieByKeywords(query string, page string) (*models.TMDBSearchResponse, error) {
+	apiUrl := baseAPIUrl + query + "&api_key=" + APIKey + "&page=" + page
 	// Send GET request to TMDB
 	resp, err := http.Get(apiUrl)
 	if err != nil {
@@ -33,15 +33,14 @@ func (c *TMDBMovieSearchService) TMDBSearchMovieByKeywords(query string) (*[]mod
 		return nil, errors.New("error with TMDB API")
 	}
 
-	// Decode the JSON response into a response struct
-	var response struct {
-		Results []models.TMDBMovieSearch
-	}
+	// Decode the JSON response into a response struct with pagination
+	var response models.TMDBSearchResponse
 	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println("Error related to decoding successful TMDB response")
 		return nil, err
 	}
-
-	return &response.Results, nil
+	// Test for debugging pagination data
+	helpers.MessageLogs.ErrorLog.Println(response.Page)
+	return &response, nil
 }
