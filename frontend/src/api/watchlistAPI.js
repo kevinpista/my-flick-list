@@ -26,6 +26,9 @@ export function fetchWatchlistItems (watchlistID) {
         },
       })
         .then(response => {
+            if (response.status === 204) {
+                throw new Error('You haven\'t added any movies to this watchlist yet.');
+              }
             return response.data; // Returning watchlist item's movie data
         })
         .catch(error => { // Will catch any error thrown by extractToken
@@ -92,6 +95,9 @@ export function fetchWatchlists () {
     
     return axios.get('http://localhost:8080/api/watchlists-by-user-id', { headers })
         .then(response => {
+            if (response.status === 204) {
+                throw new Error('You haven\'t created any watchlists yet.');
+              }
             return response.data; // Returning list of watchlists
         })
         .catch(error => { // Will catch any error thrown by extractToken

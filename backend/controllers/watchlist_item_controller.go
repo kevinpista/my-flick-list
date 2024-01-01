@@ -45,11 +45,18 @@ func GetAllWatchlistItemsByWatchListID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Does watchlist does exist, but possible it can have no watchlist items in it so services will return " 'watchlist-items': null "
+	// Service function call
 	all, err := watchlistItem.GetAllWatchlistItemsByWatchlistID(watchlistIDInt)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+
+	// Watchlist may have no items. Services will return "null"
+	if all == nil {
+		helpers.MessageLogs.ErrorLog.Println("Watchlist has no watchlist_items")
+		helpers.WriteJSON(w, http.StatusNoContent, helpers.Envelope{})
 		return
 	}
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlist-items": all})
@@ -106,11 +113,18 @@ func GetAllWatchlistItemsWithMoviesByWatchListID(w http.ResponseWriter, r *http.
         return
     }
 
-	// Watchlist exists, but possible it can have no watchlist items in it so services will return " 'watchlist-items': null "
+	// Make service function call
 	all, err := watchlistItem.GetAllWatchlistItemsWithMoviesByWatchListID(watchlistIDInt)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+
+	// Watchlist may have no items. Services will return "null"
+	if all == nil {
+		helpers.MessageLogs.ErrorLog.Println("Watchlist has no watchlist_items")
+		helpers.WriteJSON(w, http.StatusNoContent, helpers.Envelope{})
 		return
 	}
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlist-items": all})

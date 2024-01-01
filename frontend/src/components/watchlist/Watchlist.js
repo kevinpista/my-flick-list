@@ -74,7 +74,7 @@ const handleDeleteWatchlistItem = async (watchlistItemId) => {
     <Container maxWidth={"xl"} className="watchlist-item-grid-container">
       <h1 className="watchlist-name">My Watchlist</h1>
       {error ? (
-        <p> Error loading watchlist: {error.message}</p>
+        <h1 className='error'><u>Error:</u> {error.message}</h1>
       ) : (
         watchlistItems && (
         <WatchlistItemsTable 

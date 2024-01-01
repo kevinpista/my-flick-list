@@ -40,6 +40,13 @@ func GetWatchlistsByUserID(w http.ResponseWriter, r *http.Request) {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		return
 	}
+
+	// User may not have any watchlists yet. Services wil return "null"
+	if results == nil {
+		helpers.MessageLogs.ErrorLog.Println("User has no watchlists created yet")
+		helpers.WriteJSON(w, http.StatusNoContent, helpers.Envelope{})
+		return
+	}
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlists": results})
 }
 

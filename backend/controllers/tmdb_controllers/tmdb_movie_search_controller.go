@@ -59,7 +59,7 @@ func TMDBSearchMovieByKeyWords(w http.ResponseWriter, r *http.Request) {
 	// If TMDB API returned no results, return a 204 No Content code along with empty JSON
 	if allResults.TotalResults == 0 {
 		helpers.MessageLogs.ErrorLog.Println("No movies found with search query")
-		helpers.WriteJSON(w, http.StatusNoContent, helpers.Envelope{}) // returning JSON object optional
+		helpers.WriteJSON(w, http.StatusNoContent, helpers.Envelope{})
 		return
 	}
 

@@ -29,7 +29,7 @@ func (c *TMDBMovieSearchService) TMDBSearchMovieByKeywords(query string, page st
 
 	if resp.StatusCode != http.StatusOK {
 		// Catch all for TMDB API error
-		helpers.MessageLogs.ErrorLog.Println("eEror with TMDB API")
+		helpers.MessageLogs.ErrorLog.Println("Error with TMDB API")
 		return nil, errors.New("error with TMDB API")
 	}
 
@@ -40,6 +40,5 @@ func (c *TMDBMovieSearchService) TMDBSearchMovieByKeywords(query string, page st
 		helpers.MessageLogs.ErrorLog.Println("Error related to decoding successful TMDB response")
 		return nil, err
 	}
-	// Test for debugging pagination data
 	return &response, nil
 }
