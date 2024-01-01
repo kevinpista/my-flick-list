@@ -143,3 +143,38 @@ func (c *WatchlistService) GetWatchlistByID(id int) (*models.Watchlist, error) {
 	}
 
 }
+
+// Deletes a watchlist with its id - deletes all associated watchlist_items first, then the watchlist
+func (c *WatchlistService) DeleteWatchlistByID(watchlistID int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+	
+	// Delete associated watchlist_items first
+	_, err := db.ExecContext(ctx, "DELETE FROM watchlist_item WHERE watchlist_id = $1", watchlistID)
+	if err != nil {
+		return err
+	}
+	
+	// Delete watchlist itself
+	_, err = db.ExecContext(ctx, "DELETE FROM watchlist WHERE id = $1", watchlistID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Get's the UUID user_id owner of the watchlist
+func (c *WatchlistService) GetWatchlistOwnerUserID(watchlistID int) (uuid.UUID, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := "SELECT users_id FROM watchlist WHERE id = $1"
+	var watchlistOwnerID uuid.UUID
+	err := db.QueryRowContext(ctx, query, watchlistID).Scan(&watchlistOwnerID)
+	if err != nil {
+		return uuid.Nil, err
+	}
+
+	return watchlistOwnerID, nil
+}

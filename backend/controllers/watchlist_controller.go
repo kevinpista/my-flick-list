@@ -28,24 +28,19 @@ func GetAllWatchlists(w http.ResponseWriter, r *http.Request) {
 
 // GET/watchlists-by-user-id - user_id fetched from JWT token
 func GetWatchlistsByUserID(w http.ResponseWriter, r *http.Request) {
+	// Verify JWT token sent in by user and fetch their UserID
 	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
 	if tokenErr != nil {
 		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized) // tokenErr will be a errors.New(error_constants) object
 		return
 	}
-	/* When endpoint took in user_id via url parameter instead of from JWT Token
-	userIDStr := chi.URLParam(r, "userID")
-	userID, err := helpers.ConvertStringToUUID(userIDStr) // parameter will be a string. convert to int
-	if err != nil {
-		helpers.MessageLogs.ErrorLog.Println(err)
-	}
-	*/
-	all, err := watchlist.GetAllWatchlistsByUserID(userID)
+
+	results, err := watchlist.GetAllWatchlistsByUserID(userID)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		return
 	}
-	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlists": all})
+	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlists": results})
 }
 
 // GET/watchlist/{id}
@@ -93,4 +88,60 @@ func CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	helpers.WriteJSON(w, http.StatusOK, watchlistCreated)
+}
+
+// DELETE /watchlist?id={watchlistID}
+func DeleteWatchlistByID(w http.ResponseWriter, r *http.Request) {
+	watchlistID := r.URL.Query().Get("id")
+
+	// Check if 'id' is provided in the URL param
+	if watchlistID == "" {
+		helpers.MessageLogs.ErrorLog.Println("id not provided for DELETE request")
+		http.Error(w, "id parameter is missing", http.StatusBadRequest)
+		return
+	}
+
+	// Check if URL param is an integer
+	watchlistIDInt, err := strconv.Atoi(watchlistID)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, errors.New("id parameter must be an integer"), http.StatusBadRequest)
+		return
+	}
+
+	// Get userID from JWT token
+	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
+	if tokenErr != nil {
+		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized)
+		return
+	}
+
+	// Get user_id via the watchlist_id
+	watchlistOwnerID, err := watchlist.GetWatchlistOwnerUserID(watchlistIDInt)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+
+	// Compare watchlistOwnerID vs jwt user_id
+    if userID != watchlistOwnerID {
+        helpers.MessageLogs.ErrorLog.Println("User is not the owner of the watchlist")
+        helpers.ErrorJSON(w, errors.New(error_constants.UnauthorizedRequest), http.StatusUnauthorized)
+        return
+	}
+	// Service function call to delete watchlist
+	err = watchlist.DeleteWatchlistByID(watchlistIDInt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			helpers.MessageLogs.ErrorLog.Println("Watchlist does not exist")
+			helpers.ErrorJSON(w, errors.New("watchlist does not exist"), http.StatusBadRequest)
+		} else {
+			helpers.MessageLogs.ErrorLog.Println(err)
+			helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		}
+		return
+	}
+
+	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"message": "Watchlist deleted successfully"})
 }

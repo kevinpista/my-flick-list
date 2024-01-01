@@ -7,6 +7,7 @@ import UserRegistration from './components/UserRegistration'
 import UserLogin from './components/UserLogin'
 import JwtTest from './components/JwtTest';
 import Watchlist from './components/watchlist/Watchlist';
+import ListOfWatchlists from './components/watchlist/ListOfWatchlists';
 import MovieSearch from './components/MovieSearch';
 
 
@@ -20,7 +21,8 @@ function App() {
         <Route exact ={true} path="/test-two" element={<TestTwo />} />  
         <Route exact ={true} path="/user-registration" element={<UserRegistration />} />                 
         <Route exact ={true} path="/user-login" element={<UserLogin />} />           
-        <Route exact ={true} path="/jwt-test" element={<JwtTest />} />        
+        <Route exact ={true} path="/jwt-test" element={<JwtTest />} />
+        <Route exact ={true} path="/watchlist" element={<ListOfWatchlists />} />
         <Route exact={true} path="/watchlist/:watchlistID" element={<Watchlist />} />        
         <Route path="/movie-search" element={<MovieSearch />} />
       </Routes>
@@ -29,3 +31,5 @@ function App() {
 }
 
 export default App;
+
+//        <Route exact ={true} path="/watchlist" element={<ListOfWatchlists />} />     

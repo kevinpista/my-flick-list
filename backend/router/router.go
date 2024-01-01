@@ -28,19 +28,21 @@ func Routes() http.Handler {
     router.Get("/api/movies", controllers.GetAllMovies)
 
 	// Watchlist resources
-	router.Get("/api/watchlists", controllers.GetAllWatchlists)     // GET ALL watchlists in database for testing purposes only
+	// router.Get("/api/watchlists", controllers.GetAllWatchlists)     // GET ALL watchlists in database for testing purposes only
     router.Get("/api/watchlists-by-user-id", controllers.GetWatchlistsByUserID) // GET all watchlists belonging to specific user; user_id in JWT token
 	router.Post("/api/watchlists", controllers.CreateWatchlist)    // POST a watchlist; user_id retrieved from JWT token
 	router.Get("/api/watchlist/{id}", controllers.GetWatchlistByID) // GET a specific watchlist by watchlist ID
+	router.Delete("/api/watchlist", controllers.DeleteWatchlistByID) // DELETE watchlist via its id
+	// expects "?id={watchlistID}" query param
 
 	// Watchlist-items resources
 	router.Post("/api/watchlist-item", controllers.CreateWatchlistItemByWatchlistID) // POST create a watchlist item for a specific watchlist
 	router.Get("/api/watchlist-items", controllers.GetAllWatchlistItemsByWatchListID) // GET fetch all watchlist items from a specific watchlist.
-	// expects "?watchlistID={watchlistID}" query paramter
+	// expects "?watchlistID={watchlistID}" query param
 	router.Get("/api/watchlist-items-with-movies", controllers.GetAllWatchlistItemsWithMoviesByWatchListID) // GET fetch all watchlist items along with full movie data
-	// expects "?watchlistID={watchlistID}" query paramter
+	// expects "?watchlistID={watchlistID}" query param
 	router.Delete("/api/watchlist-item", controllers.DeleteWatchlistItemByID) // DELETE watchlist item via its id
-	// expects "?id={watchlistItemID}" query parameter
+	// expects "?id={watchlistItemID}" query param
 	router.Put("/api/watchlist-item-checkmarked", controllers.UpdateCheckmarkedBooleanByWatchlistItemByID) // PUT watchlist item checkmarked boolean update
 	// expects "?id={watchlistItemID}" query parameter + 'checkmarked' field with boolean in the JSON body
 
