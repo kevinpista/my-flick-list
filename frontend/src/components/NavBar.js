@@ -10,13 +10,13 @@ function NavBar() {
   return (
     <Navbar data-bs-theme="dark" expand="lg" className="nav-bar-background">
       <Container className="navbar-container">
-        <Navbar.Brand href="#home" className="custom-font">My Flick List</Navbar.Brand>
+        <Navbar.Brand href="/" className="custom-font">My Flick List</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-                <Nav.Link href="#features" className="custom-font">Movie Search</Nav.Link>
-                <Nav.Link href="#pricing" className="custom-font">Watchlists</Nav.Link>
-                <Nav.Link href="#pricing" className="custom-font">Account</Nav.Link>
+                <Nav.Link href="/movie-search" className="custom-font">Movie Search</Nav.Link>
+                <Nav.Link href="/watchlist" className="custom-font">Watchlists</Nav.Link>
+                <Nav.Link href="user-login" className="custom-font">Login</Nav.Link>
             </Nav>
         </Navbar.Collapse>
       </Container>
