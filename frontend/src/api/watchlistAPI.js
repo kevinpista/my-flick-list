@@ -4,9 +4,9 @@ import axios from 'axios';
 import { getJwtTokenFromCookies } from '../utils/authTokenUtils'
 
 
-// Returns all watchlist items and its full movie data
+// Returns watchlist name, description and its watchlist items
 // router.GET("/api/watchlist-items-with-movies, controllers.GetAllWatchlistItemsWithMoviesByWatchListID) 
-export function fetchWatchlistItems (watchlistID) {
+export function fetchWatchlistAndItems (watchlistID) {
     // Fetch the user's stored JWT token from cookies
     const token = getJwtTokenFromCookies();
     if (!token) {

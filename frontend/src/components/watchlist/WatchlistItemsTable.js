@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import { formatReleaseDate, formatRuntime, formatFinancialData } from '../../utils/formatUtils';
 import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
@@ -21,7 +22,6 @@ import Checkbox from '@mui/material/Checkbox';
 
 
 // TODO
-// Movie title link to website.com/movie{id} - should already be added to DB
 // My notes icon popup module
 
 // watchlistItems is a JSON object holding 1 array containing individual movie data for each watchlistItem
@@ -117,14 +117,27 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       headerAlign: 'center',
       align: 'center',
       renderCell: (params) => (
-        <img
-          src={params.value}
-          alt={`${params.row.title} Poster`}
-          style={{ width: 80, height: 112 }}
-        />
+        <Link to={`/movie/${params.row.movie_id}`}>
+          <img
+            src={params.value}
+            alt={`${params.row.title} Poster`}
+            style={{ width: 80, height: 112 }}
+          />
+        </Link>
       ),
     },
-    { field: 'title', headerName: 'Title', width: 300, headerAlign: 'center', align: 'center' },
+    { 
+      field: 'title', 
+      headerName: 'Title', 
+      width: 300, 
+      headerAlign: 'center', 
+      align: 'center',
+      renderCell: (params) => (
+        <Link to={`/movie/${params.row.movie_id}`} style={{ color: 'black', textDecoration: 'none' }}>
+        {params.row.title}
+        </Link>
+      ),
+     },
     { field: 'releaseDate', headerName: 'Release Date', width: 150, headerAlign: 'center', align: 'center' },
     { field: 'runtime', headerName: 'Runtime', width: 120, headerAlign: 'center', align: 'center' },
     { field: 'rating', headerName: 'Ratings', width: 120, headerAlign: 'center', align: 'center' },

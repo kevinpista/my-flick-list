@@ -3,30 +3,33 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Container } from '@mui/material';
 import NavBar from '../NavBar.js';
 import '../../css/Watchlist.css';
-import { fetchWatchlistItems } from '../../api/watchlistAPI.js'
+import { fetchWatchlistAndItems } from '../../api/watchlistAPI.js'
 import * as errorConstants from '../../api/errorConstants';
 import axios from 'axios';
 import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
 
 import WatchlistItemsTable from './WatchlistItemsTable';
 
+// TODO - if "error" is thrown relating to no movies in watchlist yet, still display
+// the title and description, have message displayed, but include movie search bar for the user
+
 // Individual Watchlist that represents 1 single watchlist and holds up to 20 movies
-// TODO
-// Max hold 20 movies. Checkmark change. Able to fetch notes data as well.
-// Need to be able to make changes to "toWatch" and send to backend and also notes
-// Convert data Release date runtime, budget, revenue with helper functions
-// Store movie ID url to titles so user is directed to the individual movie page to view
 
 const Watchlist = () => {
   const { watchlistID } = useParams(); // Extract watchlistID from the URL params
+  
+  const [watchlistName, setWatchlistName] = useState(null);
+  const [watchlistDescription, setWatchlistDescription] = useState(null);
   const [watchlistItems, setWatchlistItems] = useState(null); // In JSON object format
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetchWatchlistItems(watchlistID);
+        const response = await fetchWatchlistAndItems(watchlistID);
         setWatchlistItems(response);
+        setWatchlistName(response['name']);
+        setWatchlistDescription(response['description']);
       } catch (error) {
         setError(error);
         if (error.message === errorConstants.ERROR_BAD_REQUEST) {
@@ -72,7 +75,8 @@ const handleDeleteWatchlistItem = async (watchlistItemId) => {
     <React.Fragment>
       <NavBar />
     <Container maxWidth={"xl"} className="watchlist-item-grid-container">
-      <h1 className="watchlist-name">My Watchlist</h1>
+      <h1 className="watchlist-name">{watchlistName}</h1>
+      <p className="watchlist-description">{watchlistDescription}</p>
       {error ? (
         <h1 className='error'><u>Error:</u> {error.message}</h1>
       ) : (
