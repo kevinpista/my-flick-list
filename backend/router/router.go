@@ -37,7 +37,7 @@ func Routes() http.Handler {
 
 	// Watchlist-items resources
 	router.Post("/api/watchlist-item", controllers.CreateWatchlistItemByWatchlistID) // POST create a watchlist item for a specific watchlist
-	router.Get("/api/watchlist-items", controllers.GetAllWatchlistItemsByWatchListID) // GET fetch all watchlist items from a specific watchlist.
+	router.Get("/api/watchlist-items", controllers.GetAllWatchlistItemsWithMoviesByWatchListID) // GET fetch all watchlist items from a specific watchlist along with watchlist name + description
 	// expects "?watchlistID={watchlistID}" query param
 	router.Get("/api/watchlist-items-with-movies", controllers.GetAllWatchlistItemsWithMoviesByWatchListID) // GET fetch all watchlist items along with full movie data
 	// expects "?watchlistID={watchlistID}" query param

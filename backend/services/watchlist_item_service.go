@@ -46,7 +46,72 @@ func (c *WatchlistItemService) GetAllWatchlistItemsByWatchlistID(watchlistID int
 	return watchlistItems, nil
 }
 
-// Fetches all watchlist items + the associated movie data based on stored movie_id for a specific watchlist
+// Fetches watchlist name & description + all watchlist items and its movie data
+func (c *WatchlistItemService) GetWatchListWithWatchlistItemsByWatchListID(watchlistID int) ([]*models.WatchlistItemWithMovie, string, string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+    // Fetch watchlist name and description
+    var watchlistName, watchlistDescription string
+    err := db.QueryRowContext(ctx, "SELECT name, description FROM watchlist WHERE id = $1", watchlistID).Scan(&watchlistName, &watchlistDescription)
+    if err != nil {
+        return nil, "", "", err
+    }
+
+	// Fetch watchlist items belonging to the watchlist
+	query := `
+		SELECT 
+			wi.id, wi.watchlist_id, wi.movie_id, wi.checkmarked, wi.created_at, wi.updated_at,
+			m.original_title, m.overview, m.tagline, m.release_date, m.poster_path, m.backdrop_path, m.runtime, m.adult,
+			m.budget, m.revenue, m.rating, m.votes, m.created_at AS movie_created_at, m.updated_at AS movie_updated_at
+		FROM watchlist_item wi
+		JOIN movie m ON wi.movie_id = m.id
+		JOIN watchlist w ON wi.watchlist_id = w.id
+		WHERE wi.watchlist_id = $1
+	`
+
+    rows, err := db.QueryContext(ctx, query, watchlistID)
+    if err != nil {
+        return nil, "", "", err
+    }
+    defer rows.Close()
+
+	var watchlistItemsWithMovies []*models.WatchlistItemWithMovie
+	for rows.Next() {
+		var watchlistItemWithMovie models.WatchlistItemWithMovie
+		err := rows.Scan(
+			&watchlistItemWithMovie.ID,
+			&watchlistItemWithMovie.WatchlistID,
+			&watchlistItemWithMovie.MovieID,
+			&watchlistItemWithMovie.Checkmarked,
+			&watchlistItemWithMovie.CreatedAt,
+			&watchlistItemWithMovie.UpdatedAt,
+			&watchlistItemWithMovie.OriginalTitle,
+			&watchlistItemWithMovie.Overview,
+			&watchlistItemWithMovie.Tagline,
+			&watchlistItemWithMovie.ReleaseDate,
+			&watchlistItemWithMovie.PosterPath,
+			&watchlistItemWithMovie.BackdropPath,
+			&watchlistItemWithMovie.Runtime,
+			&watchlistItemWithMovie.Adult,
+			&watchlistItemWithMovie.Budget,
+			&watchlistItemWithMovie.Revenue,
+			&watchlistItemWithMovie.Rating,
+			&watchlistItemWithMovie.Votes,
+			&watchlistItemWithMovie.MovieCreatedAt,
+			&watchlistItemWithMovie.MovieUpdatedAt,
+		)
+
+        if err != nil {
+            return nil, "", "", err
+        }
+		watchlistItemsWithMovies = append(watchlistItemsWithMovies, &watchlistItemWithMovie)
+	}
+    return watchlistItemsWithMovies, watchlistName, watchlistDescription, nil
+}
+
+/*
+// Fetches all watchlist items + the associated movie data only
 func (c *WatchlistItemService) GetAllWatchlistItemsWithMoviesByWatchListID(watchlistID int) ([]*models.WatchlistItemWithMovie, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -99,6 +164,7 @@ func (c *WatchlistItemService) GetAllWatchlistItemsWithMoviesByWatchListID(watch
 	}
 	return watchlistItemsWithMovies, nil
 }
+*/
 
 // Creates a watchlist_item with a movie_id with the watchlist ID it belongs to
 func (c *WatchlistItemService) CreateWatchlistItemByWatchlistID(watchlistItem models.WatchlistItem) (*models.WatchlistItem, error) {

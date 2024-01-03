@@ -15,7 +15,7 @@ import (
 )
 
 var watchlistItem services.WatchlistItemService
-
+/* testing purposes only 
 // GET/watchlist-items?watchlistID={watchlistID} -- only returns the movie_id within each watchlist-item -- testing purposes only
 func GetAllWatchlistItemsByWatchListID(w http.ResponseWriter, r *http.Request) {
     watchlistID := r.URL.Query().Get("watchlistID")
@@ -61,8 +61,10 @@ func GetAllWatchlistItemsByWatchListID(w http.ResponseWriter, r *http.Request) {
 	}
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlist-items": all})
 }
+*/
 
-// GET/watchlist-items-with-movies?watchlistID={watchlistID} -- returns full movie_data for each watchlist-item
+// GET/watchlist-items-with-movies?watchlistID={watchlistID} 
+// -- returns watchlist title and description + full movie_data for each watchlist-item
 func GetAllWatchlistItemsWithMoviesByWatchListID(w http.ResponseWriter, r *http.Request) {
     watchlistID := r.URL.Query().Get("watchlistID")
 
@@ -114,7 +116,7 @@ func GetAllWatchlistItemsWithMoviesByWatchListID(w http.ResponseWriter, r *http.
     }
 
 	// Make service function call
-	all, err := watchlistItem.GetAllWatchlistItemsWithMoviesByWatchListID(watchlistIDInt)
+	watchlistItemsArray, watchlistName, watchlistDescription, err := watchlistItem.GetWatchListWithWatchlistItemsByWatchListID(watchlistIDInt)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		helpers.ErrorJSON(w, err, http.StatusBadRequest)
@@ -122,12 +124,13 @@ func GetAllWatchlistItemsWithMoviesByWatchListID(w http.ResponseWriter, r *http.
 	}
 
 	// Watchlist may have no items. Services will return "null"
-	if all == nil {
+	if watchlistItemsArray == nil {
 		helpers.MessageLogs.ErrorLog.Println("Watchlist has no watchlist_items")
-		helpers.WriteJSON(w, http.StatusNoContent, helpers.Envelope{})
+		helpers.WriteJSON(w, http.StatusNoContent, helpers.Envelope{ "name": watchlistName, "description": watchlistDescription })
 		return
 	}
-	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlist-items": all})
+	
+	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlist-items": watchlistItemsArray, "name": watchlistName, "description": watchlistDescription })
 }
 
 // POST/watchlist-item
