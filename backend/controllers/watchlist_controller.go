@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/kevinpista/my-flick-list/backend/helpers"
@@ -151,4 +152,79 @@ func DeleteWatchlistByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"message": "Watchlist deleted successfully"})
+}
+
+func UpdateWatchlistNameByID(w http.ResponseWriter, r *http.Request) {
+	// New watchlist name passed through JSON body. Decode
+	var watchlistData services.WatchlistService
+
+	err := json.NewDecoder(r.Body).Decode(&watchlistData.Watchlist)
+	helpers.MessageLogs.ErrorLog.Println(watchlistData.Watchlist.Name) // internal log
+    if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err) // internal log
+		helpers.ErrorJSON(w, errors.New(error_constants.BadRequest), http.StatusBadRequest) // external frontend
+        return
+    }
+	
+	// Trim any trailing white space
+	watchlistData.Watchlist.Name = strings.TrimSpace(watchlistData.Watchlist.Name)
+
+	if watchlistData.Watchlist.Name == "" {
+        helpers.MessageLogs.ErrorLog.Println("empty name field")
+        helpers.ErrorJSON(w, errors.New(error_constants.InvalidName), http.StatusBadRequest)
+        return
+    }
+
+	watchlistID := r.URL.Query().Get("id")
+	// Check if 'id' is provided in the URL param
+	if watchlistID == "" {
+		helpers.MessageLogs.ErrorLog.Println("id not provided for PATCH request")
+		http.Error(w, "id parameter is missing", http.StatusBadRequest)
+		return
+	}
+
+	// Check if URL param is an integer
+	watchlistIDInt, err := strconv.Atoi(watchlistID)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, errors.New("id parameter must be an integer"), http.StatusBadRequest)
+		return
+	}
+
+	// Get userID from JWT token
+	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
+	if tokenErr != nil {
+		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized)
+		return
+	}
+
+	// Get user_id via the watchlist_id
+	watchlistOwnerID, err := watchlist.GetWatchlistOwnerUserID(watchlistIDInt)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+
+	// Compare watchlistOwnerID vs jwt user_id
+    if userID != watchlistOwnerID {
+        helpers.MessageLogs.ErrorLog.Println("User is not the owner of the watchlist")
+        helpers.ErrorJSON(w, errors.New(error_constants.UnauthorizedRequest), http.StatusUnauthorized)
+        return
+	}
+
+	// Service function call to update watchlist name
+	watchlist, err := watchlist.UpdateWatchlistName(watchlistIDInt, watchlistData.Watchlist)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			helpers.MessageLogs.ErrorLog.Println("Watchlist does not exist")
+			helpers.ErrorJSON(w, errors.New("watchlist does not exist"), http.StatusBadRequest)
+		} else {
+			helpers.MessageLogs.ErrorLog.Println(err)
+			helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		}
+		return
+	}
+
+	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"name": watchlist.Name}) // return name only
 }

@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/kevinpista/my-flick-list/backend/models"
 	"github.com/google/uuid"
+	"github.com/kevinpista/my-flick-list/backend/models"
 )
 
 type WatchlistService struct {
@@ -21,26 +21,26 @@ func (c *WatchlistService) CreateWatchlist(userID uuid.UUID, watchlist models.Wa
 		VALUES ($1, $2, $3, $4, $5) returning id, users_id, name, description, created_at, updated_at
 	`
 	var insertedWatchlist models.Watchlist
-    queryErr := db.QueryRowContext(
-        ctx,
-        query,
-        userID,
-        watchlist.Name,
-        watchlist.Description,
-        time.Now(),
-        time.Now(),
-    ).Scan(
+	queryErr := db.QueryRowContext(
+		ctx,
+		query,
+		userID,
+		watchlist.Name,
+		watchlist.Description,
+		time.Now(),
+		time.Now(),
+	).Scan(
 		&insertedWatchlist.ID,
-        &insertedWatchlist.UserID,
-        &insertedWatchlist.Name,
-        &insertedWatchlist.Description,
-        &insertedWatchlist.CreatedAt,
-        &insertedWatchlist.UpdatedAt,
+		&insertedWatchlist.UserID,
+		&insertedWatchlist.Name,
+		&insertedWatchlist.Description,
+		&insertedWatchlist.CreatedAt,
+		&insertedWatchlist.UpdatedAt,
 	)
-    if queryErr != nil {
-        return nil, queryErr
-    }
-	
+	if queryErr != nil {
+		return nil, queryErr
+	}
+
 	return &insertedWatchlist, nil
 }
 
@@ -148,13 +148,13 @@ func (c *WatchlistService) GetWatchlistByID(id int) (*models.Watchlist, error) {
 func (c *WatchlistService) DeleteWatchlistByID(watchlistID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
-	
+
 	// Delete associated watchlist_items first
 	_, err := db.ExecContext(ctx, "DELETE FROM watchlist_item WHERE watchlist_id = $1", watchlistID)
 	if err != nil {
 		return err
 	}
-	
+
 	// Delete watchlist itself
 	_, err = db.ExecContext(ctx, "DELETE FROM watchlist WHERE id = $1", watchlistID)
 	if err != nil {
@@ -177,4 +177,36 @@ func (c *WatchlistService) GetWatchlistOwnerUserID(watchlistID int) (uuid.UUID, 
 	}
 
 	return watchlistOwnerID, nil
+}
+
+// Updates name of Watchlist. Returns the watchlist name for the frontend
+func (c *WatchlistService) UpdateWatchlistName(watchlistID int, watchlist models.Watchlist) (*models.Watchlist, error) {
+	
+	// Update the timestamp for the updated_at field
+	watchlist.UpdatedAt = time.Now()
+	
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `
+		UPDATE watchlist
+		SET name = $1, updated_at = $2
+		WHERE id = $3
+		RETURNING name
+    `
+	var updatedWatchlistName models.Watchlist
+	err := db.QueryRowContext(
+		ctx,
+		query,
+		watchlist.Name,
+		watchlist.UpdatedAt,
+		watchlistID,
+	).Scan(
+		&updatedWatchlistName.Name,
+	) 
+	// populates model's name only
+	if err != nil {
+		return nil, err
+	}
+	return &updatedWatchlistName, nil
 }
