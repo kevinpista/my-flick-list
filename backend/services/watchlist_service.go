@@ -194,7 +194,7 @@ func (c *WatchlistService) UpdateWatchlistName(watchlistID int, watchlist models
 		WHERE id = $3
 		RETURNING name
     `
-	var updatedWatchlistName models.Watchlist
+	var updatedWatchlist models.Watchlist
 	err := db.QueryRowContext(
 		ctx,
 		query,
@@ -202,11 +202,44 @@ func (c *WatchlistService) UpdateWatchlistName(watchlistID int, watchlist models
 		watchlist.UpdatedAt,
 		watchlistID,
 	).Scan(
-		&updatedWatchlistName.Name,
+		&updatedWatchlist.Name,
 	) 
 	// populates model's name only
 	if err != nil {
 		return nil, err
 	}
-	return &updatedWatchlistName, nil
+	return &updatedWatchlist, nil
+}
+
+
+// Updates description of Watchlist. Returns the watchlist description for the frontend
+func (c *WatchlistService) UpdateWatchlistDescription(watchlistID int, watchlist models.Watchlist) (*models.Watchlist, error) {
+	
+	// Update the timestamp for the updated_at field
+	watchlist.UpdatedAt = time.Now()
+	
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `
+		UPDATE watchlist
+		SET description = $1, updated_at = $2
+		WHERE id = $3
+		RETURNING description
+    `
+	var updatedWatchlist models.Watchlist
+	err := db.QueryRowContext(
+		ctx,
+		query,
+		watchlist.Description,
+		watchlist.UpdatedAt,
+		watchlistID,
+	).Scan(
+		&updatedWatchlist.Description,
+	) 
+	// Populates model's description only
+	if err != nil {
+		return nil, err
+	}
+	return &updatedWatchlist, nil
 }

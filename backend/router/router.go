@@ -34,8 +34,10 @@ func Routes() http.Handler {
 	router.Get("/api/watchlist/{id}", controllers.GetWatchlistByID) // GET a specific watchlist by watchlist ID
 	router.Delete("/api/watchlist", controllers.DeleteWatchlistByID) // DELETE watchlist via its id
 	// expects "?id={watchlistID}" query param
-	router.Patch("/api/watchlist", controllers.UpdateWatchlistNameByID) // PATCH a watchlist name
+	router.Patch("/api/watchlist-name", controllers.UpdateWatchlistNameByID) // PATCH a watchlist name
 	// expects "?id={watchlistID}" query param + new name in the json body
+	router.Patch("/api/watchlist-description", controllers.UpdateWatchlistDescriptionByID) // PATCH watchlist description
+	// expects "?id={watchlistID}" query param + new description in the json body"
 
 	// Watchlist-items resources
 	router.Post("/api/watchlist-item", controllers.CreateWatchlistItemByWatchlistID) // POST create a watchlist item for a specific watchlist
