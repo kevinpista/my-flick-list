@@ -19,9 +19,9 @@ var jwtSecret = []byte("custom_secret_key_change_later")
 
 // Generate a new JWT token
 func GenerateToken(userID uuid.UUID) (string, error) {
-    // Token expires in 24 hours of the jwt.NumericDate type
+    // Token expires in 72 hours of the jwt.NumericDate type
     expTime := &jwt.NumericDate{
-       Time: time.Now().Add(time.Hour * 24),
+       Time: time.Now().Add(time.Hour * 72),
     }
     
     claims := &Claims{
