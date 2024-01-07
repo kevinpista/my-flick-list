@@ -83,6 +83,22 @@ func CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Checks for empty or invalid names + descriptions & trim trailing space
+
+	watchlistData.Watchlist.Name = strings.TrimSpace(watchlistData.Watchlist.Name)
+	if watchlistData.Watchlist.Name == "" {
+		helpers.MessageLogs.ErrorLog.Println("empty watchlist name field")
+		helpers.ErrorJSON(w, errors.New("watchlist name cannot be empty"), http.StatusBadRequest)
+		return
+	}
+
+	watchlistData.Watchlist.Description = strings.TrimSpace(watchlistData.Watchlist.Description)
+	if watchlistData.Watchlist.Description == "" {
+		helpers.MessageLogs.ErrorLog.Println("empty watchlist description field")
+		helpers.ErrorJSON(w, errors.New("watchlist description cannot be empty"), http.StatusBadRequest)
+		return
+	}
+
 	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
 	if tokenErr != nil {
 		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized) // tokenErr will be a errors.New(error_constants) object
