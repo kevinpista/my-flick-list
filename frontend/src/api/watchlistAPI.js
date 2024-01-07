@@ -147,3 +147,44 @@ export function deleteWatchlist (watchlistID) {
             }
         });
     }
+
+// router.Patch("/api/watchlist-name", controllers.UpdateWatchlistNameByID) // PATCH a watchlist name
+// expects "?id={watchlistID}" query param + new name in the json body
+export function editWatchlistName (watchlistID, newWatchlistName) {
+    // Fetch the user's stored JWT token from cookies
+    const token = getJwtTokenFromCookies();
+    if (!token) {
+        console.error('Token not available or expired');
+        // For now, will use a Promise.reject method instead of redirect
+        return Promise.reject('Token not available or expired');
+        }
+
+    const headers = {
+        Authorization: `Bearer ${token}`,
+    };
+    const url = 'http://localhost:8080/api/watchlist-name';
+    const params = {
+        id: watchlistID,
+    };
+    const data = {
+        'name': newWatchlistName,
+    };
+
+    return axios.patch(url, data, {headers, params})
+        .then(response => {
+            return response.data; // Returning { 'name': 'new name here' } to component
+        })
+        .catch(error => { // Will catch any error thrown by extractToken
+            if (error.response) {
+                const errorMessage = error.response.data.message;
+                console.error('Error:', errorMessage);
+                throw new Error(errorMessage);
+            } else { 
+                console.error('Network or other error:', error); 
+                throw error;
+            }
+        });
+    }
+
+
+    

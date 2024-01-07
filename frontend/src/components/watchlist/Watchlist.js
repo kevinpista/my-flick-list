@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from '@mui/material';
 import NavBar from '../NavBar.js';
 import '../../css/Watchlist.css';
-import { fetchWatchlistAndItems } from '../../api/watchlistAPI.js'
+import { fetchWatchlistAndItems, editWatchlistName } from '../../api/watchlistAPI.js'
 import * as errorConstants from '../../api/errorConstants';
 import axios from 'axios';
 import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
@@ -88,29 +88,22 @@ const handleEditNameDialogClose = () => {
 
 const handleEditNameDialogSubmit = async () => {
   try {
-    const token = getJwtTokenFromCookies();
-    if (!token) {
-      console.error('Token not available or expired');
-      return Promise.reject('Token not available or expired');
+    const response = await editWatchlistName(watchlistID, newWatchlistName);
+    if (response) {
+      setWatchlistName(response.name);
+      setEditNameDialogOpen(false);
     }
-
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-
-    const response = await axios.patch(
-      `http://localhost:8080/api/watchlist-name?id=${watchlistID}`,
-      { name: newWatchlistName },
-      { headers }
-    );
-
-    setWatchlistName(response.data.name);
-    setEditNameDialogOpen(false);
-
   } catch (error) {
-    console.error('Error updating watchlist name:', error);
-    setDialogErrorMessage(`Error updating watchlist name: ${error.message}`);
-  }
+    if (error.message === errorConstants.ERROR_INVALID_NAME) {
+      setDialogErrorMessage('Error: Name cannot be empty.');
+    } else if (error.message === errorConstants.ERROR_BAD_REQUEST) {
+      setDialogErrorMessage('Eror: Bad request. Please try again.');
+    } else {
+      console.log(error)
+      console.log(error.message)
+      setDialogErrorMessage('An unexpected error occurred. Please wait and try again.');
+    }
+  };
 };
 
   return (
@@ -141,7 +134,7 @@ const handleEditNameDialogSubmit = async () => {
         <DialogTitle>Edit Watchlist Name</DialogTitle>
         <DialogContent>
           <TextField
-            autofocus
+            autoFocus
             label="New Watchlist Name"
             value={newWatchlistName}
             onChange={(e) => setNewWatchlistName(e.target.value)}
