@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from '@mui/material';
 import NavBar from '../NavBar.js';
 import '../../css/Watchlist.css';
-import { fetchWatchlistAndItems, editWatchlistName } from '../../api/watchlistAPI.js'
+import { fetchWatchlistAndItems, editWatchlistName, editWatchlistDescription } from '../../api/watchlistAPI.js'
 import * as errorConstants from '../../api/errorConstants';
 import axios from 'axios';
 import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
@@ -23,7 +23,9 @@ const Watchlist = () => {
   const [watchlistItems, setWatchlistItems] = useState(null); // In JSON object format
   const [error, setError] = useState(null);
 
+  // Dialog forms to edit name & description
   const [isEditNameDialogOpen, setEditNameDialogOpen] = useState(false);
+  const [isEditDescriptionDialogOpen, setEditDescriptionDialogOpen] = useState(false);
   const [newWatchlistName, setNewWatchlistName] = useState('');
   const [newWatchlistDescription, setNewWatchlistDescription] = useState('');
   const [dialogErrorMessage, setDialogErrorMessage] = useState(''); // Use 1 for both Name & Description edits 
@@ -77,6 +79,7 @@ const handleDeleteWatchlistItem = async (watchlistItemId) => {
   }
 };
 
+// Handle Edit Watchlist Name
 const handleEditNameButtonClick = () => {
   setEditNameDialogOpen(true);
 };
@@ -97,11 +100,37 @@ const handleEditNameDialogSubmit = async () => {
     if (error.message === errorConstants.ERROR_INVALID_NAME) {
       setDialogErrorMessage('Error: Name cannot be empty.');
     } else if (error.message === errorConstants.ERROR_BAD_REQUEST) {
-      setDialogErrorMessage('Eror: Bad request. Please try again.');
+      setDialogErrorMessage('Error: Bad request. Please try again.');
     } else {
-      console.log(error)
-      console.log(error.message)
-      setDialogErrorMessage('An unexpected error occurred. Please wait and try again.');
+      setDialogErrorMessage(`Error updating watchlist name: ${error.message}`);
+    }
+  };
+};
+
+// Handle Edit Watchlist Description
+const handleEditDescriptionButtonClick = () => {
+  setEditDescriptionDialogOpen(true);
+};
+
+const handleEditDescriptionDialogClose = () => {
+  setEditDescriptionDialogOpen(false);
+  setDialogErrorMessage(''); // Clear error message when the dialog is closed
+};
+
+const handleEditDescriptionDialogSubmit = async () => {
+  try {
+    const response = await editWatchlistDescription(watchlistID, newWatchlistDescription);
+    if (response) {
+      setWatchlistDescription(response.description);
+      setEditDescriptionDialogOpen(false);
+    }
+  } catch (error) {
+    if (error.message === errorConstants.ERROR_INVALID_NAME) {
+      setDialogErrorMessage('Error: Description cannot be empty.');
+    } else if (error.message === errorConstants.ERROR_BAD_REQUEST) {
+      setDialogErrorMessage('Error: Bad request. Please try again.');
+    } else {
+      setDialogErrorMessage(`Error updating watchlist description: ${error.message}`);
     }
   };
 };
@@ -114,6 +143,9 @@ const handleEditNameDialogSubmit = async () => {
           <h1 className="watchlist-name">{watchlistName}</h1>
           <Button variant="outlined" onClick={handleEditNameButtonClick}>
             Edit Watchlist Name
+          </Button>
+          <Button variant="outlined" onClick={handleEditDescriptionButtonClick}>
+            Edit Description
           </Button>
         </div>
         <p className="watchlist-description">{watchlistDescription}</p>
@@ -135,7 +167,7 @@ const handleEditNameDialogSubmit = async () => {
         <DialogContent>
           <TextField
             autoFocus
-            label="New Watchlist Name"
+            label="Enter new name."
             value={newWatchlistName}
             onChange={(e) => setNewWatchlistName(e.target.value)}
             fullWidth
@@ -151,6 +183,31 @@ const handleEditNameDialogSubmit = async () => {
         <DialogActions>
           <Button onClick={handleEditNameDialogClose}>Cancel</Button>
           <Button onClick={handleEditNameDialogSubmit}>Submit</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal for editing watchlist description */}
+      <Dialog open={isEditDescriptionDialogOpen} onClose={handleEditDescriptionDialogClose}>
+        <DialogTitle>Edit Watchlist Description</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            label="Enter new description."
+            value={newWatchlistDescription}
+            onChange={(e) => setNewWatchlistDescription(e.target.value)}
+            fullWidth
+            margin="dense"
+            variant="standard"
+          />
+          {dialogErrorMessage && (
+            <Typography color="error" variant="body2">
+              {dialogErrorMessage}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleEditDescriptionDialogClose}>Cancel</Button>
+          <Button onClick={handleEditDescriptionDialogSubmit}>Submit</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

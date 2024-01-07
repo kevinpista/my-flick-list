@@ -187,4 +187,40 @@ export function editWatchlistName (watchlistID, newWatchlistName) {
     }
 
 
-    
+// router.Patch("/api/watchlist-description", controllers.UpdateWatchlistDescriptionByID) // PATCH watchlist description
+// expects "?id={watchlistID}" query param + new description in the json body"
+export function editWatchlistDescription (watchlistID, newWatchlistDescription) {
+    // Fetch the user's stored JWT token from cookies
+    const token = getJwtTokenFromCookies();
+    if (!token) {
+        console.error('Token not available or expired');
+        // For now, will use a Promise.reject method instead of redirect
+        return Promise.reject('Token not available or expired');
+        }
+
+    const headers = {
+        Authorization: `Bearer ${token}`,
+    };
+    const url = 'http://localhost:8080/api/watchlist-description';
+    const params = {
+        id: watchlistID,
+    };
+    const data = {
+        'description': newWatchlistDescription,
+    };
+
+    return axios.patch(url, data, {headers, params})
+        .then(response => {
+            return response.data; // Returning { 'description': 'new description here' } to component
+        })
+        .catch(error => { // Will catch any error thrown by extractToken
+            if (error.response) {
+                const errorMessage = error.response.data.message;
+                console.error('Error:', errorMessage);
+                throw new Error(errorMessage);
+            } else { 
+                console.error('Network or other error:', error); 
+                throw error;
+            }
+        });
+    }
