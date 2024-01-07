@@ -65,7 +65,7 @@ func GetAllWatchlistItemsByWatchListID(w http.ResponseWriter, r *http.Request) {
 
 // GET/watchlist-items-with-movies?watchlistID={watchlistID} 
 // -- returns watchlist title and description + full movie_data for each watchlist-item
-func GetAllWatchlistItemsWithMoviesByWatchListID(w http.ResponseWriter, r *http.Request) {
+func GetAllWatchlistItemsWithMoviesByWatchlistID(w http.ResponseWriter, r *http.Request) {
     watchlistID := r.URL.Query().Get("watchlistID")
 
 	// Check if watchlistID is empty or not provided in the URL
@@ -123,10 +123,10 @@ func GetAllWatchlistItemsWithMoviesByWatchListID(w http.ResponseWriter, r *http.
 		return
 	}
 
-	// Watchlist may have no items. Services will return "null"
+	// Watchlist may have no items. Services will return "null". Frontend will handle alert message if null is detected.
 	if watchlistItemsArray == nil {
 		helpers.MessageLogs.ErrorLog.Println("Watchlist has no watchlist_items")
-		helpers.WriteJSON(w, http.StatusNoContent, helpers.Envelope{ "name": watchlistName, "description": watchlistDescription })
+		helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{ "watchlist-items": watchlistItemsArray, "name": watchlistName, "description": watchlistDescription })
 		return
 	}
 	
