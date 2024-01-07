@@ -22,3 +22,17 @@
     border-radius: 10px;
     margin-top: 20px;
 }
+
+  .watchlist-root {
+    display: flex;
+    gap: 5px; /* Gap between buttons table & container */
+    align-items: flex-start; /* Align items at the(top) of the flex  div */
+  }
+  
+  .watchlist-buttons-table {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Gap between buttons */
+    justify-content: center; /* Center items vertically within the table */
+    margin: auto; /* Center the container horizontally within parent */
+  }

@@ -38,9 +38,16 @@ const Watchlist = () => {
     const fetchData = async () => {
       try {
         const response = await fetchWatchlistAndItems(watchlistID);
-        setWatchlistItems(response);
-        setWatchlistName(response['name']);
-        setWatchlistDescription(response['description']);
+        // Still want to render Name + Description if there are no items added yet
+        if (response['watchlist-items'] === null) {
+          setWatchlistName(response['name']);
+          setWatchlistDescription(response['description']);
+          setError(Error("You have not added any movies yet."));
+        } else {
+          setWatchlistItems(response);
+          setWatchlistName(response['name']);
+          setWatchlistDescription(response['description']);
+        }
       } catch (error) {
         setError(error);
         if (error.message === errorConstants.ERROR_BAD_REQUEST) {
@@ -142,19 +149,15 @@ const handleEditDescriptionDialogSubmit = async () => {
     <ThemeProvider theme={muiTheme}>
     <React.Fragment>
       <NavBar />
+      <div className="watchlist-root">
       <Container maxWidth={"xl"} className="watchlist-item-grid-container">
         <div className="watchlist-name-div">
           <h1 className="watchlist-name">{watchlistName}</h1>
-          <Button variant="contained" onClick={handleEditNameButtonClick}>
-            Edit Watchlist Name
-          </Button>
-          <Button variant="contained" onClick={handleEditDescriptionButtonClick}>
-            Edit Description
-          </Button>
         </div>
+
         <p className="watchlist-description">{watchlistDescription}</p>
         {error ? (
-          <h1 className='error'><u>Error:</u> {error.message}</h1>
+          <h1 className='error'><u>Heads Up:</u> {error.message}</h1>
         ) : (
           watchlistItems && (
           <WatchlistItemsTable 
@@ -165,6 +168,15 @@ const handleEditDescriptionDialogSubmit = async () => {
           )
         )}
       </Container>
+      <div className="watchlist-buttons-table">
+        <Button variant="contained" onClick={handleEditNameButtonClick}>
+          Edit Watchlist Name
+        </Button>
+        <Button variant="contained" onClick={handleEditDescriptionButtonClick}>
+          Edit Description
+        </Button>
+        </div>
+      </div>
       {/* Modal for editing watchlist name */}
       <Dialog
         open={isEditNameDialogOpen}

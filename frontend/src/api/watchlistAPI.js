@@ -26,10 +26,7 @@ export function fetchWatchlistAndItems (watchlistID) {
         },
       })
         .then(response => {
-            if (response.status === 204) {
-                throw new Error('You haven\'t added any movies to this watchlist yet.');
-              }
-            return response.data; // Returning watchlist item's movie data
+            return response.data; // Returning watchlist item's movie data + watchlist name & description
         })
         .catch(error => { // Will catch any error thrown by extractToken
             if (error.response) {
