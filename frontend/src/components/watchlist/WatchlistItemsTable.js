@@ -187,6 +187,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
         disableMultipleRowSelection={true}
         getRowId={getRowId}
         rowHeight={rowHeight}
+        hideFooterPagination
       />
       {/* Confirmation Dialog for Deletion */}
       <Dialog
