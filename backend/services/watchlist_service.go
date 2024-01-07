@@ -13,7 +13,8 @@ type WatchlistService struct {
 	Watchlist models.Watchlist
 }
 
-func (c *WatchlistService) CreateWatchlist(userID uuid.UUID, watchlist models.Watchlist) (*models.Watchlist, error) {
+// Create watchlist. Returns error if failure to create.
+func (c *WatchlistService) CreateWatchlist(userID uuid.UUID, watchlist models.Watchlist) (error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	query := `
@@ -38,10 +39,10 @@ func (c *WatchlistService) CreateWatchlist(userID uuid.UUID, watchlist models.Wa
 		&insertedWatchlist.UpdatedAt,
 	)
 	if queryErr != nil {
-		return nil, queryErr
+		return queryErr
 	}
 
-	return &insertedWatchlist, nil
+	return nil
 }
 
 func (c *WatchlistService) GetAllWatchlists() ([]*models.Watchlist, error) {

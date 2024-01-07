@@ -105,13 +105,13 @@ func CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	watchlistCreated, err := watchlist.CreateWatchlist(userID, watchlistData.Watchlist)
-	if err != nil {
+	queryErr := watchlist.CreateWatchlist(userID, watchlistData.Watchlist)
+	if queryErr != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		helpers.ErrorJSON(w, errors.New(error_constants.BadRequest), http.StatusBadRequest)
 		return
 	}
-	helpers.WriteJSON(w, http.StatusOK, watchlistCreated)
+	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"message": "Watchlist created successfully!"})
 }
 
 // DELETE /watchlist?id={watchlistID}
