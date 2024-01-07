@@ -10,6 +10,9 @@ import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
 
 import WatchlistItemsTable from './WatchlistItemsTable';
 
+import { ThemeProvider } from '@mui/material/styles';
+import {muiTheme} from '../../css/MuiThemeProvider.js';
+
 // TODO - if "error" is thrown relating to no movies in watchlist yet, still display
 // the title and description, have message displayed, but include movie search bar for the user
 
@@ -136,15 +139,16 @@ const handleEditDescriptionDialogSubmit = async () => {
 };
 
   return (
+    <ThemeProvider theme={muiTheme}>
     <React.Fragment>
       <NavBar />
       <Container maxWidth={"xl"} className="watchlist-item-grid-container">
         <div className="watchlist-name-div">
           <h1 className="watchlist-name">{watchlistName}</h1>
-          <Button variant="outlined" onClick={handleEditNameButtonClick}>
+          <Button variant="contained" onClick={handleEditNameButtonClick}>
             Edit Watchlist Name
           </Button>
-          <Button variant="outlined" onClick={handleEditDescriptionButtonClick}>
+          <Button variant="contained" onClick={handleEditDescriptionButtonClick}>
             Edit Description
           </Button>
         </div>
@@ -162,14 +166,20 @@ const handleEditDescriptionDialogSubmit = async () => {
         )}
       </Container>
       {/* Modal for editing watchlist name */}
-      <Dialog open={isEditNameDialogOpen} onClose={handleEditNameDialogClose}>
+      <Dialog
+        open={isEditNameDialogOpen}
+        onClose={handleEditNameDialogClose}
+        maxWidth="md"
+        fullWidth={true}
+      >
         <DialogTitle>Edit Watchlist Name</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
-            label="Enter new name."
+            label="Enter new name..."
             value={newWatchlistName}
             onChange={(e) => setNewWatchlistName(e.target.value)}
+            multiline
             fullWidth
             margin="dense"
             variant="standard"
@@ -181,21 +191,28 @@ const handleEditDescriptionDialogSubmit = async () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleEditNameDialogClose}>Cancel</Button>
-          <Button onClick={handleEditNameDialogSubmit}>Submit</Button>
+          <Button variant="contained" onClick={handleEditNameDialogClose}>Cancel</Button>
+          <Button variant="contained" onClick={handleEditNameDialogSubmit}>Submit</Button>
         </DialogActions>
       </Dialog>
 
       {/* Modal for editing watchlist description */}
-      <Dialog open={isEditDescriptionDialogOpen} onClose={handleEditDescriptionDialogClose}>
+      <Dialog 
+        open={isEditDescriptionDialogOpen}
+        onClose={handleEditDescriptionDialogClose}
+        maxWidth="lg"
+        fullWidth={true}
+      >
         <DialogTitle>Edit Watchlist Description</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
-            label="Enter new description."
+            label="Enter new description..."
             value={newWatchlistDescription}
             onChange={(e) => setNewWatchlistDescription(e.target.value)}
-            fullWidth
+            multiline
+            maxWidth="lg"
+            fullWidth={true}
             margin="dense"
             variant="standard"
           />
@@ -206,11 +223,12 @@ const handleEditDescriptionDialogSubmit = async () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleEditDescriptionDialogClose}>Cancel</Button>
-          <Button onClick={handleEditDescriptionDialogSubmit}>Submit</Button>
+          <Button variant="contained" onClick={handleEditDescriptionDialogClose}>Cancel</Button>
+          <Button variant="contained" onClick={handleEditDescriptionDialogSubmit}>Submit</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
+    </ThemeProvider>
   );
 };
 
