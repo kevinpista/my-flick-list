@@ -174,8 +174,8 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseConfirmation}>Cancel</Button>
-          <Button onClick={() => handleConfirmDelete(deleteWatchlistId)} autoFocus>
+          <Button variant="contained" onClick={handleCloseConfirmation}>Cancel</Button>
+          <Button variant="contained" onClick={() => handleConfirmDelete(deleteWatchlistId)} autoFocus>
             Confirm
           </Button>
         </DialogActions>

@@ -111,7 +111,7 @@ export function fetchWatchlistsAPI () {
 
 
 // 	router.DELETE("/api/watchlist?id={watchlistID}", controllers.DeleteWatchlistByID) // DELETE watchlist via its id
-export function deleteWatchlist (watchlistID) {
+export function deleteWatchlistAPI (watchlistID) {
     // Fetch the user's stored JWT token from cookies
     const token = getJwtTokenFromCookies();
     if (!token) {
@@ -124,14 +124,14 @@ export function deleteWatchlist (watchlistID) {
         Authorization: `Bearer ${token}`,
     };
     
-    return axios.delete('http://localhost:8080/api/watchlist-item', {
+    return axios.delete('http://localhost:8080/api/watchlist', {
         headers, 
         params: {
             id: watchlistID,
         },
         })
         .then(response => {
-            return response.data; // Returning success message "mesage: Watchlist deleted successfully"
+            return response.data; // Returning message of { 'message': 'Watchlist deleted successfully'}
         })
         .catch(error => { // Will catch any error thrown by extractToken
             if (error.response) {
@@ -236,7 +236,7 @@ export function createWatchlistAPI(newWatchlistName, newWatchlistDescription) {
     const headers = {
         Authorization: `Bearer ${token}`,
     };
-    const url = 'http://localhost:8080/api/watchlists';
+    const url = 'http://localhost:8080/api/watchlist';
 
     const data = {
         'name': newWatchlistName,

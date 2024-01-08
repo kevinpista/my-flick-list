@@ -2,10 +2,8 @@ import React, { useState, useEffect} from 'react';
 import { Container, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from '@mui/material';
 import NavBar from '../NavBar.js';
 import '../../css/Watchlist.css';
-import { fetchWatchlistsAPI, createWatchlistAPI } from '../../api/watchlistAPI.js'
+import { fetchWatchlistsAPI, createWatchlistAPI, deleteWatchlistAPI } from '../../api/watchlistAPI.js'
 import * as errorConstants from '../../api/errorConstants';
-import axios from 'axios';
-import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
 
 import ListOfWatchlistsTable from './ListOfWatchlistsTable.js';
 import { ThemeProvider } from '@mui/material/styles';
@@ -43,33 +41,33 @@ const ListOfWatchlists = () => {
     fetchData();
 }, []);
 
-const handleDeleteWatchlist = async (WatchlistId) => {
+// deleteWatchlistAPI Call
+const handleDeleteWatchlist = async (watchlistID) => {
   try {
-    const token = getJwtTokenFromCookies();
-    if (!token) {
-      console.error('Token not available or expired');
-      // For now, will use a Promise.reject method instead of redirect
-      return Promise.reject('Token not available or expired');
-    }
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };    
+    const response = await deleteWatchlistAPI(watchlistID);
+    if (response) {
+      console.log(response.message);
 
-    await axios.delete(`http://localhost:8080/api/watchlist?id=${WatchlistId}`, { headers });
-    // Update the watchlist in the state after a deletion
-    setWatchlistData((prevItems) => {
-      const currentItems = prevItems && prevItems['watchlists']; // Extract the array from the object
-      const updatedItems = Array.isArray(currentItems)
-        ? currentItems.filter((watchlist) => watchlist.id !== WatchlistId) // Re-render all watchlists not equal to the watchlistID that was deleted
-        : [];
-      return { 'watchlists': updatedItems }; // Maintain JSON object structure
-    });
+      // Update list of watchlists table
+      setWatchlistData((prevItems) => {
+        const currentItems = prevItems && prevItems['watchlists']; // Extract the array from the object
+        const updatedItems = Array.isArray(currentItems)
+          ? currentItems.filter((watchlist) => watchlist.id !== watchlistID) // Re-render all watchlists not equal to the watchlistID that was deleted
+          : [];
+        return { 'watchlists': updatedItems }; // Maintain JSON object structure
+      });
+    }
+
   } catch (error) {
-    console.error('Error deleting watchlist:', error);
-  }
- console.log("test")
+    if (error.message === errorConstants.ERROR_BAD_REQUEST) {
+      console.error('Bad request:', error);
+    } else {
+      console.error('An unexpected error occured');
+    }
+  };
 };
 
+// Handle Create Watchlist
 const handleCreateWatchlistButtonClick = () => {
   setCreateWatchlistDialogOpen(true);
 };
@@ -79,7 +77,7 @@ const handleCreateWatchlistButtonClose = () => {
   setDialogErrorMessage(''); // Clear error message when the dialog is closed
 };
 
-// API Call
+// createWatchlistAPI Call
 const handleCreateWatchlistDialogSubmit = async () => {
   try {
     const response = await createWatchlistAPI(newWatchlistName, newWatchlistDescription);
