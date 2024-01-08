@@ -1,5 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import { Container, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
 import NavBar from '../NavBar.js';
 import '../../css/Watchlist.css';
 import { fetchWatchlistsAPI, createWatchlistAPI, deleteWatchlistAPI } from '../../api/watchlistAPI.js'
@@ -142,6 +143,16 @@ const handleCreateWatchlistDialogSubmit = async () => {
           fullWidth
           margin="dense"
           variant="standard"
+          // Display character limit and changes text to red if user goes over limit
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+              <span style={{ color: newWatchlistName.length > 60 ? 'red' : 'inherit' }}>
+                {newWatchlistName.length}/{60}
+              </span>
+            </InputAdornment>
+            ),
+          }}
         />
         <TextField
           autoFocus
@@ -153,6 +164,16 @@ const handleCreateWatchlistDialogSubmit = async () => {
           fullWidth
           margin="dense"
           variant="standard"
+          // Display character limit and changes text to red if user goes over limit
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+              <span style={{ color: newWatchlistDescription.length > 500 ? 'red' : 'inherit' }}>
+                {newWatchlistDescription.length}/{500}
+              </span>
+            </InputAdornment>
+            ),
+          }}
         />
         {dialogErrorMessage && (
           <Typography color="error" variant="body2">
@@ -161,8 +182,20 @@ const handleCreateWatchlistDialogSubmit = async () => {
         )}
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" onClick={handleCreateWatchlistButtonClose}>Exit</Button>
-        <Button variant="contained" onClick={handleCreateWatchlistDialogSubmit}>Create</Button>
+        <Button variant="contained" onClick={handleCreateWatchlistButtonClose}>
+          Exit</Button>
+
+        <Button 
+        variant="contained"
+        onClick={handleCreateWatchlistDialogSubmit}
+        disabled={
+          newWatchlistName.length > 60 || // Character limit for watchlist name
+          newWatchlistDescription.length > 500 // Character limit for watchlist description
+        }
+        >
+          Create
+        </Button>
+
       </DialogActions>
     </Dialog>
 
