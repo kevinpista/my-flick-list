@@ -2,7 +2,7 @@ import React, { useState, useEffect} from 'react';
 import { Container, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from '@mui/material';
 import NavBar from '../NavBar.js';
 import '../../css/Watchlist.css';
-import { fetchWatchlists } from '../../api/watchlistAPI.js'
+import { fetchWatchlistsAPI, createWatchlistAPI } from '../../api/watchlistAPI.js'
 import * as errorConstants from '../../api/errorConstants';
 import axios from 'axios';
 import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
@@ -24,27 +24,27 @@ const ListOfWatchlists = () => {
 
   const [dialogErrorMessage, setDialogErrorMessage] = useState('');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetchWatchlists();
-        setWatchlistData(response);
-      } catch (error) {
-        setError(error);
-        if (error.message === errorConstants.ERROR_BAD_REQUEST) {
-          console.log('Bad request');
-      } else {
-        console.log('Unexpected error occured');
-      }
+  const fetchData = async () => {
+    try {
+      const response = await fetchWatchlistsAPI();
+      setWatchlistData(response);
+    } catch (error) {
+      setError(error);
+      if (error.message === errorConstants.ERROR_BAD_REQUEST) {
+        console.log('Bad request');
+    } else {
+      console.log('Unexpected error occured');
     }
-  };
-  
-  fetchData();
+  }
+};
+
+  useEffect(() => {
+    // Call fetchData when component mounts
+    fetchData();
 }, []);
 
 const handleDeleteWatchlist = async (WatchlistId) => {
   try {
-    console.log("delete button hit outer")
     const token = getJwtTokenFromCookies();
     if (!token) {
       console.error('Token not available or expired');
@@ -82,20 +82,24 @@ const handleCreateWatchlistButtonClose = () => {
 // API Call
 const handleCreateWatchlistDialogSubmit = async () => {
   try {
-    console.log("we in");
-    /*
-    const response = await editWatchlistName(watchlistID, newWatchlistName);
+    const response = await createWatchlistAPI(newWatchlistName, newWatchlistDescription);
     if (response) {
-      console.log("Successfully created")
+      // Will consider redirecting user to newly created watchlist. 
+      // For now, will simply refetch watchlist data for user
+
+      // Clear the TextField inputs
+      setNewWatchlistName('');
+      setNewWatchlistDescription('');
+
+      setCreateWatchlistDialogOpen(false);
+      // Trigger fetchData after successful creation
+      fetchData();
     }
-    */
   } catch (error) {
-    if (error.message === errorConstants.ERROR_INVALID_NAME) {
-      setDialogErrorMessage('Error: Name cannot be empty.');
-    } else if (error.message === errorConstants.ERROR_BAD_REQUEST) {
+    if (error.message === errorConstants.ERROR_BAD_REQUEST) {
       setDialogErrorMessage('Error: Bad request. Please try again.');
     } else {
-      setDialogErrorMessage(`Error updating watchlist name: ${error.message}`);
+      setDialogErrorMessage(`Error: ${error.message}`);
     }
   };
 };
@@ -128,14 +132,25 @@ const handleCreateWatchlistDialogSubmit = async () => {
       maxWidth="md"
       fullWidth={true}
     >
-      <DialogTitle>Create a New Watchlist</DialogTitle>
+      <DialogTitle><b>Create a New Watchlist</b></DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
           id="watchlist-name"
-          label="Enter Watchlist Name..."
+          label="Watchlist Name"
           value={newWatchlistName}
           onChange={(e) => setNewWatchlistName(e.target.value)}
+          multiline
+          fullWidth
+          margin="dense"
+          variant="standard"
+        />
+        <TextField
+          autoFocus
+          id="watchlist-description"
+          label="Watchlist Description"
+          value={newWatchlistDescription}
+          onChange={(e) => setNewWatchlistDescription(e.target.value)}
           multiline
           fullWidth
           margin="dense"
@@ -148,8 +163,8 @@ const handleCreateWatchlistDialogSubmit = async () => {
         )}
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" onClick={handleCreateWatchlistButtonClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleCreateWatchlistDialogSubmit}>Submit</Button>
+        <Button variant="contained" onClick={handleCreateWatchlistButtonClose}>Exit</Button>
+        <Button variant="contained" onClick={handleCreateWatchlistDialogSubmit}>Create</Button>
       </DialogActions>
     </Dialog>
 

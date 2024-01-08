@@ -77,7 +77,7 @@ export function deleteWatchlistItem (watchlistItemID) {
 
 // Returns a list of watchlists belonging to a user; via user cookie
 // router.GET("/api/watchlists-by-user-id?id={watchlistID", controllers.GetWatchlistsByUserID)
-export function fetchWatchlists () {
+export function fetchWatchlistsAPI () {
     // Fetch the user's stored JWT token from cookies
     const token = getJwtTokenFromCookies();
     if (!token) {
@@ -209,6 +209,44 @@ export function editWatchlistDescription (watchlistID, newWatchlistDescription) 
     return axios.patch(url, data, {headers, params})
         .then(response => {
             return response.data; // Returning { 'description': 'new description here' } to component
+        })
+        .catch(error => { // Will catch any error thrown by extractToken
+            if (error.response) {
+                const errorMessage = error.response.data.message;
+                console.error('Error:', errorMessage);
+                throw new Error(errorMessage);
+            } else { 
+                console.error('Network or other error:', error); 
+                throw error;
+            }
+        });
+    }
+
+// router.Post("/api/watchlists", controllers.CreateWatchlist)    // POST a watchlist; user_id retrieved from JWT token
+// Watchlist data passed in json body. Returns {message: "Watchlist created successfully!"}.
+export function createWatchlistAPI(newWatchlistName, newWatchlistDescription) {
+    // Fetch the user's stored JWT token from cookies
+    const token = getJwtTokenFromCookies();
+    if (!token) {
+        console.error('Token not available or expired');
+        // For now, will use a Promise.reject method instead of redirect
+        return Promise.reject('Token not available or expired');
+        }
+
+    const headers = {
+        Authorization: `Bearer ${token}`,
+    };
+    const url = 'http://localhost:8080/api/watchlists';
+
+    const data = {
+        'name': newWatchlistName,
+        'description': newWatchlistDescription,
+    };
+
+    return axios.post(url, data, {headers})
+        .then(response => {
+            return response; // Returning to component so it can access status code 200
+            // contains a response.data.message that says "Watchlist created successfully!"
         })
         .catch(error => { // Will catch any error thrown by extractToken
             if (error.response) {

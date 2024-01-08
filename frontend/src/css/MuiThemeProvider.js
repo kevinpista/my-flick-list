@@ -16,5 +16,8 @@ export const muiTheme = createTheme({
         // dark: will be calculated from palette.secondary.main,
         contrastText: '#47008F',
       },
+      typography: {
+        fontFamily: "'Source Sans Pro', Arial, sans-serif",
+      },
     },
   });
