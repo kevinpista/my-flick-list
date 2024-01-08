@@ -1,6 +1,7 @@
 import React, { useState, useEffect} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
 import NavBar from '../NavBar.js';
 import '../../css/Watchlist.css';
 import { fetchWatchlistAndItems, editWatchlistName, editWatchlistDescription } from '../../api/watchlistAPI.js'
@@ -177,6 +178,7 @@ const handleEditDescriptionDialogSubmit = async () => {
         </Button>
         </div>
       </div>
+
       {/* Modal for editing watchlist name */}
       <Dialog
         open={isEditNameDialogOpen}
@@ -195,6 +197,16 @@ const handleEditDescriptionDialogSubmit = async () => {
             fullWidth
             margin="dense"
             variant="standard"
+            // Display character limit and changes text to red if user goes over limit
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                <span style={{ color: newWatchlistName.length > 60 ? 'red' : 'inherit' }}>
+                  {newWatchlistName.length}/{60}
+                </span>
+              </InputAdornment>
+              ),
+            }}
           />
           {dialogErrorMessage && (
             <Typography color="error" variant="body2">
@@ -204,7 +216,15 @@ const handleEditDescriptionDialogSubmit = async () => {
         </DialogContent>
         <DialogActions>
           <Button variant="contained" onClick={handleEditNameDialogClose}>Cancel</Button>
-          <Button variant="contained" onClick={handleEditNameDialogSubmit}>Submit</Button>
+          <Button
+          variant="contained"
+          onClick={handleEditNameDialogSubmit}
+          disabled={
+            newWatchlistName.length > 60 // Character limit for watchlist name
+          }
+          >
+            Submit
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -227,6 +247,16 @@ const handleEditDescriptionDialogSubmit = async () => {
             fullWidth={true}
             margin="dense"
             variant="standard"
+            // Display character limit and changes text to red if user goes over limit
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                <span style={{ color: newWatchlistDescription.length > 500 ? 'red' : 'inherit' }}>
+                  {newWatchlistDescription.length}/{500}
+                </span>
+              </InputAdornment>
+              ),
+            }}
           />
           {dialogErrorMessage && (
             <Typography color="error" variant="body2">
@@ -236,7 +266,15 @@ const handleEditDescriptionDialogSubmit = async () => {
         </DialogContent>
         <DialogActions>
           <Button variant="contained" onClick={handleEditDescriptionDialogClose}>Cancel</Button>
-          <Button variant="contained" onClick={handleEditDescriptionDialogSubmit}>Submit</Button>
+          <Button
+          variant="contained"
+          onClick={handleEditDescriptionDialogSubmit}
+          disabled={
+            newWatchlistDescription.length > 500 // Character limit for watchlist description
+          }
+          >
+            Submit
+          </Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
