@@ -1,7 +1,8 @@
 .env
 node_modules
 node_modules
-backend/services/tmdb_constants.go
+
+/backend/services/tmdb_constants.go
 
 
 /src/components/Test.js
