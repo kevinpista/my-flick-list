@@ -1,15 +1,15 @@
 package tmdb_controllers
 
 import (
-	"net/http"
 	"errors"
+	"net/http"
 
 	"github.com/kevinpista/my-flick-list/backend/helpers"
-	"github.com/kevinpista/my-flick-list/backend/services/tmdb_services"
+	"github.com/kevinpista/my-flick-list/backend/services"
 )
 
 
-var movieResult tmdb_services.TMDBMovieService
+var movieResult services.TMDBMovieService
 
 // GET/tmdb-movie?query={movie_id}
 func TMDBGetMovieByID(w http.ResponseWriter, r *http.Request) {

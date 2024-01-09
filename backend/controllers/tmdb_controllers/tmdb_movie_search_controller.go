@@ -4,11 +4,11 @@ import (
 	// "github.com/joho/godotenv"
 	// "encoding/json"
 	// "strings"
-	"net/http"
 	"errors"
+	"net/http"
 
 	"github.com/kevinpista/my-flick-list/backend/helpers"
-	"github.com/kevinpista/my-flick-list/backend/services/tmdb_services"
+	"github.com/kevinpista/my-flick-list/backend/services"
 )
 
 /*
@@ -24,7 +24,7 @@ apiKey := os.Getenv("API_KEY")
 }
 */
 
-var searchResults tmdb_services.TMDBMovieSearchService
+var searchResults services.TMDBMovieSearchService
 
 // GET/search?query={keyword+keyword..}&page={pageNumber}
 func TMDBSearchMovieByKeyWords(w http.ResponseWriter, r *http.Request) {

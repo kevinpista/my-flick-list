@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"strings"
 	"errors"
 	"database/sql"
 
@@ -133,7 +132,16 @@ func GetAllWatchlistItemsWithMoviesByWatchlistID(w http.ResponseWriter, r *http.
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlist-items": watchlistItemsArray, "name": watchlistName, "description": watchlistDescription })
 }
 
-// POST/watchlist-item
+// ** IMPORTANT CONTROLLER BELOW ** This is the only gateway for a TMDB movie to be added locally to the Postgresql DB.
+// If movie is not in local database, the called service function CreateWatchlistItemByWatchlistID
+// will call on another service function (TMDBGetMovieByIDAddToLocalDatabase) to query TMDB API to fetch movie data
+// and add that movie to local database. Once added, the watchlist_item will be linked to the movie in the local database.
+// Else, connect the already existing movie in the DB to the newly created watchlist_item
+// Reasoning: Movie data is stored locally because multiple watchlists & users can have the same movie for a watchlist_item.
+// More efficient to fetch the movie data to render within each watchlist when the data is stored locally in DB versus having to make a
+// TMDB API call every time a user loads their watchlist to view their added movies.
+
+// POST/watchlist-item - data passed through JSON body
 func CreateWatchlistItemByWatchlistID(w http.ResponseWriter, r *http.Request) {
 	var watchlistItemData services.WatchlistItemService
 
@@ -205,18 +213,19 @@ func CreateWatchlistItemByWatchlistID(w http.ResponseWriter, r *http.Request) {
 		helpers.ErrorJSON(w, errors.New("movie is already in watchlist"), http.StatusBadRequest)
 		return
 	}
-	
+
+	// Service function call to create watchlist_item and link to movie from local database. If movie in DB, query TMDB API for the movie to add, then link.
 	watchlistItemCreated, err := watchlistItemData.CreateWatchlistItemByWatchlistID(watchlistItemData.WatchlistItem)
 	if err != nil {
-		helpers.MessageLogs.ErrorLog.Println(err)
+		/*
 		movieNotInDataBase := strings.Contains(strings.ToLower(err.Error()), "watchlist_item_movie_id_fkey")
 		if movieNotInDataBase {
 			helpers.MessageLogs.ErrorLog.Println("Movie data with this ID not yet added to DB")
 			helpers.ErrorJSON(w, errors.New("movie not yet added to database "), http.StatusBadRequest)
 			return
 		} 
-	// TO-DO will consider if want to take care of adding the missing movie data here in order to have it done in 1 go
-	// Versus returning an error
+		*/
+		helpers.MessageLogs.ErrorLog.Println(err)
 		helpers.ErrorJSON(w, err, http.StatusBadRequest)
 		return
 

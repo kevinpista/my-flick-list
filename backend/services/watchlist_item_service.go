@@ -2,6 +2,9 @@ package services
 
 import (
 	"context"
+	"errors"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -12,6 +15,8 @@ type WatchlistItemService struct {
 	WatchlistItem          models.WatchlistItem
 	WatchlistItemWithMovie models.WatchlistItemWithMovie
 }
+
+var movieQuery TMDBMovieService
 
 // Fetches all watchlist items that belongs to a specific watchlist via its watchlistID
 func (c *WatchlistItemService) GetAllWatchlistItemsByWatchlistID(watchlistID int) ([]*models.WatchlistItem, error) {
@@ -51,12 +56,12 @@ func (c *WatchlistItemService) GetWatchListWithWatchlistItemsByWatchListID(watch
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-    // Fetch watchlist name and description
-    var watchlistName, watchlistDescription string
-    err := db.QueryRowContext(ctx, "SELECT name, description FROM watchlist WHERE id = $1", watchlistID).Scan(&watchlistName, &watchlistDescription)
-    if err != nil {
-        return nil, "", "", err
-    }
+	// Fetch watchlist name and description
+	var watchlistName, watchlistDescription string
+	err := db.QueryRowContext(ctx, "SELECT name, description FROM watchlist WHERE id = $1", watchlistID).Scan(&watchlistName, &watchlistDescription)
+	if err != nil {
+		return nil, "", "", err
+	}
 
 	// Fetch watchlist items belonging to the watchlist
 	query := `
@@ -70,11 +75,11 @@ func (c *WatchlistItemService) GetWatchListWithWatchlistItemsByWatchListID(watch
 		WHERE wi.watchlist_id = $1
 	`
 
-    rows, err := db.QueryContext(ctx, query, watchlistID)
-    if err != nil {
-        return nil, "", "", err
-    }
-    defer rows.Close()
+	rows, err := db.QueryContext(ctx, query, watchlistID)
+	if err != nil {
+		return nil, "", "", err
+	}
+	defer rows.Close()
 
 	var watchlistItemsWithMovies []*models.WatchlistItemWithMovie
 	for rows.Next() {
@@ -102,12 +107,12 @@ func (c *WatchlistItemService) GetWatchListWithWatchlistItemsByWatchListID(watch
 			&watchlistItemWithMovie.MovieUpdatedAt,
 		)
 
-        if err != nil {
-            return nil, "", "", err
-        }
+		if err != nil {
+			return nil, "", "", err
+		}
 		watchlistItemsWithMovies = append(watchlistItemsWithMovies, &watchlistItemWithMovie)
 	}
-    return watchlistItemsWithMovies, watchlistName, watchlistDescription, nil
+	return watchlistItemsWithMovies, watchlistName, watchlistDescription, nil
 }
 
 /*
@@ -166,15 +171,19 @@ func (c *WatchlistItemService) GetAllWatchlistItemsWithMoviesByWatchListID(watch
 }
 */
 
-// Creates a watchlist_item with a movie_id with the watchlist ID it belongs to
+// Important TWO-PART service function
+// Creates a watchlist_item with a movie_id with the watchlist ID it belongs to.
+// If the movie data is not in the local database yet, query TMDB API to fetch movie data, add to database, then connect
+// watchlist_item to the newly added movie via its movie_id
 func (c *WatchlistItemService) CreateWatchlistItemByWatchlistID(watchlistItem models.WatchlistItem) (*models.WatchlistItem, error) {
+	// Initial attempt to connect watchlist_item to movie_id. Success if movie_id is already in database.
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	query := `
 		INSERT INTO watchlist_item (watchlist_id, movie_id, checkmarked, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5) returning *
 		`
-	_, err := db.ExecContext(
+	err := db.QueryRowContext(
 		ctx,
 		query,
 		watchlistItem.WatchlistID,
@@ -182,10 +191,59 @@ func (c *WatchlistItemService) CreateWatchlistItemByWatchlistID(watchlistItem mo
 		watchlistItem.Checkmarked,
 		time.Now(), // watchlistItem.CreatedAt
 		time.Now(), // watchlistItem.UpdatedAt
+	).Scan(
+		&watchlistItem.ID,
+		&watchlistItem.WatchlistID,
+		&watchlistItem.MovieID,
+		&watchlistItem.Checkmarked,
+		&watchlistItem.CreatedAt,
+		&watchlistItem.UpdatedAt,
 	)
+
 	if err != nil {
-		return nil, err
-	}
+		// Check if err is related to the movie not existing
+		movieNotInDataBase := strings.Contains(strings.ToLower(err.Error()), "watchlist_item_movie_id_fkey") // Returns true if error message contains string
+		if movieNotInDataBase {
+			// This block executes if true, therefore movie data with this movie_id is not in DB
+
+			// Convert movieID integer to a string to correctly send query to TMDB API service function
+			movieIDString := strconv.Itoa(watchlistItem.MovieID)
+
+			// Service function call to query TMDB API and add to local database
+			addToDatabaseErr := movieQuery.TMDBGetMovieByIDAddToLocalDatabase(movieIDString)
+			if addToDatabaseErr != nil {
+				// Error related to TMDBGetMovieByIDAddToLocalDatabase
+				return nil, addToDatabaseErr
+			}
+
+			// At this point, movie that was not in database should be added now. Attempt to re-add watchlist_item again.
+			err := db.QueryRowContext(
+				ctx,
+				query,
+				watchlistItem.WatchlistID,
+				watchlistItem.MovieID,
+				watchlistItem.Checkmarked,
+				time.Now(),
+				time.Now(),
+			).Scan(
+				&watchlistItem.ID,
+				&watchlistItem.WatchlistID,
+				&watchlistItem.MovieID,
+				&watchlistItem.Checkmarked,
+				&watchlistItem.CreatedAt,
+				&watchlistItem.UpdatedAt,
+			)
+		
+			if err != nil {
+				return nil, errors.New("failed to create watchlist_item after adding movie to db")
+
+			}
+		} else {
+			// Error unrelated to 'movie not in database'
+			return nil, err
+		}
+	} 
+
 	return &watchlistItem, nil
 }
 
@@ -197,7 +255,7 @@ func (c *WatchlistItemService) DeleteWatchlistItemByID(watchlistItemID int) erro
 	query := `
 		DELETE FROM watchlist_item WHERE id = $1
 	`
-	
+
 	_, err := db.ExecContext(ctx, query, watchlistItemID)
 	if err != nil {
 		return err
@@ -205,7 +263,6 @@ func (c *WatchlistItemService) DeleteWatchlistItemByID(watchlistItemID int) erro
 
 	return nil
 }
-
 
 // Updates the "checkmarked" boolean of the particular watchlist_item
 func (c *WatchlistItemService) UpdateCheckmarkedBooleanByWatchlistItemByID(watchlistItemID int, watchlistItem models.WatchlistItem) error {
@@ -234,19 +291,19 @@ HELPER FUNCTIONS
 
 // Check if exisiting watchlist_items within a watchlist contain a movie_id as the one being passed by user
 func (c *WatchlistItemService) CheckIfMovieInWatchlistExists(watchlistID, movieID int) (bool, error) {
-    ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
 
-    query := `
+	query := `
 		SELECT EXISTS (SELECT 1 FROM watchlist_item WHERE watchlist_id = $1 AND movie_id = $2)
     `
-    var exists bool
-    err := db.QueryRowContext(ctx, query, watchlistID, movieID).Scan(&exists)
-    if err != nil {
-        return false, err
-    }
+	var exists bool
+	err := db.QueryRowContext(ctx, query, watchlistID, movieID).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
 
-    return exists, nil
+	return exists, nil
 }
 
 // Checks if a watchlist with the given ID exists
