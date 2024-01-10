@@ -52,7 +52,7 @@ func (c *WatchlistItemService) GetAllWatchlistItemsByWatchlistID(watchlistID int
 }
 
 // Fetches watchlist name & description + all watchlist items and its movie data
-func (c *WatchlistItemService) GetWatchListWithWatchlistItemsByWatchListID(watchlistID int) ([]*models.WatchlistItemWithMovie, string, string, error) {
+func (c *WatchlistItemService) GetWatchlistWithWatchlistItemsByWatchlistID(watchlistID int) ([]*models.WatchlistItemWithMovie, string, string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 

@@ -115,7 +115,7 @@ func GetAllWatchlistItemsWithMoviesByWatchlistID(w http.ResponseWriter, r *http.
     }
 
 	// Make service function call
-	watchlistItemsArray, watchlistName, watchlistDescription, err := watchlistItem.GetWatchListWithWatchlistItemsByWatchListID(watchlistIDInt)
+	watchlistItemsArray, watchlistName, watchlistDescription, err := watchlistItem.GetWatchlistWithWatchlistItemsByWatchlistID(watchlistIDInt)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		helpers.ErrorJSON(w, err, http.StatusBadRequest)
