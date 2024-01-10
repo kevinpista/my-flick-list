@@ -8,6 +8,14 @@ import { getMovieDataTMDB } from '../api/movieDataTMDB';
 import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
 import { useParams } from 'react-router-dom';
 
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+
+
 // TODO
 // 1. Change AddIcon button and icon to "Added" with CheckMark icon when successfully added to someone's watchlist
 // popup menu of which watchlist to add to -- or dropdown to let them pick which watchlist they want to add to.
@@ -37,6 +45,9 @@ const MoviePage = () => {
 
     const [error, setError] = useState(null);
     const { movieID } = useParams(); // Extract movieID from the URL params
+
+    const [openDialog, setOpenDialog] = useState(false);
+    const [selectedWatchlist, setSelectedWatchlist] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -94,6 +105,25 @@ const MoviePage = () => {
       
     const moviePosterBaseUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2";
 
+
+    const handleOpenDialog = () => {
+        setOpenDialog(true);
+      };
+      
+      const handleCloseDialog = () => {
+        setOpenDialog(false);
+      };
+      
+      const handleWatchlistChange = (event) => {
+        setSelectedWatchlist(event.target.value);
+      };
+      
+      const handleConfirm = () => {
+        // Send axios request with selectedWatchlist and movieID
+        console.log('user picked:', selectedWatchlist);
+        handleCloseDialog();
+      };
+
     // RENDER COMPONENT
     return (
         <React.Fragment>
@@ -142,7 +172,8 @@ const MoviePage = () => {
                         </Typography>
                     </div>
                     
-                    <Button 
+                    <Button
+                        onClick={handleOpenDialog} 
                         variant="contained"
                         color="primary"
                         size="large" 
@@ -155,8 +186,36 @@ const MoviePage = () => {
             </Paper>
             )
         )}
-    </Container>
-    </React.Fragment>
+
+            <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+            >
+                <DialogTitle>Select a Watchlist</DialogTitle>
+                <DialogContent>
+                    <Select
+                    value={selectedWatchlist}
+                    onChange={handleWatchlistChange}
+                    fullWidth
+                    >
+                    {/* Map through user's watchlists and populate the dropdown */}
+                    {/* For now just entering a filler static value for testing */}
+                        <MenuItem key={2} value={22}>
+                        Watchlist 22
+                        </MenuItem>
+                    </Select>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="primary">
+                    Cancel
+                    </Button>
+                    <Button onClick={handleConfirm} color="primary" disabled={!selectedWatchlist}>
+                    Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </Container>
+        </React.Fragment>
   );
 };
 export default MoviePage;
