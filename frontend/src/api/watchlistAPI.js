@@ -236,6 +236,7 @@ export function createWatchlistAPI(newWatchlistName, newWatchlistDescription) {
     const headers = {
         Authorization: `Bearer ${token}`,
     };
+
     const url = 'http://localhost:8080/api/watchlist';
 
     const data = {
@@ -247,6 +248,46 @@ export function createWatchlistAPI(newWatchlistName, newWatchlistDescription) {
         .then(response => {
             return response; // Returning to component so it can access status code 200
             // contains a response.data.message that says "Watchlist created successfully!"
+        })
+        .catch(error => { // Will catch any error thrown by extractToken
+            if (error.response) {
+                const errorMessage = error.response.data.message;
+                console.error('Error:', errorMessage);
+                throw new Error(errorMessage);
+            } else { 
+                console.error('Network or other error:', error); 
+                throw error;
+            }
+        });
+    }
+
+// router.Post("/api/watchlist-item", controllers.CreateWatchlistItemByWatchlistID) // POST create a watchlist item for a specific watchlist
+export function addWatchlistItemAPI(watchlistID, movieID) {
+    // Fetch the user's stored JWT token from cookies
+    const token = getJwtTokenFromCookies();
+    if (!token) {
+        console.error('Token not available or expired');
+        // For now, will use a Promise.reject method instead of redirect
+        return Promise.reject('Token not available or expired');
+        }
+
+    const headers = {
+        Authorization: `Bearer ${token}`,
+    };
+
+    const url = 'http://localhost:8080/api/watchlist-item';
+
+    const parsedMovieID = parseInt(movieID, 10); // Convert string movieID into an int for backend 
+    const data = {
+        'watchlist_id': watchlistID,
+        'movie_id': parsedMovieID,
+        'checkmarked': false, // default mark item as unwatched
+    };
+
+    return axios.post(url, data, {headers})
+        .then(response => {
+            return response; // Holds watchlist_item details
+            // Just need to check for successful 200 status & alert user in component
         })
         .catch(error => { // Will catch any error thrown by extractToken
             if (error.response) {

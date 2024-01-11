@@ -7,6 +7,7 @@ import '../css/Movie.css';
 import { getMovieDataTMDB } from '../api/movieDataTMDB';
 import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
 import { useParams } from 'react-router-dom';
+import { fetchWatchlistsAPI, addWatchlistItemAPI } from '../api/watchlistAPI'
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -26,9 +27,6 @@ import Select from '@mui/material/Select';
 // 4. Movie details currently shifts all the way to the right if the content isn't long enough to fill the 2/3 space. Format so that 
 // movie details always begins aligned left next to the movie poster regardless of overall content lenght. Can see this difference based on the movie data
 
-// 5. const movieID needs to be dynamically updated based on what movieID user is sending a request to view for at the certain webpage; 
-// likely make it a query url for our frontend
-
 const MoviePage = () => {
     const [moviePosterPath, setMoviePosterPath] = useState('');
     const [movieTitle, setMovieTitle] = useState('');
@@ -47,7 +45,9 @@ const MoviePage = () => {
     const { movieID } = useParams(); // Extract movieID from the URL params
 
     const [openDialog, setOpenDialog] = useState(false);
-    const [selectedWatchlist, setSelectedWatchlist] = useState('');
+    const [selectedWatchlistID, setSelectedWatchlistID] = useState('');
+    const [userWatchlists, setUserWatchlists] = useState(null);
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -94,6 +94,10 @@ const MoviePage = () => {
                 setMovieRevenue(formattedRevenue);
                 setMovieBudget(formattedBudget);
                 setValidMovie(true);
+                
+                // Fetch user's watchlist on mount
+                const fetchedWatchlists = await fetchWatchlistsAPI()
+                setUserWatchlists(fetchedWatchlists)
 
             } catch (error) {
                 setError(error);
@@ -108,20 +112,32 @@ const MoviePage = () => {
 
     const handleOpenDialog = () => {
         setOpenDialog(true);
-      };
+
+    };
       
       const handleCloseDialog = () => {
         setOpenDialog(false);
       };
       
       const handleWatchlistChange = (event) => {
-        setSelectedWatchlist(event.target.value);
+        setSelectedWatchlistID(event.target.value);
       };
       
-      const handleConfirm = () => {
-        // Send axios request with selectedWatchlist and movieID
-        console.log('user picked:', selectedWatchlist);
-        handleCloseDialog();
+      const handleConfirm = async () => {
+        // Send axios request with selectedWatchlistID and movieID
+        console.log('user picked:', selectedWatchlistID); // test
+        try {
+            const response = await addWatchlistItemAPI(selectedWatchlistID, movieID)
+            if (response.status === 200) {
+                console.log("Movie added successfully to watchlist")
+            } else {
+                console.error('Request failed with status:', response.status);
+            }
+        } catch (error) {
+            console.log(error)
+        } finally { // Closes dialog regardless of a successful or failed API request
+            handleCloseDialog();
+        }
       };
 
     // RENDER COMPONENT
@@ -194,22 +210,27 @@ const MoviePage = () => {
                 <DialogTitle>Select a Watchlist</DialogTitle>
                 <DialogContent>
                     <Select
-                    value={selectedWatchlist}
+                    value={selectedWatchlistID}
                     onChange={handleWatchlistChange}
                     fullWidth
                     >
                     {/* Map through user's watchlists and populate the dropdown */}
-                    {/* For now just entering a filler static value for testing */}
-                        <MenuItem key={2} value={22}>
-                        Watchlist 22
-                        </MenuItem>
+                        {userWatchlists === null  ? (
+                        <MenuItem disabled>You haven't created a Watchlist yet!</MenuItem>
+                        ) : (
+                        userWatchlists['watchlists'].map((watchlist) => (
+                            <MenuItem key={watchlist.id} value={watchlist.id}>
+                                {watchlist.name}
+                            </MenuItem>
+                        ))
+                        )}
                     </Select>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog} color="primary">
                     Cancel
                     </Button>
-                    <Button onClick={handleConfirm} color="primary" disabled={!selectedWatchlist}>
+                    <Button onClick={handleConfirm} color="primary" disabled={!selectedWatchlistID}>
                     Confirm
                     </Button>
                 </DialogActions>
