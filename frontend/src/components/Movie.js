@@ -167,6 +167,8 @@ const MoviePage = () => {
         <NavBar />
         <Container maxWidth="fluid">
             <Snackbar
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                style={{ top: '50px' }} // Adjust the top position as needed
                 open={successAlertOpen || errorAlertOpen}
                 autoHideDuration={5000}
                 onClose={handleAlertClose}
