@@ -15,7 +15,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 // TODO
 // 1. Change AddIcon button and icon to "Added" with CheckMark icon when successfully added to someone's watchlist
@@ -47,6 +48,10 @@ const MoviePage = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedWatchlistID, setSelectedWatchlistID] = useState('');
     const [userWatchlists, setUserWatchlists] = useState(null);
+
+    const [successAlertOpen, setSuccessAlertOpen] = useState(false);
+    const [errorAlertOpen, setErrorAlertOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
 
 
     useEffect(() => {
@@ -109,42 +114,70 @@ const MoviePage = () => {
       
     const moviePosterBaseUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2";
 
-
+    // Handles functions related to when user clicks "Add To Watchlist". 
     const handleOpenDialog = () => {
         setOpenDialog(true);
-
     };
-      
-      const handleCloseDialog = () => {
+    const handleCloseDialog = () => {
         setOpenDialog(false);
-      };
-      
-      const handleWatchlistChange = (event) => {
+    };
+    const handleWatchlistChange = (event) => {
         setSelectedWatchlistID(event.target.value);
-      };
-      
-      const handleConfirm = async () => {
-        // Send axios request with selectedWatchlistID and movieID
-        console.log('user picked:', selectedWatchlistID); // test
-        try {
-            const response = await addWatchlistItemAPI(selectedWatchlistID, movieID)
-            if (response.status === 200) {
-                console.log("Movie added successfully to watchlist")
-            } else {
-                console.error('Request failed with status:', response.status);
-            }
-        } catch (error) {
-            console.log(error)
-        } finally { // Closes dialog regardless of a successful or failed API request
-            handleCloseDialog();
+    };
+    const handleConfirm = async () => {
+    // Send axios request with selectedWatchlistID and movieID
+    console.log('user picked:', selectedWatchlistID); // test
+    try {
+        const response = await addWatchlistItemAPI(selectedWatchlistID, movieID)
+        if (response.status === 200) {
+            console.log("Movie added successfully to watchlist")
+            handleSuccessAlertOpen();
+        } else {
+            console.error('Request failed with status:', response.status);
+            handleErrorAlertOpen(`Request failed with status: ${response.status}`);
         }
-      };
+    } catch (error) {
+        console.log(error)
+        handleErrorAlertOpen(`Error: ${error.message}`);
+    } finally { // Closes dialog regardless of a successful or failed API request
+        handleCloseDialog();
+    }
+    };
+
+    // Handles alert messages related to when a user submits the watchlist + movie they want to add
+    const handleSuccessAlertOpen = () => {
+        setAlertMessage('Watchlist Added Successfully!');
+        setSuccessAlertOpen(true);
+    };
+    
+    const handleErrorAlertOpen = (errorMessage) => {
+        setAlertMessage(errorMessage);
+        setErrorAlertOpen(true);
+    };
+    
+    const handleAlertClose = () => {
+        setSuccessAlertOpen(false);
+        setErrorAlertOpen(false);
+        setAlertMessage('');
+    };
 
     // RENDER COMPONENT
     return (
         <React.Fragment>
         <NavBar />
         <Container maxWidth="fluid">
+            <Snackbar
+                open={successAlertOpen || errorAlertOpen}
+                autoHideDuration={5000}
+                onClose={handleAlertClose}
+            >
+                <Alert
+                    onClose={handleAlertClose}
+                    severity={successAlertOpen ? 'success' : 'error'}
+                >
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
             {error ? (
                 <h1 className='error'><u>Error loading movie:</u> {error.message}</h1>
             ) : ( 
