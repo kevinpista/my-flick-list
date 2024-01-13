@@ -28,6 +28,9 @@ import Snackbar from '@mui/material/Snackbar';
 // 4. Movie details currently shifts all the way to the right if the content isn't long enough to fill the 2/3 space. Format so that 
 // movie details always begins aligned left next to the movie poster regardless of overall content lenght. Can see this difference based on the movie data
 
+// 5. TEST 'setLongestWatchlistNameLength(fetchedWatchlists['watchlists']... ' line in useEffect
+// when a new user who has no watchlists on file and see if component handles it correctly
+
 const MoviePage = () => {
     const [moviePosterPath, setMoviePosterPath] = useState('');
     const [movieTitle, setMovieTitle] = useState('');
@@ -48,6 +51,7 @@ const MoviePage = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedWatchlistID, setSelectedWatchlistID] = useState('');
     const [userWatchlists, setUserWatchlists] = useState(null);
+    const [longestWatchlistNameLength, setLongestWatchlistNameLength] = useState(0);
 
     const [successAlertOpen, setSuccessAlertOpen] = useState(false);
     const [errorAlertOpen, setErrorAlertOpen] = useState(false);
@@ -103,7 +107,10 @@ const MoviePage = () => {
                 // Fetch user's watchlist on mount
                 const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheck(movieID)
                 setUserWatchlists(fetchedWatchlists)
-                console.log(fetchedWatchlists)
+                // Calculate the longest watchlist name for proper styling in dialog <MenuItem>
+                setLongestWatchlistNameLength(fetchedWatchlists['watchlists'].reduce((max, watchlist) => {
+                    return Math.max(max, watchlist.name.length);
+                  }, 0));
 
             } catch (error) {
                 setError(error);
@@ -245,10 +252,20 @@ const MoviePage = () => {
             >
                 <DialogTitle>Select a Watchlist</DialogTitle>
                 <DialogContent>
+                    {/* Need this renderValue part to properly show selected item on one line due to using 2 divs for MenuItem */}
                     <Select
                     value={selectedWatchlistID}
                     onChange={handleWatchlistChange}
                     fullWidth
+                    renderValue={(selectedValue) => (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ flex: '1', width: `${longestWatchlistNameLength + 10}ch` }}>
+                                {selectedValue}
+                            </div>
+                                <div style={{ textAlign: 'right', paddingLeft: '10px' }}>
+                            </div>
+                        </div>
+                    )}
                     >
                     {/* Map through user's watchlists and populate the dropdown */}
                         {userWatchlists === null  ? (
@@ -259,9 +276,14 @@ const MoviePage = () => {
                                 key={watchlist.id}
                                 value={watchlist.id}
                                 disabled={watchlist.contains_queried_movie}
+                                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                             >
-                                {watchlist.name}{' '}
-                                {watchlist.contains_queried_movie ? '[Already in Watchlist]' : `[${watchlist.watchlist_item_count} movies]`}
+                                <div style={{ flex: '1', width: `${longestWatchlistNameLength + 10}ch` }}>
+                                    {watchlist.name}
+                                </div>
+                                <div style={{ textAlign: 'right', paddingLeft: '10px' }}> 
+                                    {watchlist.contains_queried_movie ? '[Already in Watchlist]' : `[${watchlist.watchlist_item_count} movies]`}
+    </                          div>
                             </MenuItem>
                         ))
                         )}
