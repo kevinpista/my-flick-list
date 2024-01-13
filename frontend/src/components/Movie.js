@@ -50,6 +50,7 @@ const MoviePage = () => {
 
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedWatchlistID, setSelectedWatchlistID] = useState('');
+    const [selectedWatchlist, setSelectedWatchlist] = useState('');
     const [userWatchlists, setUserWatchlists] = useState(null);
     const [longestWatchlistNameLength, setLongestWatchlistNameLength] = useState(0);
 
@@ -130,7 +131,8 @@ const MoviePage = () => {
         setOpenDialog(false);
     };
     const handleWatchlistChange = (event) => {
-        setSelectedWatchlistID(event.target.value);
+        setSelectedWatchlist(event.target.value)
+        setSelectedWatchlistID(event.target.value.id);
     };
     const handleConfirm = async () => {
     // Send axios request with selectedWatchlistID and movieID
@@ -139,6 +141,8 @@ const MoviePage = () => {
         const response = await addWatchlistItemAPI(selectedWatchlistID, movieID)
         if (response.status === 200) {
             console.log("Movie added successfully to watchlist")
+            const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheck(movieID)
+            setUserWatchlists(fetchedWatchlists)
             handleSuccessAlertOpen();
         } else {
             console.error('Request failed with status:', response.status);
@@ -254,15 +258,16 @@ const MoviePage = () => {
                 <DialogContent>
                     {/* Need this renderValue part to properly show selected item on one line due to using 2 divs for MenuItem */}
                     <Select
-                    value={selectedWatchlistID}
+                    value={selectedWatchlist}
                     onChange={handleWatchlistChange}
                     fullWidth
                     renderValue={(selectedValue) => (
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ flex: '1', width: `${longestWatchlistNameLength + 10}ch` }}>
-                                {selectedValue}
+                            <div style={{ flex: '1', width: `${longestWatchlistNameLength + 2}ch` }}>
+                                {selectedValue.name}
                             </div>
-                                <div style={{ textAlign: 'right', paddingLeft: '10px' }}>
+                                <div style={{ textAlign: 'right', paddingLeft: '2px' }}>
+                                {selectedValue.contains_queried_movie ? '[Already in Watchlist]' : `[${selectedValue.watchlist_item_count} movies]`}
                             </div>
                         </div>
                     )}
@@ -274,16 +279,16 @@ const MoviePage = () => {
                         userWatchlists['watchlists'].map((watchlist) => (
                             <MenuItem 
                                 key={watchlist.id}
-                                value={watchlist.id}
+                                value={watchlist}
                                 disabled={watchlist.contains_queried_movie}
                                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                             >
-                                <div style={{ flex: '1', width: `${longestWatchlistNameLength + 10}ch` }}>
+                                <div style={{ flex: '1', width: `${longestWatchlistNameLength + 2}ch` }}>
                                     {watchlist.name}
                                 </div>
                                 <div style={{ textAlign: 'right', paddingLeft: '10px' }}> 
                                     {watchlist.contains_queried_movie ? '[Already in Watchlist]' : `[${watchlist.watchlist_item_count} movies]`}
-    </                          div>
+                                </div>
                             </MenuItem>
                         ))
                         )}
