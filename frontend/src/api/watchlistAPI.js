@@ -109,6 +109,41 @@ export function fetchWatchlistsAPI () {
         });
     }
 
+// 	router.Get("/api/watchlists/movie/{movieID}", controllers.GetWatchlistsByUserIDWithMovieIDCheck)
+// GET all watchlists belong to user + watchlist_item count for each + boolean if queried movieID is in the watchlist
+export function fetchWatchlistsByUserIDWithMovieIDCheck (movieID) {
+    // Fetch the user's stored JWT token from cookies
+    const token = getJwtTokenFromCookies();
+    if (!token) {
+        console.error('Token not available or expired');
+        // For now, will use a Promise.reject method instead of redirect
+        return Promise.reject('Token not available or expired');
+        }
+
+    const headers = {
+        Authorization: `Bearer ${token}`,
+    };
+    
+    const url = `http://localhost:8080/api/watchlists/movie/${movieID}`
+    return axios.get(url, { headers })
+        .then(response => {
+            if (response.status === 204) {
+                throw new Error('You haven\'t created any watchlists yet.');
+                }
+            return response.data; // Returning list of watchlists
+        })
+        .catch(error => { // Will catch any error thrown by extractToken
+            if (error.response) {
+                const errorMessage = error.response.data.message;
+                console.error('Error:', errorMessage);
+                throw new Error(errorMessage);
+            } else { 
+                console.error('Network or other error:', error); 
+                throw error;
+            }
+        });
+    }
+    
 
 // 	router.DELETE("/api/watchlist?id={watchlistID}", controllers.DeleteWatchlistByID) // DELETE watchlist via its id
 export function deleteWatchlistAPI (watchlistID) {

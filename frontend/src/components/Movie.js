@@ -7,7 +7,7 @@ import '../css/Movie.css';
 import { getMovieDataTMDB } from '../api/movieDataTMDB';
 import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
 import { useParams } from 'react-router-dom';
-import { fetchWatchlistsAPI, addWatchlistItemAPI } from '../api/watchlistAPI'
+import { fetchWatchlistsByUserIDWithMovieIDCheck, addWatchlistItemAPI } from '../api/watchlistAPI'
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -101,8 +101,9 @@ const MoviePage = () => {
                 setValidMovie(true);
                 
                 // Fetch user's watchlist on mount
-                const fetchedWatchlists = await fetchWatchlistsAPI()
+                const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheck(movieID)
                 setUserWatchlists(fetchedWatchlists)
+                console.log(fetchedWatchlists)
 
             } catch (error) {
                 setError(error);
