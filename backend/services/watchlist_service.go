@@ -109,6 +109,45 @@ func (c *WatchlistService) GetAllWatchlistsByUserID(userID uuid.UUID) ([]*models
 	return watchlists, nil
 }
 
+// Fetches all watchlists belonging to a user. Takes a movieID parameter. 
+// Returns all watchlists with the count of all watchlist_items belonging to each watchlist
+// and also a boolean of "contains_movie" on whether or not there are any watchlists that
+// have a watchlist item that contain the movieID parameter
+func (c *WatchlistService) GetWatchlistsByUserIDWithMovieIDCheck(userID uuid.UUID, movieID int) ([]*models.WatchlistWithCountAndContainsMovie, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+	query := `
+		SELECT w.id, w.name,
+			COUNT(wi.id) AS watchlist_item_count,
+			COUNT(wi.movie_id = $2 OR NULL) > 0 AS contains_queried_movie
+		FROM watchlist w
+		LEFT JOIN watchlist_item wi ON w.id = wi.watchlist_id
+		WHERE w.users_id = $1
+		GROUP BY w.id
+	`
+
+	rows, err := db.QueryContext(ctx, query, userID, movieID)
+	if err != nil {
+		return nil, err
+	}
+
+	var watchlists []*models.WatchlistWithCountAndContainsMovie
+	for rows.Next() {
+		var watchlist models.WatchlistWithCountAndContainsMovie
+		err := rows.Scan(
+            &watchlist.ID,
+            &watchlist.Name,
+            &watchlist.WatchlistItemCount,
+            &watchlist.ContainsQueriedMovie,
+		)
+		if err != nil {
+			return nil, err
+		}
+		watchlists = append(watchlists, &watchlist)
+	}
+	return watchlists, nil
+}
+
 // TODO possibly remove id from query as we don't need that
 func (c *WatchlistService) GetWatchlistByID(id int) (*models.Watchlist, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)

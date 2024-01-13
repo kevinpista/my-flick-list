@@ -27,7 +27,8 @@ func GetAllWatchlists(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlists": all})
 }
 
-// GET/watchlists-by-user-id - user_id fetched from JWT token
+// GET/watchlists-by-user-id - user_id fetched from JWT token - returns list of watchlists.
+// Used for watchlist page
 func GetWatchlistsByUserID(w http.ResponseWriter, r *http.Request) {
 	// Verify JWT token sent in by user and fetch their UserID
 	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
@@ -37,6 +38,49 @@ func GetWatchlistsByUserID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	results, err := watchlist.GetAllWatchlistsByUserID(userID)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		return
+	}
+
+	// User may not have any watchlists yet. Services wil return "null"
+	if results == nil {
+		helpers.MessageLogs.ErrorLog.Println("User has no watchlists created yet")
+		helpers.WriteJSON(w, http.StatusNoContent, helpers.Envelope{})
+		return
+	}
+	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlists": results})
+}
+
+// GET/watchlists/movie/:movieID - userID fetched from JWT token
+// Fetches all watchlists belonging to user. Includes count of watchlist_items + boolean if any watchlist_items
+// of a particular watchlist references the movieID that is queried
+// Use for movie page and the dialog dropdown menu for user to pick which watchlist to add to
+func GetWatchlistsByUserIDWithMovieIDCheck(w http.ResponseWriter, r *http.Request) {
+	// Verify JWT token sent in by user and fetch their UserID
+	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
+	if tokenErr != nil {
+		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized) // tokenErr will be a errors.New(error_constants) object
+		return
+	}
+
+	// Extract movie ID from URL path parameter
+	movieIDStr := chi.URLParam(r, "movieID")
+
+	if movieIDStr == "" {
+		helpers.MessageLogs.ErrorLog.Println("User did not include movieID in URL")
+		helpers.ErrorJSON(w, errors.New("movieID not provided"), http.StatusBadRequest)
+		return
+	}
+
+	movieID, err := strconv.Atoi(movieIDStr)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println("Error converting string to number")
+		helpers.ErrorJSON(w, errors.New("error converting string to number"), http.StatusBadRequest)
+	}
+
+	// Service call
+	results, err := watchlist.GetWatchlistsByUserIDWithMovieIDCheck(userID, movieID)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		return
