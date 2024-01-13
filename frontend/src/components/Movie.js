@@ -238,7 +238,7 @@ const MoviePage = () => {
             </Paper>
             )
         )}
-
+        {/* Watchlist dropdown menu */}
             <Dialog
                 open={openDialog}
                 onClose={handleCloseDialog}
@@ -255,8 +255,13 @@ const MoviePage = () => {
                         <MenuItem disabled>You haven't created a Watchlist yet!</MenuItem>
                         ) : (
                         userWatchlists['watchlists'].map((watchlist) => (
-                            <MenuItem key={watchlist.id} value={watchlist.id}>
-                                {watchlist.name}
+                            <MenuItem 
+                                key={watchlist.id}
+                                value={watchlist.id}
+                                disabled={watchlist.contains_queried_movie}
+                            >
+                                {watchlist.name}{' '}
+                                {watchlist.contains_queried_movie ? '[Already in Watchlist]' : `[${watchlist.watchlist_item_count} movies]`}
                             </MenuItem>
                         ))
                         )}
