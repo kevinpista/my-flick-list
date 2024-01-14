@@ -141,7 +141,6 @@ const MoviePage = () => {
     };
     const handleConfirm = async () => {
     // Send axios request with selectedWatchlistID and movieID
-    console.log('user picked:', selectedWatchlistID); // test
     try {
         const response = await addWatchlistItemAPI(selectedWatchlistID, movieID)
         if (response.status === 200) {
@@ -272,7 +271,9 @@ const MoviePage = () => {
                     renderValue={(selectedValue) => (
                         <div>
                           {selectedValue === 'placeholder' ? (
-                            <InputLabel style={{ width: `${longestWatchlistNameLength + 10}ch` }}>Select a watchlist</InputLabel>
+                            <InputLabel style={{ width: `${longestWatchlistNameLength + 10}ch` }}>
+                                Select a watchlist
+                            </InputLabel>
                           ) : (
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div style={{ flex: '1', width: `${longestWatchlistNameLength + 2}ch` }}>
