@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import { Container, Paper, Typography, Button } from '@mui/material';
+import { Container, Paper, Typography, Button, InputLabel } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import NavBar from './NavBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -17,6 +17,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
+
+import { ThemeProvider } from '@mui/material/styles';
+import { muiTheme } from '../css/MuiThemeProvider.js';
 
 // TODO
 // 1. Change AddIcon button and icon to "Added" with CheckMark icon when successfully added to someone's watchlist
@@ -50,7 +53,7 @@ const MoviePage = () => {
 
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedWatchlistID, setSelectedWatchlistID] = useState('');
-    const [selectedWatchlist, setSelectedWatchlist] = useState('');
+    const [selectedWatchlist, setSelectedWatchlist] = useState('placeholder');
     const [userWatchlists, setUserWatchlists] = useState(null);
     const [longestWatchlistNameLength, setLongestWatchlistNameLength] = useState(0);
 
@@ -129,6 +132,8 @@ const MoviePage = () => {
     };
     const handleCloseDialog = () => {
         setOpenDialog(false);
+        setSelectedWatchlistID('');
+        setSelectedWatchlist('placeholder');
     };
     const handleWatchlistChange = (event) => {
         setSelectedWatchlist(event.target.value)
@@ -175,6 +180,7 @@ const MoviePage = () => {
 
     // RENDER COMPONENT
     return (
+        <ThemeProvider theme={muiTheme}>
         <React.Fragment>
         <NavBar />
         <Container maxWidth="fluid">
@@ -256,21 +262,29 @@ const MoviePage = () => {
             >
                 <DialogTitle>Select a Watchlist</DialogTitle>
                 <DialogContent>
-                    {/* Need this renderValue part to properly show selected item on one line due to using 2 divs for MenuItem */}
+                <InputLabel id="watchlist-placeholder">Watchlist</InputLabel>
+                    {/* Need renderValue prop to correctly show selected item on one line due to using 2 divs for MenuItem */}
                     <Select
+                    id="select-watchlist"
                     value={selectedWatchlist}
                     onChange={handleWatchlistChange}
                     fullWidth
                     renderValue={(selectedValue) => (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ flex: '1', width: `${longestWatchlistNameLength + 2}ch` }}>
-                                {selectedValue.name}
+                        <div>
+                          {selectedValue === 'placeholder' ? (
+                            <InputLabel style={{ width: `${longestWatchlistNameLength + 10}ch` }}>Select a watchlist</InputLabel>
+                          ) : (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ flex: '1', width: `${longestWatchlistNameLength + 2}ch` }}>
+                                    {selectedValue.name}
+                                </div>
+                                    <div style={{ textAlign: 'right', paddingLeft: '2px' }}>
+                                    {selectedValue.contains_queried_movie ? '[Already in Watchlist]' : `[${selectedValue.watchlist_item_count} movies]`}
+                                </div>
                             </div>
-                                <div style={{ textAlign: 'right', paddingLeft: '2px' }}>
-                                {selectedValue.contains_queried_movie ? '[Already in Watchlist]' : `[${selectedValue.watchlist_item_count} movies]`}
-                            </div>
+                        )}
                         </div>
-                    )}
+                      )}
                     >
                     {/* Map through user's watchlists and populate the dropdown */}
                         {userWatchlists === null  ? (
@@ -295,16 +309,17 @@ const MoviePage = () => {
                     </Select>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDialog} color="primary">
+                    <Button variant="contained" onClick={handleCloseDialog} color="primary">
                     Cancel
                     </Button>
-                    <Button onClick={handleConfirm} color="primary" disabled={!selectedWatchlistID}>
+                    <Button variant="contained" onClick={handleConfirm} color="primary" disabled={!selectedWatchlistID || selectedWatchlistID === 'placeholder'}>
                     Confirm
                     </Button>
                 </DialogActions>
             </Dialog>
         </Container>
         </React.Fragment>
+        </ThemeProvider>
   );
 };
 export default MoviePage;
