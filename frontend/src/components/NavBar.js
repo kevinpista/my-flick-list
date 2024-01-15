@@ -22,7 +22,7 @@ function NavBar() {
     setSnackbarOpen(true);
     setTimeout(() => {
       navigate('/');
-    }, 2000); // Redirect after 2 seconds delay
+    }, 1500); // Redirect after 1.5 seconds delay
   };
 
   const handleCloseSnackbar = () => {
@@ -31,31 +31,41 @@ function NavBar() {
 
   return (
     <>
-    <Navbar data-bs-theme="dark" expand="lg" className="nav-bar-background">
-      <Container className="navbar-container">
-        <Navbar.Brand href="/" className="custom-font">My Flick List</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-                <Nav.Link href="/movie-search" className="custom-font">Movie Search</Nav.Link>
-                <Nav.Link href="/watchlist" className="custom-font">Watchlists</Nav.Link>
-                <Nav.Link href="user-login" className="custom-font">Login</Nav.Link>
-                <Nav.Link onClick={handleLogout} className="custom-font">Logout</Nav.Link>
+    <Navbar data-bs-theme='dark' expand='lg' className='nav-bar-background'>
+      <Container className='navbar-container'>
+        <Navbar.Brand onClick={() => navigate('/')} className='custom-font'>
+          My Flick List
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls='basic-navbar-nav' />
+        <Navbar.Collapse id='basic-navbar-nav'>
+            <Nav className='me-auto'>
+              <Nav.Link onClick={() => navigate('/movie-search')} className='custom-font'>
+                Movie Search
+              </Nav.Link>
+              <Nav.Link onClick={() => navigate('/watchlist')} className='custom-font'>
+                Watchlists
+              </Nav.Link>
+              <Nav.Link onClick={() => navigate('/user-login')} className='custom-font'>
+                Login
+              </Nav.Link>
+              <Nav.Link onClick={handleLogout} className='custom-font'>
+                Logout
+              </Nav.Link>                
             </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>
     <Snackbar
       open={snackbarOpen}
-      autoHideDuration={3000}
+      autoHideDuration={2000}
       onClose={handleCloseSnackbar}
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       style={{ top: '50px' }}
     >
       <Alert
-          severity="success"
+          severity='info'
       >
-        Logout successful...
+        Logging you out...
       </Alert>
 </Snackbar>
 </>
