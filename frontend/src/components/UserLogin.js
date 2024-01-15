@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -34,6 +35,7 @@ function Copyright(props) {
 
 export default function UserLogin() {
 
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -70,7 +72,11 @@ export default function UserLogin() {
         if (response) {
           setErrorAlertMessage('');
           setShowSuccessAlert(true);
-          // TODO: Add logic for successful login (e.g., redirect)
+
+          setTimeout(() => {
+            navigate('/watchlist');
+          }, 2000); // Redirect to user's watchlist page after 2 seconds delay
+
         }
     } catch (error) {
         if (error.message === errorConstants.ERROR_INVALID_EMAIL) {
