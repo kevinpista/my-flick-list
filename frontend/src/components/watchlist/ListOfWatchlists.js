@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from '@mui/material';
+import { Container, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import NavBar from '../NavBar.js';
 import '../../css/Watchlist.css';
@@ -111,16 +111,31 @@ const handleCreateWatchlistDialogSubmit = async () => {
 };
 
 
-
   if (!jwtToken) {
     return (
-      <div>
-        <p>Please sign up or log in to create a watchlist.</p>
-        <Button onClick={() => navigate('/user-login')}>Log In</Button>
-        <Button onClick={() => navigate('/user-registration')}>Sign Up</Button>
-      </div>
+      <ThemeProvider theme={muiTheme}>
+        <NavBar />
+        <Container maxWidth="sm" style={{ marginTop: '50px', textAlign: 'center' }}>
+        <Paper elevation={6} style={{ padding: '25px' }}>
+          <Typography variant="h6">
+            Please sign up or log in to create a watchlist.
+          </Typography>
+          <div style ={{ margin: '10px' }}>
+            <Button variant="contained" color="primary" onClick={() => navigate('/user-login')} style={{ margin: '10px' }}>
+              Log In
+            </Button>
+            <Button variant="outlined" color="secondary" onClick={() => navigate('/user-registration')} style={{ margin: '10px' }}>
+              Sign Up
+            </Button>
+          </div>
+          <Typography variant="h7" >
+            Click "LOG IN" and use the demo account!
+          </Typography>
+        </Paper>
+        </Container>
+      </ThemeProvider>
     );
-  }
+  };
 
   return (
     <ThemeProvider theme={muiTheme}>

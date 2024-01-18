@@ -11,10 +11,10 @@ export const muiTheme = createTheme({
       },
       // Not currently using
       secondary: {
-        main: '#E0C2FF',
+        main: '#375A7F',
         light: '#F5EBFF',
         // dark: will be calculated from palette.secondary.main,
-        contrastText: '#47008F',
+        contrastText: '#FFFFFF',
       },
       typography: {
         fontFamily: "'Source Sans Pro', Arial, sans-serif",
