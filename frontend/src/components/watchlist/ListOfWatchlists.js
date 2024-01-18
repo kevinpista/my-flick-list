@@ -1,4 +1,5 @@
 import React, { useState, useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import NavBar from '../NavBar.js';
@@ -9,11 +10,15 @@ import * as errorConstants from '../../api/errorConstants';
 import ListOfWatchlistsTable from './ListOfWatchlistsTable.js';
 import { ThemeProvider } from '@mui/material/styles';
 import { muiTheme } from '../../css/MuiThemeProvider.js';
+import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
+
 
 // List of Watchlists; states name of watchlist, its description, and how many movies inside
 // Accessed via URL of /watchlists
 
 const ListOfWatchlists = () => {
+  const jwtToken = getJwtTokenFromCookies();
+  const navigate = useNavigate();
   const [watchlistData, setWatchlistData] = useState(null); // In JSON object format
   const [error, setError] = useState(null);
 
@@ -34,13 +39,15 @@ const ListOfWatchlists = () => {
     } else {
       console.log('Unexpected error occured');
     }
-  }
-};
+    }
+  };
 
   useEffect(() => {
-    // Call fetchData when component mounts
-    fetchData();
-}, []);
+    // Call fetchData if jwtToken is present
+    if (jwtToken) {
+      fetchData();
+    }
+}, [jwtToken]);
 
 // deleteWatchlistAPI Call
 const handleDeleteWatchlist = async (watchlistID) => {
@@ -102,6 +109,18 @@ const handleCreateWatchlistDialogSubmit = async () => {
     }
   };
 };
+
+
+
+  if (!jwtToken) {
+    return (
+      <div>
+        <p>Please sign up or log in to create a watchlist.</p>
+        <Button onClick={() => navigate('/user-login')}>Log In</Button>
+        <Button onClick={() => navigate('/user-registration')}>Sign Up</Button>
+      </div>
+    );
+  }
 
   return (
     <ThemeProvider theme={muiTheme}>
