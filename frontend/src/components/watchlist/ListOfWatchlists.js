@@ -33,11 +33,19 @@ const ListOfWatchlists = () => {
       const response = await fetchWatchlistsAPI();
       setWatchlistData(response);
     } catch (error) {
-      setError(error);
       if (error.message === errorConstants.ERROR_BAD_REQUEST) {
         console.log('Bad request');
+        setError(Error('Bad request. Try again'));
+    }
+    else if (error.message === errorConstants.TOKEN_EXPIRED) {
+        console.error('Token expired!!!');
+        setError(Error('Token expired or missing. Redirecting you to login ... '));
+        setTimeout(() => {
+          navigate('/user-login');
+        }, 2500); // Redirect to login
     } else {
-      console.log('Unexpected error occured');
+        console.error('An unexpected error occured');
+        setError(error)
     }
     }
   };
@@ -47,7 +55,7 @@ const ListOfWatchlists = () => {
     if (jwtToken) {
       fetchData();
     }
-}, [jwtToken]);
+  }, [jwtToken]);
 
 // deleteWatchlistAPI Call
 const handleDeleteWatchlist = async (watchlistID) => {
@@ -69,6 +77,13 @@ const handleDeleteWatchlist = async (watchlistID) => {
   } catch (error) {
     if (error.message === errorConstants.ERROR_BAD_REQUEST) {
       console.error('Bad request:', error);
+    } 
+    else if (error.message === errorConstants.TOKEN_EXPIRED) {
+      console.error('Token expired!!!');
+      setError(Error('Token expired or missing. Redirecting you to login ... '));
+      setTimeout(() => {
+        navigate('/user-login');
+      }, 2500); // Redirect to login
     } else {
       console.error('An unexpected error occured');
     }
