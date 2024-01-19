@@ -105,8 +105,6 @@ const handleCreateWatchlistDialogSubmit = async () => {
   try {
     const response = await createWatchlistAPI(newWatchlistName, newWatchlistDescription);
     if (response) {
-      // Will consider redirecting user to newly created watchlist. 
-      // For now, will simply refetch watchlist data for user
 
       // Clear the TextField inputs
       setNewWatchlistName('');
@@ -126,7 +124,6 @@ const handleCreateWatchlistDialogSubmit = async () => {
     }
   };
 };
-
 
   if (!jwtToken) {
     return (
