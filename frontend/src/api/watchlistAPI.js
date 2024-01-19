@@ -281,8 +281,7 @@ export function createWatchlistAPI(newWatchlistName, newWatchlistDescription) {
 
     return axios.post(url, data, {headers})
         .then(response => {
-            return response; // Returning to component so it can access status code 200
-            // contains a response.data.message that says "Watchlist created successfully!"
+            return response.data; // Details of created watchlist so component can redirect via id
         })
         .catch(error => { // Will catch any error thrown by extractToken
             if (error.response) {

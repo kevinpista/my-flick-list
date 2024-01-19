@@ -113,8 +113,10 @@ const handleCreateWatchlistDialogSubmit = async () => {
       setNewWatchlistDescription('');
 
       setCreateWatchlistDialogOpen(false);
-      // Trigger fetchData after successful creation
-      fetchData();
+      setTimeout(() => {
+        navigate(`/watchlist/${response.id}`)
+      }, 1000); // Redirect to new watchlist 
+
     }
   } catch (error) {
     if (error.message === errorConstants.ERROR_BAD_REQUEST) {
