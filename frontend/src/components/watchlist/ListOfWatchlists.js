@@ -258,6 +258,7 @@ const handleCreateWatchlistDialogSubmit = async () => {
     );
   };
 
+  // Main component render
   return (
     <ThemeProvider theme={muiTheme}>
     <React.Fragment>
