@@ -92,10 +92,7 @@ export function fetchWatchlistsAPI () {
     
     return axios.get('http://localhost:8080/api/watchlists-by-user-id', { headers })
         .then(response => {
-            if (response.status === 204) {
-                throw new Error('You haven\'t created any watchlists yet.');
-              }
-            return response.data; // Returning list of watchlists
+            return response; // Returning entire response so that component can check status code
         })
         .catch(error => { // Will catch any error thrown by extractToken
             if (error.response) {

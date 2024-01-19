@@ -18,6 +18,7 @@ import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
 
 const ListOfWatchlists = () => {
   const jwtToken = getJwtTokenFromCookies();
+  const [noWatchlistsFound, setNoWatchlistsFound] = useState(false);
   const navigate = useNavigate();
   const [watchlistData, setWatchlistData] = useState(null); // In JSON object format
   const [error, setError] = useState(null);
@@ -30,8 +31,12 @@ const ListOfWatchlists = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetchWatchlistsAPI();
-      setWatchlistData(response);
+      const response = await fetchWatchlistsAPI(); // Entire response with headers
+      if (response.status === 204) {
+        setNoWatchlistsFound(true);
+      } else {
+        setWatchlistData(response.data);
+      }
     } catch (error) {
       if (error.message === errorConstants.ERROR_BAD_REQUEST) {
         console.log('Bad request');
@@ -125,6 +130,7 @@ const handleCreateWatchlistDialogSubmit = async () => {
   };
 };
 
+// Renders "Login or Sign Up" pop up if a jwtToken is not found
   if (!jwtToken) {
     return (
       <ThemeProvider theme={muiTheme}>
@@ -147,6 +153,106 @@ const handleCreateWatchlistDialogSubmit = async () => {
           </Typography>
         </Paper>
         </Container>
+      </ThemeProvider>
+    );
+  };
+
+// Renders "Create Watchlist" button pop up if the user does not have any watchlists yet
+  if (noWatchlistsFound) {
+    return (
+      <ThemeProvider theme={muiTheme}>
+        <NavBar />
+        <Container maxWidth="sm" style={{ marginTop: '50px', textAlign: 'center' }}>
+        <Paper elevation={6} style={{ padding: '25px' }}>
+          <Typography variant="h6">
+            Let's create your first watchlist!
+          </Typography>
+          <div style ={{ margin: '10px' }}>
+            <Button variant="contained" color="primary" size="large" onClick={handleCreateWatchlistButtonClick} style={{ width: '200px', margin: '10px' }}>
+              Create Watchlist
+            </Button>
+    
+          </div>
+          <Typography variant="h7" >
+            You will need a watchlist to add movies.
+          </Typography>
+        </Paper>
+        </Container>
+
+      {/* Modal creating a watchlist */}
+      <Dialog
+        open={isCreateWatchlistDialogOpen}
+        onClose={handleCreateWatchlistButtonClose}
+        maxWidth="md"
+        fullWidth={true}
+      >
+        <DialogTitle><b>Create a New Watchlist</b></DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            id="watchlist-name"
+            label="Watchlist Name"
+            value={newWatchlistName}
+            onChange={(e) => setNewWatchlistName(e.target.value)}
+            multiline
+            fullWidth
+            margin="dense"
+            variant="standard"
+            // Display character limit and changes text to red if user goes over limit
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                <span style={{ color: newWatchlistName.length > 60 ? 'red' : 'inherit' }}>
+                  {newWatchlistName.length}/{60}
+                </span>
+              </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            autoFocus
+            id="watchlist-description"
+            label="Watchlist Description"
+            value={newWatchlistDescription}
+            onChange={(e) => setNewWatchlistDescription(e.target.value)}
+            multiline
+            fullWidth
+            margin="dense"
+            variant="standard"
+            // Display character limit and changes text to red if user goes over limit
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                <span style={{ color: newWatchlistDescription.length > 500 ? 'red' : 'inherit' }}>
+                  {newWatchlistDescription.length}/{500}
+                </span>
+              </InputAdornment>
+              ),
+            }}
+          />
+          {dialogErrorMessage && (
+            <Typography color="error" variant="body2">
+              {dialogErrorMessage}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" onClick={handleCreateWatchlistButtonClose}>
+            Exit</Button>
+
+          <Button 
+          variant="contained"
+          onClick={handleCreateWatchlistDialogSubmit}
+          disabled={
+            newWatchlistName.length > 60 || // Character limit for watchlist name
+            newWatchlistDescription.length > 500 // Character limit for watchlist description
+          }
+          >
+            Create
+          </Button>
+
+        </DialogActions>
+      </Dialog>
       </ThemeProvider>
     );
   };
