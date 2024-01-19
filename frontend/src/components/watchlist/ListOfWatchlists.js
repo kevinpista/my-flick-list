@@ -1,6 +1,7 @@
 import React, { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import NavBar from '../NavBar.js';
 import '../../css/Watchlist.css';
@@ -28,6 +29,7 @@ const ListOfWatchlists = () => {
   const [newWatchlistDescription, setNewWatchlistDescription] = useState('');
 
   const [dialogErrorMessage, setDialogErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -107,27 +109,25 @@ const handleCreateWatchlistButtonClose = () => {
 
 // createWatchlistAPI Call
 const handleCreateWatchlistDialogSubmit = async () => {
+  setLoading(true)
   try {
     const response = await createWatchlistAPI(newWatchlistName, newWatchlistDescription);
     if (response) {
 
-      // Clear the TextField inputs
-      setNewWatchlistName('');
-      setNewWatchlistDescription('');
-
-      setCreateWatchlistDialogOpen(false);
       setTimeout(() => {
         navigate(`/watchlist/${response.id}`)
-      }, 1000); // Redirect to new watchlist 
+      }, 3000); // Redirect to new watchlist 
 
     }
   } catch (error) {
     if (error.message === errorConstants.ERROR_BAD_REQUEST) {
+      setLoading(false)
       setDialogErrorMessage('Error: Bad request. Please try again.');
     } else {
+      setLoading(false)
       setDialogErrorMessage(`Error: ${error.message}`);
-    }
-  };
+    } 
+  }
 };
 
 // Renders "Login or Sign Up" pop up if a jwtToken is not found
@@ -240,8 +240,9 @@ const handleCreateWatchlistDialogSubmit = async () => {
           <Button variant="contained" onClick={handleCreateWatchlistButtonClose}>
             Exit</Button>
 
-          <Button 
+          <LoadingButton 
           variant="contained"
+          loading={loading}
           onClick={handleCreateWatchlistDialogSubmit}
           disabled={
             newWatchlistName.length > 60 || // Character limit for watchlist name
@@ -249,7 +250,7 @@ const handleCreateWatchlistDialogSubmit = async () => {
           }
           >
             Create
-          </Button>
+          </LoadingButton>
 
         </DialogActions>
       </Dialog>
