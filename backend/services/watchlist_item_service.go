@@ -115,62 +115,6 @@ func (c *WatchlistItemService) GetWatchlistWithWatchlistItemsByWatchlistID(watch
 	return watchlistItemsWithMovies, watchlistName, watchlistDescription, nil
 }
 
-/*
-// Fetches all watchlist items + the associated movie data only
-func (c *WatchlistItemService) GetAllWatchlistItemsWithMoviesByWatchListID(watchlistID int) ([]*models.WatchlistItemWithMovie, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-	defer cancel()
-
-	query := `
-		SELECT wi.id, wi.watchlist_id, wi.movie_id, wi.checkmarked, wi.created_at, wi.updated_at,
-			m.original_title, m.overview, m.tagline, m.release_date, m.poster_path, m.backdrop_path, m.runtime, m.adult,
-			m.budget, m.revenue, m.rating, m.votes, m.created_at AS movie_created_at, m.updated_at AS movie_updated_at
-		FROM watchlist_item wi
-		JOIN movie m ON wi.movie_id = m.id
-		WHERE wi.watchlist_id = $1
-	`
-
-	rows, err := db.QueryContext(ctx, query, watchlistID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var watchlistItemsWithMovies []*models.WatchlistItemWithMovie
-	for rows.Next() {
-		var watchlistItemWithMovie models.WatchlistItemWithMovie
-		err := rows.Scan(
-			&watchlistItemWithMovie.ID,
-			&watchlistItemWithMovie.WatchlistID,
-			&watchlistItemWithMovie.MovieID,
-			&watchlistItemWithMovie.Checkmarked,
-			&watchlistItemWithMovie.CreatedAt,
-			&watchlistItemWithMovie.UpdatedAt,
-			&watchlistItemWithMovie.OriginalTitle,
-			&watchlistItemWithMovie.Overview,
-			&watchlistItemWithMovie.Tagline,
-			&watchlistItemWithMovie.ReleaseDate,
-			&watchlistItemWithMovie.PosterPath,
-			&watchlistItemWithMovie.BackdropPath,
-			&watchlistItemWithMovie.Runtime,
-			&watchlistItemWithMovie.Adult,
-			&watchlistItemWithMovie.Budget,
-			&watchlistItemWithMovie.Revenue,
-			&watchlistItemWithMovie.Rating,
-			&watchlistItemWithMovie.Votes,
-			&watchlistItemWithMovie.MovieCreatedAt,
-			&watchlistItemWithMovie.MovieUpdatedAt,
-		)
-
-		if err != nil {
-			return nil, err
-		}
-		watchlistItemsWithMovies = append(watchlistItemsWithMovies, &watchlistItemWithMovie)
-	}
-	return watchlistItemsWithMovies, nil
-}
-*/
-
 // Important TWO-PART service function
 // Creates a watchlist_item with a movie_id with the watchlist ID it belongs to.
 // If the movie data is not in the local database yet, query TMDB API to fetch movie data, add to database, then connect
@@ -179,11 +123,18 @@ func (c *WatchlistItemService) CreateWatchlistItemByWatchlistID(watchlistItem mo
 	// Initial attempt to connect watchlist_item to movie_id. Success if movie_id is already in database.
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
+
+	// Use 'tx' to ensure atomicity of operations since the Watchlist updated_at field needs to be updated
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
 	query := `
 		INSERT INTO watchlist_item (watchlist_id, movie_id, checkmarked, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5) returning *
 		`
-	err := db.QueryRowContext(
+	err = tx.QueryRowContext(
 		ctx,
 		query,
 		watchlistItem.WatchlistID,
@@ -213,11 +164,12 @@ func (c *WatchlistItemService) CreateWatchlistItemByWatchlistID(watchlistItem mo
 			addToDatabaseErr := movieQuery.TMDBGetMovieByIDAddToLocalDatabase(movieIDString)
 			if addToDatabaseErr != nil {
 				// Error related to TMDBGetMovieByIDAddToLocalDatabase
+				tx.Rollback()
 				return nil, addToDatabaseErr
 			}
 
 			// At this point, movie that was not in database should be added now. Attempt to re-add watchlist_item again.
-			err := db.QueryRowContext(
+			err := tx.QueryRowContext(
 				ctx,
 				query,
 				watchlistItem.WatchlistID,
@@ -235,14 +187,40 @@ func (c *WatchlistItemService) CreateWatchlistItemByWatchlistID(watchlistItem mo
 			)
 		
 			if err != nil {
+				tx.Rollback()
 				return nil, errors.New("failed to create watchlist_item after adding movie to db")
 
 			}
 		} else {
 			// Error unrelated to 'movie not in database'
+			tx.Rollback()
 			return nil, err
 		}
 	} 
+	// Update Watchlist's updated_at time field
+	updateWatchlistQuery := `
+		UPDATE watchlist
+		SET updated_at = $1
+		WHERE id = $2
+	`
+
+	_, err = tx.ExecContext(
+		ctx,
+		updateWatchlistQuery,
+		time.Now(),
+		watchlistItem.WatchlistID,
+	)
+
+	if err != nil {
+		tx.Rollback()
+
+		return nil, err
+	}
+
+	// Send in transaction
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
 
 	return &watchlistItem, nil
 }
@@ -284,6 +262,7 @@ func (c *WatchlistItemService) UpdateCheckmarkedBooleanByWatchlistItemByID(watch
 	}
 	return nil
 }
+
 
 /*
 HELPER FUNCTIONS
