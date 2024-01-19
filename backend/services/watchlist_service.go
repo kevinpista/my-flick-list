@@ -13,15 +13,15 @@ type WatchlistService struct {
 	Watchlist models.Watchlist
 }
 
-// Create watchlist. Returns error if failure to create.
-func (c *WatchlistService) CreateWatchlist(userID uuid.UUID, watchlist models.Watchlist) (error) {
+// Create watchlist. Returns the watchlist details of the newly created watchlist - primarily for frontend to access id
+func (c *WatchlistService) CreateWatchlist(userID uuid.UUID, watchlist models.Watchlist) (*models.Watchlist, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	query := `
 		INSERT INTO watchlist (users_id, name, description, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5) returning id, users_id, name, description, created_at, updated_at
 	`
-	var insertedWatchlist models.Watchlist
+	var createdWatchlist models.Watchlist
 	queryErr := db.QueryRowContext(
 		ctx,
 		query,
@@ -31,18 +31,18 @@ func (c *WatchlistService) CreateWatchlist(userID uuid.UUID, watchlist models.Wa
 		time.Now(),
 		time.Now(),
 	).Scan(
-		&insertedWatchlist.ID,
-		&insertedWatchlist.UserID,
-		&insertedWatchlist.Name,
-		&insertedWatchlist.Description,
-		&insertedWatchlist.CreatedAt,
-		&insertedWatchlist.UpdatedAt,
+		&createdWatchlist.ID,
+		&createdWatchlist.UserID,
+		&createdWatchlist.Name,
+		&createdWatchlist.Description,
+		&createdWatchlist.CreatedAt,
+		&createdWatchlist.UpdatedAt,
 	)
 	if queryErr != nil {
-		return queryErr
+		return nil, queryErr
 	}
 
-	return nil
+	return &createdWatchlist, nil
 }
 
 func (c *WatchlistService) GetAllWatchlists() ([]*models.Watchlist, error) {

@@ -116,7 +116,7 @@ func GetWatchlistByID(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteJSON(w, http.StatusOK, watchlistData)
 }
 
-// POST/watchlists - user_id fetched from JWT token
+// POST/watchlists - user_id fetched from JWT token - returns the new watchlist details
 func CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 	var watchlistData services.WatchlistService
 
@@ -149,13 +149,13 @@ func CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	queryErr := watchlist.CreateWatchlist(userID, watchlistData.Watchlist)
+	createdWatchlist, queryErr := watchlist.CreateWatchlist(userID, watchlistData.Watchlist)
 	if queryErr != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		helpers.ErrorJSON(w, errors.New(error_constants.BadRequest), http.StatusBadRequest)
 		return
 	}
-	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"message": "Watchlist created successfully!"})
+	helpers.WriteJSON(w, http.StatusOK, createdWatchlist)
 }
 
 // DELETE /watchlist?id={watchlistID}
