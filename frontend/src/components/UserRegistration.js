@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -47,6 +48,7 @@ export default function UserRegistration() {
 
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
     const [errorAlertMessage, setErrorAlertMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -61,7 +63,10 @@ export default function UserRegistration() {
             setErrorAlertMessage('');
             setShowSuccessAlert(true);
 
-            // TODO - add action such as logging user in or redirecting
+            setTimeout(() => {
+                navigate('/watchlist');
+              }, 1500); // Redirect to user's watchlist page after 1.5 second delay
+
         } 
 
         // If error was thrown by API request
