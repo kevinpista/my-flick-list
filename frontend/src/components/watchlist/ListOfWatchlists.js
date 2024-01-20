@@ -116,7 +116,7 @@ const handleCreateWatchlistDialogSubmit = async () => {
 
       setTimeout(() => {
         navigate(`/watchlist/${response.id}`)
-      }, 3000); // Redirect to new watchlist 
+      }, 2000); // Redirect to new watchlist 
 
     }
   } catch (error) {
@@ -341,8 +341,9 @@ const handleCreateWatchlistDialogSubmit = async () => {
         <Button variant="contained" onClick={handleCreateWatchlistButtonClose}>
           Exit</Button>
 
-        <Button 
+        <LoadingButton 
         variant="contained"
+        loading={loading}
         onClick={handleCreateWatchlistDialogSubmit}
         disabled={
           newWatchlistName.length > 60 || // Character limit for watchlist name
@@ -350,7 +351,7 @@ const handleCreateWatchlistDialogSubmit = async () => {
         }
         >
           Create
-        </Button>
+        </LoadingButton>
 
       </DialogActions>
     </Dialog>

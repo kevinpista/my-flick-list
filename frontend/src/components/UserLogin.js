@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -19,6 +18,7 @@ import { loginUser } from '../api/userLoginAPI';
 import * as errorConstants from '../api/errorConstants';
 import * as themeStyles from '../styling/ThemeStyles';
 import Alert from '@mui/material/Alert';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 function Copyright(props) {
     return (
@@ -40,7 +40,7 @@ export default function UserLogin() {
     email: '',
     password: '',
   });
-
+  const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
 
@@ -68,6 +68,7 @@ export default function UserLogin() {
 
     try {
         const response = await loginUser(formData);
+        setLoading(true)
 
         if (response) {
           setErrorAlertMessage('');
@@ -75,19 +76,23 @@ export default function UserLogin() {
 
           setTimeout(() => {
             navigate('/watchlist');
-          }, 2000); // Redirect to user's watchlist page after 2 seconds delay
+          }, 1600); // Redirect to user's watchlist page
+          setLoading(false)
 
         }
     } catch (error) {
         if (error.message === errorConstants.ERROR_INVALID_EMAIL) {
           setErrorAlertMessage('Email format not valid.');
+          setLoading(false)
           setEmailError(true);
       } else if (error.message === errorConstants.ERROR_INVALID_LOGIN) {
           setErrorAlertMessage('Invalid login credentials');
+          setLoading(false)
           setEmailError(true); // Set error status for both form fields
           setPasswordError(true);
       } else {
           setErrorAlertMessage('An unexpected error occurred');
+          setLoading(false)
       }
     };
   };
@@ -95,7 +100,6 @@ export default function UserLogin() {
   const handleInputChange = (e) => {
     const fieldName = e.target.name;
     const fieldValue = e.target.value;
-
     // Reset error state when the user starts typing in a field
     if (fieldName === 'email') {
       setEmailError(false);
@@ -171,14 +175,17 @@ export default function UserLogin() {
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
             />
-            <Button
+
+            <LoadingButton 
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In
-            </Button>
+              loading={loading}
+              style={{marginTop: "5px", marginBottom: "10px"}}
+              
+              >
+              SIGN IN
+            </LoadingButton>
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">

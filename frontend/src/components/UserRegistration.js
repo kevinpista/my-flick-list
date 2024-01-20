@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
@@ -17,6 +16,8 @@ import { registerUser } from '../api/userRegistrationAPI';
 import * as errorConstants from '../api/errorConstants';
 import * as themeStyles from '../styling/ThemeStyles';
 import Alert from '@mui/material/Alert';
+import LoadingButton from '@mui/lab/LoadingButton';
+
 
 function Copyright(props) {
   return (
@@ -45,6 +46,7 @@ export default function UserRegistration() {
     const [nameError, setNameError] = useState(false);
     const [emailError, setEmailError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
     const [errorAlertMessage, setErrorAlertMessage] = useState('');
@@ -52,6 +54,7 @@ export default function UserRegistration() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        setLoading(true)
 
     try {
         const response = await registerUser(formData); // i believe response var here = the backend json body already
@@ -65,12 +68,12 @@ export default function UserRegistration() {
 
             setTimeout(() => {
                 navigate('/watchlist');
-              }, 1500); // Redirect to user's watchlist page after 1.5 second delay
-
+              }, 1600); // Redirect to user's watchlist page
         } 
 
         // If error was thrown by API request
         } catch(error) {
+            setLoading(false)
             if (error.message === errorConstants.ERROR_EMAIL_EXISTS) {
                 setErrorAlertMessage('Email address is already in use.');
                 setEmailError(true);
@@ -186,14 +189,16 @@ export default function UserRegistration() {
                     />
                     </Grid>
                 </Grid>
-                <Button
+                <LoadingButton 
                     type="submit"
                     fullWidth
                     variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
-                >
-                    Sign Up
-                </Button>
+                    loading={loading}
+                    style={{marginTop: "20px", marginBottom: "15px"}}
+                    
+                    >
+                    SIGN UP
+                </LoadingButton>
                 <Grid container justifyContent="center">
                     <Grid item>
                     <Link href="http://localhost:3000/user-login" variant="body2">
