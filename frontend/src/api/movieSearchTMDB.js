@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Fetches the movie search results from TMDB API - must pass in query parameters
 
-export function movieSearchTMDB(query, page = 1) {
+export function movieSearchTMDBAPI(query, page = 1) {
     // query argument will be normal spaced out words, encode query for spaces to become "%2B" 
     const encodedQuery = encodeURIComponent(query).replace(/%20/g, '%2B');
     

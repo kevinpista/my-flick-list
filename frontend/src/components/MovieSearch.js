@@ -34,7 +34,7 @@ const MovieSearch = () => {
         if (query !== null) {
         const fetchData = async () => {
             try {
-                const data = await movieSearchTMDB(query, currentPage);
+                const data = await movieSearchTMDBAPI(query, currentPage);
                 setSearchResults(data.results || []);
                 setTotalPages(data.total_pages || 1);
                 setTotalResultsCount(data.total_results || 0);
