@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import { Container, Typography, Button } from '@mui/material';
+import { Container, Paper, Typography, Button } from '@mui/material';
 import NavBar from './NavBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/MovieSearch.css';
@@ -8,6 +8,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import MovieSearchBar from './MovieSearchBar.js';
 import MovieSearchResults from './MovieSearchResults';
+
+import { ThemeProvider } from '@mui/material/styles';
+import { muiTheme } from '../css/MuiThemeProvider.js';
 
 const MovieSearch = () => {
 
@@ -28,6 +31,7 @@ const MovieSearch = () => {
     const [totalResultsCount, setTotalResultsCount] = useState(0);
 
     useEffect(() => {
+        if (query !== null) {
         const fetchData = async () => {
             try {
                 const data = await movieSearchTMDB(query, currentPage);
@@ -40,7 +44,8 @@ const MovieSearch = () => {
         };
 
         fetchData();
-        }, [query, currentPage]);
+        }
+    }, [query, currentPage]);
 
     // Pagination handling
     const handleNextPage = () => {
@@ -67,37 +72,54 @@ const MovieSearch = () => {
             <NavBar />
             <Container >
             <MovieSearchBar/>
-            {error ? (
-                <h1 className='error'><u>Error:</u> {error.message}</h1>
+            {query === null ? (
+                    // Render a message when query is null
+                        <ThemeProvider theme={muiTheme}>
+                          <Container maxWidth="lg" style={{ marginTop: '15px', textAlign: 'center' }}>
+                          <Paper elevation={15} style={{ padding: '25px' }}>
+                            <Typography variant="h6" color='#032541' fontWeight='bold'>
+                              Type in the search bar above to find any movie
+                            </Typography>
+
+                            <Typography variant="h7" >
+                              View the movie and add it to your watchlist.
+                            </Typography>
+                          </Paper>
+                          </Container>
+                        </ThemeProvider>
+            ) : (
+                error ? (
+                    <h1 className='error'><u>Error:</u> {error.message}</h1>
                 ) : (
-                <React.Fragment>
-                    {searchResults && (
-                    searchResults.map((movie) => (
-                        <MovieSearchResults
-                            key = {movie.id}
-                            id = {movie.id}
-                            title = {movie.original_title}
-                            releaseDate = {movie.release_date}
-                            description = {movie.overview}
-                            posterURL={movie.poster_path ? `https://image.tmdb.org/t/p/w300_and_h450_bestv2${movie.poster_path}` : null }
-                            />
-                        )) 
-                    )}
-                    <div className="pagination">
-                        <Button onClick={handlePrevPage} disabled={currentPage === 1}>
-                            Previous
-                        </Button>
-                        <Typography variant="h6" className="page-indicator" style={{ margin: '0 15px' }}>
-                            Page {currentPage} of {totalPages}
-                        </Typography>
-                        <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
-                            Next Page
-                        </Button>
-                        <Typography variant="h6" className="page-indicator" style={{ margin: '0 15px' }}>
-                        Total results: {totalResultsCount}
-                        </Typography>
-                    </div>
-                </React.Fragment>
+                    <React.Fragment>
+                        {searchResults && (
+                        searchResults.map((movie) => (
+                            <MovieSearchResults
+                                key = {movie.id}
+                                id = {movie.id}
+                                title = {movie.original_title}
+                                releaseDate = {movie.release_date}
+                                description = {movie.overview}
+                                posterURL={movie.poster_path ? `https://image.tmdb.org/t/p/w300_and_h450_bestv2${movie.poster_path}` : null }
+                                />
+                            )) 
+                        )}
+                        <div className="pagination">
+                            <Button onClick={handlePrevPage} disabled={currentPage === 1}>
+                                Previous
+                            </Button>
+                            <Typography variant="h6" className="page-indicator" style={{ margin: '0 15px' }}>
+                                Page {currentPage} of {totalPages}
+                            </Typography>
+                            <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
+                                Next Page
+                            </Button>
+                            <Typography variant="h6" className="page-indicator" style={{ margin: '0 15px' }}>
+                            Total results: {totalResultsCount}
+                            </Typography>
+                        </div>
+                    </React.Fragment>
+                )
                 )}
             </Container>
         </React.Fragment>
