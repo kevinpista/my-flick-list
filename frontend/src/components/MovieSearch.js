@@ -56,12 +56,15 @@ const MovieSearch = () => {
     const handleNextPage = () => {
         if (currentPage < totalPages) {
             updateURL(currentPage + 1);
+           // Scroll to the top of the page
+           window.scrollTo({ top: 0, behavior: 'instant' });
         }
     };
 
     const handlePrevPage = () => {
         if (currentPage > 1) {
             updateURL(currentPage - 1);
+            window.scrollTo({ top: 0, behavior: 'instant' });
         }
     };
     
