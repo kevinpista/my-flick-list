@@ -3,6 +3,9 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
 import '../css/MovieSearchBar.css';
+import { ThemeProvider } from '@mui/material/styles';
+import { muiTheme } from '../css/MuiThemeProvider.js';
+
 
 function MovieSearchBar() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,6 +16,7 @@ function MovieSearchBar() {
   };
 
   return (
+    <ThemeProvider theme={muiTheme}>
     <div className="search-bar">
       <TextField
         label="Search for a movie..."
@@ -27,10 +31,15 @@ function MovieSearchBar() {
             }
         }}
       />
-      <Button className="search-button" variant="contained" onClick={handleSearch}>
+      <Button 
+      className="search-button" 
+      variant="contained" 
+      onClick={handleSearch}
+      >
         Search
       </Button>
     </div>
+    </ThemeProvider>
   );
 }
 
