@@ -3,7 +3,7 @@ import { Container, Paper, Typography, Button } from '@mui/material';
 import NavBar from './NavBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/MovieSearch.css';
-import { movieSearchTMDB } from '../api/movieSearchTMDB';
+import { movieSearchTMDBAPI } from '../api/movieSearchTMDB';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import MovieSearchBar from './MovieSearchBar.js';
@@ -15,6 +15,7 @@ import { muiTheme } from '../css/MuiThemeProvider.js';
 const MovieSearch = () => {
 
     const [error, setError] = useState(null);
+    const [noMoviesFound, setNoMoviesFound] = useState(false)
 
     const navigate = useNavigate();
 
@@ -34,10 +35,14 @@ const MovieSearch = () => {
         if (query !== null) {
         const fetchData = async () => {
             try {
-                const data = await movieSearchTMDBAPI(query, currentPage);
-                setSearchResults(data.results || []);
-                setTotalPages(data.total_pages || 1);
-                setTotalResultsCount(data.total_results || 0);
+                const response = await movieSearchTMDBAPI(query, currentPage);
+                if (response.status === 204) {
+                    setNoMoviesFound(true);
+                  } else {
+                    setSearchResults(response.data.results || []);
+                    setTotalPages(response.data.total_pages || 1);
+                    setTotalResultsCount(response.data.total_results || 0);
+                  }
             } catch (error) {
                 setError(error);
             }
@@ -65,7 +70,34 @@ const MovieSearch = () => {
         navigate(`/movie-search${newSearch}`);
         setCurrentPage(page);
     };
-      
+
+  // Renders No Results message if no movies found by TMDB API
+    if (noMoviesFound) {
+        return (
+            <React.Fragment>
+                <NavBar />
+                <Container >
+                <MovieSearchBar/>
+
+                <ThemeProvider theme={muiTheme}>
+                    <Container maxWidth="lg" style={{ marginTop: '15px', textAlign: 'center' }}>
+                    <Paper elevation={15} style={{ padding: '25px' }}>
+                    <Typography variant="h6" color='#032541' fontWeight='bold'>
+                        No Results Found
+                    </Typography>
+
+                    <Typography variant="h7" >
+                    There were no movies found for your search query.
+                    </Typography>
+                    </Paper>
+                    </Container>
+                </ThemeProvider>
+
+                </Container>
+            </React.Fragment>
+        );
+    };
+        
     // RENDER COMPONENT
     return (
         <React.Fragment>
@@ -78,11 +110,11 @@ const MovieSearch = () => {
                           <Container maxWidth="lg" style={{ marginTop: '15px', textAlign: 'center' }}>
                           <Paper elevation={15} style={{ padding: '25px' }}>
                             <Typography variant="h6" color='#032541' fontWeight='bold'>
-                              Type in the search bar above to find any movie
+                              Use the search bar above to find any movie
                             </Typography>
 
                             <Typography variant="h7" >
-                              View the movie and add it to your watchlist.
+                              Then view the movie and add it to your watchlist.
                             </Typography>
                           </Paper>
                           </Container>

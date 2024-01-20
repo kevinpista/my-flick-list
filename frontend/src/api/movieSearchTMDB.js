@@ -8,12 +8,7 @@ export function movieSearchTMDBAPI(query, page = 1) {
     
     return axios.get(`http://localhost:8080/api/tmdb-search?query=${encodedQuery}&page=${page}`)
     .then(response => {
-        // TESTING
-        console.log(response.data)
-        if (response.status === 204) {
-          throw new Error('No results found');
-        }
-        return response.data;
+        return response; // Returning entire response so that component can check status code
       })
       .catch(error => {
         if (error.response) {
