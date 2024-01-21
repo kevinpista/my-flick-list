@@ -10,6 +10,7 @@ import axios from 'axios';
 import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
 
 import WatchlistItemsTable from './WatchlistItemsTable';
+import MovieSearchBar from '../MovieSearchBar.js';
 
 import { ThemeProvider } from '@mui/material/styles';
 import {muiTheme} from '../../css/MuiThemeProvider.js';
@@ -176,6 +177,7 @@ const handleEditDescriptionDialogSubmit = async () => {
         <Button variant="contained" onClick={handleEditDescriptionButtonClick}>
           Edit Description
         </Button>
+        <MovieSearchBar sizeSx="small" labelText="Find a movie to add..."/>
         </div>
       </div>
 

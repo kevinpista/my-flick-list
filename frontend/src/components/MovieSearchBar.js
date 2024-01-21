@@ -7,8 +7,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { muiTheme } from '../css/MuiThemeProvider.js';
 import SearchIcon from '@mui/icons-material/Search';
 
-
-function MovieSearchBar() {
+// Args for search bar TextField's size & label
+function MovieSearchBar({ sizeSx ="medium", labelText="Search for any movie..."}) { 
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = () => {
@@ -20,7 +20,7 @@ function MovieSearchBar() {
     <ThemeProvider theme={muiTheme}>
     <div className="search-bar">
       <TextField
-        label="Search for a movie..."
+        label={labelText}
         type="search"
         variant="filled"
         color="primary"
@@ -34,6 +34,7 @@ function MovieSearchBar() {
                 handleSearch();
             }
         }}
+        size={sizeSx}
       />
       <Button 
         className="search-button" 

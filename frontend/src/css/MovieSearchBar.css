@@ -1,9 +1,10 @@
 .search-bar {
     display: flex;
     align-items: left;
-    gap: 16px;
+    gap: 1%;
     padding: 16px;
     color: #032541;
+    width: 100%;
   }
 
   .search-button {
