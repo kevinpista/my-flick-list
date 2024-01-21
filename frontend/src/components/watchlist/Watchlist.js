@@ -1,10 +1,10 @@
 import React, { useState, useEffect} from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from '@mui/material';
+import { Container, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Paper, Typography } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import NavBar from '../NavBar.js';
 import '../../css/Watchlist.css';
-import { fetchWatchlistAndItems, editWatchlistName, editWatchlistDescription } from '../../api/watchlistAPI.js'
+import { fetchWatchlistAndItemsAPI, editWatchlistName, editWatchlistDescription } from '../../api/watchlistAPI.js'
 import * as errorConstants from '../../api/errorConstants';
 import axios from 'axios';
 import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
@@ -15,13 +15,10 @@ import MovieSearchBar from '../MovieSearchBar.js';
 import { ThemeProvider } from '@mui/material/styles';
 import {muiTheme} from '../../css/MuiThemeProvider.js';
 
-// TODO - if "error" is thrown relating to no movies in watchlist yet, still display
-// the title and description, have message displayed, but include movie search bar for the user
-
 // Individual Watchlist that represents 1 single watchlist and holds up to 20 movies
-
 const Watchlist = () => {
   const { watchlistID } = useParams(); // Extract watchlistID from the URL params
+  const [noWatchlistItemsFound, setNoWatchlistsItemsFound] = useState(false);
   
   const [watchlistName, setWatchlistName] = useState(null);
   const [watchlistDescription, setWatchlistDescription] = useState(null);
@@ -39,12 +36,13 @@ const Watchlist = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetchWatchlistAndItems(watchlistID);
+        const response = await fetchWatchlistAndItemsAPI(watchlistID);
+        console.log(response)
         // Still want to render Name + Description if there are no items added yet
         if (response['watchlist-items'] === null) {
           setWatchlistName(response['name']);
           setWatchlistDescription(response['description']);
-          setError(Error("You have not added any movies yet."));
+          setNoWatchlistsItemsFound(true)
         } else {
           setWatchlistItems(response);
           setWatchlistName(response['name']);
@@ -146,6 +144,142 @@ const handleEditDescriptionDialogSubmit = async () => {
     }
   };
 };
+  // Renders Movie Search Bar so user can find a movie and add to empty watchlist
+  if (noWatchlistItemsFound) {
+    return(
+    <ThemeProvider theme={muiTheme}>
+    <React.Fragment>
+      <NavBar />
+      <div className="watchlist-root">
+      <Container maxWidth={"xl"} className="watchlist-item-grid-container">
+        <div className="watchlist-name-div">
+          <h1 className="watchlist-name">{watchlistName}</h1>
+        </div>
+
+        <p className="watchlist-description">{watchlistDescription}</p>
+
+        <MovieSearchBar labelText="Search for a movie to add..."/>
+        <Paper elevation={20} style={{ padding: '35px', marginTop:'1%' }}>
+          <Typography variant="h6" color='#032541' fontWeight='bold' sx={{ textAlign: 'center' }}>
+            No Movies In This Watchlist
+          </Typography>
+
+          <Typography variant="h7" sx={{ display:"flex", justifyContent:"center",textAlign: 'center' }}>
+          Let's add some movies! Use the search bar above to search.
+          </Typography>
+        </Paper>
+      </Container>
+      <div className="watchlist-buttons-table">
+        <Button variant="contained" onClick={handleEditNameButtonClick}>
+          Edit Watchlist Name
+        </Button>
+        <Button variant="contained" onClick={handleEditDescriptionButtonClick}>
+          Edit Description
+        </Button>
+        </div>
+      </div>
+
+      {/* Modal for editing watchlist name */}
+      <Dialog
+        open={isEditNameDialogOpen}
+        onClose={handleEditNameDialogClose}
+        maxWidth="md"
+        fullWidth={true}
+      >
+        <DialogTitle>Edit Watchlist Name</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            label="Enter new name..."
+            value={newWatchlistName}
+            onChange={(e) => setNewWatchlistName(e.target.value)}
+            multiline
+            fullWidth
+            margin="dense"
+            variant="standard"
+            // Display character limit and changes text to red if user goes over limit
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                <span style={{ color: newWatchlistName.length > 60 ? 'red' : 'inherit' }}>
+                  {newWatchlistName.length}/{60}
+                </span>
+              </InputAdornment>
+              ),
+            }}
+          />
+          {dialogErrorMessage && (
+            <Typography color="error" variant="body2">
+              {dialogErrorMessage}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" onClick={handleEditNameDialogClose}>Cancel</Button>
+          <Button
+          variant="contained"
+          onClick={handleEditNameDialogSubmit}
+          disabled={
+            newWatchlistName.length > 60 // Character limit for watchlist name
+          }
+          >
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal for editing watchlist description */}
+      <Dialog 
+        open={isEditDescriptionDialogOpen}
+        onClose={handleEditDescriptionDialogClose}
+        maxWidth="lg"
+        fullWidth={true}
+      >
+        <DialogTitle>Edit Watchlist Description</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            label="Enter new description..."
+            value={newWatchlistDescription}
+            onChange={(e) => setNewWatchlistDescription(e.target.value)}
+            multiline
+            maxWidth="lg"
+            fullWidth={true}
+            margin="dense"
+            variant="standard"
+            // Display character limit and changes text to red if user goes over limit
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                <span style={{ color: newWatchlistDescription.length > 500 ? 'red' : 'inherit' }}>
+                  {newWatchlistDescription.length}/{500}
+                </span>
+              </InputAdornment>
+              ),
+            }}
+          />
+          {dialogErrorMessage && (
+            <Typography color="error" variant="body2">
+              {dialogErrorMessage}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" onClick={handleEditDescriptionDialogClose}>Cancel</Button>
+          <Button
+          variant="contained"
+          onClick={handleEditDescriptionDialogSubmit}
+          disabled={
+            newWatchlistDescription.length > 500 // Character limit for watchlist description
+          }
+          >
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
+    </ThemeProvider>
+  )};
 
   return (
     <ThemeProvider theme={muiTheme}>
@@ -159,7 +293,7 @@ const handleEditDescriptionDialogSubmit = async () => {
 
         <p className="watchlist-description">{watchlistDescription}</p>
         {error ? (
-          <h1 className='error'><u>Heads Up:</u> {error.message}</h1>
+          <h1 className='error'><u>Error:</u> {error.message}</h1>
         ) : (
           watchlistItems && (
           <WatchlistItemsTable 
@@ -171,10 +305,10 @@ const handleEditDescriptionDialogSubmit = async () => {
         )}
       </Container>
       <div className="watchlist-buttons-table">
-        <Button variant="contained" onClick={handleEditNameButtonClick}>
+        <Button variant="contained" onClick={handleEditNameButtonClick} disabled={error}>
           Edit Watchlist Name
         </Button>
-        <Button variant="contained" onClick={handleEditDescriptionButtonClick}>
+        <Button variant="contained" onClick={handleEditDescriptionButtonClick} disabled={error}>
           Edit Description
         </Button>
         <MovieSearchBar sizeSx="small" labelText="Find a movie to add..."/>

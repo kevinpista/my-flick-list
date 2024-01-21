@@ -6,7 +6,7 @@ import { getJwtTokenFromCookies } from '../utils/authTokenUtils'
 
 // Returns watchlist name, description and its watchlist items
 // router.GET("/api/watchlist-items-with-movies, controllers.GetAllWatchlistItemsWithMoviesByWatchListID) 
-export function fetchWatchlistAndItems (watchlistID) {
+export function fetchWatchlistAndItemsAPI (watchlistID) {
     // Fetch the user's stored JWT token from cookies
     const token = getJwtTokenFromCookies();
     if (!token) {
