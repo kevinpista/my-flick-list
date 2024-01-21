@@ -41,7 +41,8 @@ export function fetchWatchlistAndItemsAPI (watchlistID) {
     }
 
 // router.DELETE("/api/watchlist-item?id={watchlistItemID}, controllers.DeleteWatchlistItemByID(id)
-export function deleteWatchlistItem (watchlistItemID) {
+// Deletes watchlist_item via its id
+export function deleteWatchlistItemAPI (watchlistItemID) {
     // Fetch the user's stored JWT token from cookies
     const token = getJwtTokenFromCookies();
     if (!token) {
@@ -142,7 +143,8 @@ export function fetchWatchlistsByUserIDWithMovieIDCheck (movieID) {
     }
     
 
-// 	router.DELETE("/api/watchlist?id={watchlistID}", controllers.DeleteWatchlistByID) // DELETE watchlist via its id
+// 	router.DELETE("/api/watchlist?id={watchlistID}", controllers.DeleteWatchlistByID)
+// DELETE watchlist via its id
 export function deleteWatchlistAPI (watchlistID) {
     // Fetch the user's stored JWT token from cookies
     const token = getJwtTokenFromCookies();
@@ -179,7 +181,7 @@ export function deleteWatchlistAPI (watchlistID) {
 
 // router.Patch("/api/watchlist-name", controllers.UpdateWatchlistNameByID) // PATCH a watchlist name
 // expects "?id={watchlistID}" query param + new name in the json body
-export function editWatchlistName (watchlistID, newWatchlistName) {
+export function editWatchlistNameAPI (watchlistID, newWatchlistName) {
     // Fetch the user's stored JWT token from cookies
     const token = getJwtTokenFromCookies();
     if (!token) {
@@ -218,7 +220,7 @@ export function editWatchlistName (watchlistID, newWatchlistName) {
 
 // router.Patch("/api/watchlist-description", controllers.UpdateWatchlistDescriptionByID) // PATCH watchlist description
 // expects "?id={watchlistID}" query param + new description in the json body"
-export function editWatchlistDescription (watchlistID, newWatchlistDescription) {
+export function editWatchlistDescriptionAPI (watchlistID, newWatchlistDescription) {
     // Fetch the user's stored JWT token from cookies
     const token = getJwtTokenFromCookies();
     if (!token) {

@@ -4,10 +4,8 @@ import { Container, Button, Dialog, DialogTitle, DialogContent, DialogActions, T
 import InputAdornment from '@mui/material/InputAdornment';
 import NavBar from '../NavBar.js';
 import '../../css/Watchlist.css';
-import { fetchWatchlistAndItemsAPI, editWatchlistName, editWatchlistDescription } from '../../api/watchlistAPI.js'
+import { fetchWatchlistAndItemsAPI, deleteWatchlistItemAPI, editWatchlistNameAPI, editWatchlistDescriptionAPI } from '../../api/watchlistAPI.js'
 import * as errorConstants from '../../api/errorConstants';
-import axios from 'axios';
-import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
 
 import WatchlistItemsTable from './WatchlistItemsTable';
 import MovieSearchBar from '../MovieSearchBar.js';
@@ -63,27 +61,17 @@ const Watchlist = () => {
 
 const handleDeleteWatchlistItem = async (watchlistItemId) => {
   try {
-    console.log("delete button hit outer")
-    const token = getJwtTokenFromCookies();
-    if (!token) {
-      console.error('Token not available or expired');
-      // For now, will use a Promise.reject method instead of redirect
-      return Promise.reject('Token not available or expired');
+    const response = await deleteWatchlistItemAPI(watchlistItemId);
+    if (response) {
+      // Update the watchlist items in the state after a deletion
+      setWatchlistItems((prevItems) => {
+        const currentItems = prevItems && prevItems['watchlist-items']; // Extract the array from the object
+        const updatedItems = Array.isArray(currentItems)
+          ? currentItems.filter((item) => item.id !== watchlistItemId) // Re-render all items not equal to the itemID that was deleted
+          : [];
+        return { 'watchlist-items': updatedItems }; // Maintain JSON object structure
+      });
     }
-  
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };    
-    
-    await axios.delete(`http://localhost:8080/api/watchlist-item?id=${watchlistItemId}`, { headers });
-    // Update the watchlist items in the state after a deletion
-    setWatchlistItems((prevItems) => {
-      const currentItems = prevItems && prevItems['watchlist-items']; // Extract the array from the object
-      const updatedItems = Array.isArray(currentItems)
-        ? currentItems.filter((item) => item.id !== watchlistItemId) // Re-render all items not equal to the itemID that was deleted
-        : [];
-      return { 'watchlist-items': updatedItems }; // Maintain JSON object structure
-    });
   } catch (error) {
     console.error('Error deleting item:', error);
   }
@@ -101,7 +89,7 @@ const handleEditNameDialogClose = () => {
 
 const handleEditNameDialogSubmit = async () => {
   try {
-    const response = await editWatchlistName(watchlistID, newWatchlistName);
+    const response = await editWatchlistNameAPI(watchlistID, newWatchlistName);
     if (response) {
       setWatchlistName(response.name);
       setEditNameDialogOpen(false);
@@ -129,7 +117,7 @@ const handleEditDescriptionDialogClose = () => {
 
 const handleEditDescriptionDialogSubmit = async () => {
   try {
-    const response = await editWatchlistDescription(watchlistID, newWatchlistDescription);
+    const response = await editWatchlistDescriptionAPI(watchlistID, newWatchlistDescription);
     if (response) {
       setWatchlistDescription(response.description);
       setEditDescriptionDialogOpen(false);
