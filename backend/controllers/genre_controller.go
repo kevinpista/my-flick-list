@@ -53,3 +53,18 @@ func CreateGenreDataByMovieID(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteJSON(w, http.StatusOK, genreDataCreated)
 
 }
+
+// GET/genre -- TESTING PURPOSES ONLY
+func GetAllGenres(w http.ResponseWriter, r *http.Request) {
+	genreData, err := genre.GetAllGenres()
+	
+    if err != nil {
+        if err == sql.ErrNoRows {
+            helpers.ErrorJSON(w, errors.New("genre data not found"), http.StatusNotFound)
+        } else {
+            helpers.ErrorJSON(w, err, http.StatusBadRequest)
+        }
+        return
+    }
+	helpers.WriteJSON(w, http.StatusOK, genreData)
+}

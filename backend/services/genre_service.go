@@ -66,3 +66,37 @@ func (c *GenreService) CreateGenreDataByMovieID(genre models.Genre) (*models.Gen
 
 	return &genre, nil
 }
+
+func (c *GenreService) GetAllGenres() ([]*models.Genre, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+	query := `
+		SELECT * FROM genre
+	`
+	rows, err := db.QueryContext(ctx, query)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var genres []*models.Genre // holds multiple movie pointers. a slice called 'movies' holding pointers of type Movie struct
+	for rows.Next() {   // for every row we get from our db query
+		var genre models.Genre // we create a var called movie with type Movie struct and append it to our movies slice
+		// order should follow the order of your query
+		// scan each row from our query and assigns the column field data from our query to each movie Movie struct field
+		err := rows.Scan(
+			&genre.MovieID,
+			&genre.GenreID,
+			&genre.Genre,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		genres = append(genres, &genre)
+	}
+
+	return genres, nil// Case where query did not find any genre data for the movie
+}
