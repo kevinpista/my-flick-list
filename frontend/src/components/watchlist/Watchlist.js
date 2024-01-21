@@ -9,6 +9,8 @@ import * as errorConstants from '../../api/errorConstants';
 
 import WatchlistItemsTable from './WatchlistItemsTable';
 import MovieSearchBar from '../MovieSearchBar.js';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 import { ThemeProvider } from '@mui/material/styles';
 import {muiTheme} from '../../css/MuiThemeProvider.js';
@@ -30,6 +32,11 @@ const Watchlist = () => {
   const [newWatchlistDescription, setNewWatchlistDescription] = useState('');
   const [dialogErrorMessage, setDialogErrorMessage] = useState(''); // Use 1 for both Name & Description edits 
 
+  // Snackbar Alert messages upon submission of a successful or failed edit of name or description
+  const [successAlertOpen, setSuccessAlertOpen] = useState(false);
+  const [errorAlertOpen, setErrorAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,9 +56,9 @@ const Watchlist = () => {
       } catch (error) {
         setError(error);
         if (error.message === errorConstants.ERROR_BAD_REQUEST) {
-          console.log('Bad request');
-      } else {
-        console.log('Unexpected error occured');
+          handleErrorAlertOpen(`Request failed: ${error.message}`);
+        } else {
+          handleErrorAlertOpen(`Request failed: ${error.message}`);
       }
     }
   };
@@ -71,13 +78,16 @@ const handleDeleteWatchlistItem = async (watchlistItemId) => {
           : [];
         return { 'watchlist-items': updatedItems }; // Maintain JSON object structure
       });
+      handleSuccessAlertOpen('Movie successfully deleted.');
     }
   } catch (error) {
-    console.error('Error deleting item:', error);
+    handleErrorAlertOpen(`Error deleting movie: ${error}`);
+    console.error('Error deleting movie:', error);
   }
 };
 
-// Handle Edit Watchlist Name
+// MODAL DIALOG FORMS
+// Handle Edit Watchlist Name 
 const handleEditNameButtonClick = () => {
   setEditNameDialogOpen(true);
 };
@@ -93,6 +103,7 @@ const handleEditNameDialogSubmit = async () => {
     if (response) {
       setWatchlistName(response.name);
       setEditNameDialogOpen(false);
+      handleSuccessAlertOpen('Name successfully updated.');
     }
   } catch (error) {
     if (error.message === errorConstants.ERROR_INVALID_NAME) {
@@ -121,6 +132,7 @@ const handleEditDescriptionDialogSubmit = async () => {
     if (response) {
       setWatchlistDescription(response.description);
       setEditDescriptionDialogOpen(false);
+      handleSuccessAlertOpen('Description successfully updated.');
     }
   } catch (error) {
     if (error.message === errorConstants.ERROR_INVALID_NAME) {
@@ -132,6 +144,24 @@ const handleEditDescriptionDialogSubmit = async () => {
     }
   };
 };
+
+// Handles SnackBar Alert Messages
+const handleSuccessAlertOpen = (message) => {
+  setAlertMessage(message);
+  setSuccessAlertOpen(true);
+};
+
+const handleErrorAlertOpen = (errorMessage) => {
+  setAlertMessage(errorMessage);
+  setErrorAlertOpen(true);
+};
+
+const handleAlertClose = () => {
+  setSuccessAlertOpen(false);
+  setErrorAlertOpen(false);
+  setAlertMessage('');
+};
+
   // Renders Movie Search Bar so user can find a movie and add to empty watchlist
   if (noWatchlistItemsFound) {
     return(
@@ -140,6 +170,21 @@ const handleEditDescriptionDialogSubmit = async () => {
       <NavBar />
       <div className="watchlist-root">
       <Container maxWidth={"xl"} className="watchlist-item-grid-container">
+        {/* Alert component to display success or failed actions */}
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          style={{ top: '50px' }}
+          open={successAlertOpen || errorAlertOpen}
+          autoHideDuration={5000}
+          onClose={handleAlertClose}
+        >
+          <Alert
+              onClose={handleAlertClose}
+              severity={successAlertOpen ? 'success' : 'error'}
+          >
+              {alertMessage}
+          </Alert>
+        </Snackbar>
         <div className="watchlist-name-div">
           <h1 className="watchlist-name">{watchlistName}</h1>
         </div>
@@ -268,13 +313,30 @@ const handleEditDescriptionDialogSubmit = async () => {
     </React.Fragment>
     </ThemeProvider>
   )};
-
+  
+  // Main Component Render
   return (
     <ThemeProvider theme={muiTheme}>
     <React.Fragment>
       <NavBar />
       <div className="watchlist-root">
       <Container maxWidth={"xl"} className="watchlist-item-grid-container">
+        {/* Alert component to display success or failed actions */}
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          style={{ top: '50px' }}
+          open={successAlertOpen || errorAlertOpen}
+          autoHideDuration={5000}
+          onClose={handleAlertClose}
+        >
+          <Alert
+              onClose={handleAlertClose}
+              severity={successAlertOpen ? 'success' : 'error'}
+          >
+              {alertMessage}
+          </Alert>
+        </Snackbar>
+
         <div className="watchlist-name-div">
           <h1 className="watchlist-name">{watchlistName}</h1>
         </div>
