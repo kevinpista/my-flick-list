@@ -283,7 +283,7 @@ func DeleteWatchlistItemByID(w http.ResponseWriter, r *http.Request) {
         return
 	}
 	// Service function call to delete watchlist_item
-	err = watchlistItem.DeleteWatchlistItemByID(watchlistItemIDInt)
+	err = watchlistItem.DeleteWatchlistItemByID(watchlistItemIDInt, watchlistID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			helpers.MessageLogs.ErrorLog.Println("Watchlist item does not exist")

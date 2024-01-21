@@ -203,7 +203,6 @@ func (c *WatchlistItemService) CreateWatchlistItemByWatchlistID(watchlistItem mo
 
 	if err != nil {
 		tx.Rollback()
-
 		return nil, err
 	}
 
@@ -215,17 +214,47 @@ func (c *WatchlistItemService) CreateWatchlistItemByWatchlistID(watchlistItem mo
 	return &watchlistItem, nil
 }
 
-// Deletes a watchlist_item with its id
-func (c *WatchlistItemService) DeleteWatchlistItemByID(watchlistItemID int) error {
+// Deletes a watchlist_item with its id and updates the updated_at time of the watchlist it belongs in
+func (c *WatchlistItemService) DeleteWatchlistItemByID(watchlistItemID int, watchlistID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	deleteQuery := `
 		DELETE FROM watchlist_item WHERE id = $1
 	`
 
-	_, err := db.ExecContext(ctx, query, watchlistItemID)
+	_, err = tx.ExecContext(ctx, deleteQuery, watchlistItemID)
 	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Update Watchlist's updated_at time field
+	updateWatchlistQuery := `
+		UPDATE watchlist
+		SET updated_at = $1
+		WHERE id = $2
+	`
+
+	_, err = tx.ExecContext(
+		ctx,
+		updateWatchlistQuery,
+		time.Now(),
+		watchlistID,
+	)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Send in transaction
+	if err := tx.Commit(); err != nil {
 		return err
 	}
 
