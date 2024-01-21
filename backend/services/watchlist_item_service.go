@@ -309,28 +309,6 @@ func (c *WatchlistItemService) UpdateCheckmarkedBooleanByWatchlistItemByID(watch
 	return nil
 }
 
-/*
-// Updates the "checkmarked" boolean of the particular watchlist_item
-func (c *WatchlistItemService) UpdateCheckmarkedBooleanByWatchlistItemByID(watchlistItemID int, watchlistItem models.WatchlistItem) error {
-	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-	defer cancel()
-	query := `
-		UPDATE watchlist_item
-		SET checkmarked = $1
-		WHERE id = $2
-		`
-	_, err := db.ExecContext(
-		ctx,
-		query,
-		watchlistItem.Checkmarked,
-		watchlistItemID,
-	)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-*/
 
 /*
 HELPER FUNCTIONS
