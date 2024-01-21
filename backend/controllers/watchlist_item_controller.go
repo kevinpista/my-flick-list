@@ -360,7 +360,7 @@ func UpdateCheckmarkedBooleanByWatchlistItemByID(w http.ResponseWriter, r *http.
 		return
 	}
 
-	err = watchlistItem.UpdateCheckmarkedBooleanByWatchlistItemByID(watchlistItemIDInt, watchlistItemData.WatchlistItem)
+	err = watchlistItem.UpdateCheckmarkedBooleanByWatchlistItemByID(watchlistItemIDInt, watchlistItemData.WatchlistItem, watchlistID)
 	if err != nil{
 		helpers.MessageLogs.ErrorLog.Println(err)
 		helpers.ErrorJSON(w, err, http.StatusBadRequest)

@@ -227,7 +227,6 @@ func (c *WatchlistItemService) DeleteWatchlistItemByID(watchlistItemID int, watc
 	deleteQuery := `
 		DELETE FROM watchlist_item WHERE id = $1
 	`
-
 	_, err = tx.ExecContext(ctx, deleteQuery, watchlistItemID)
 	if err != nil {
 		tx.Rollback()
@@ -240,14 +239,12 @@ func (c *WatchlistItemService) DeleteWatchlistItemByID(watchlistItemID int, watc
 		SET updated_at = $1
 		WHERE id = $2
 	`
-
 	_, err = tx.ExecContext(
 		ctx,
 		updateWatchlistQuery,
 		time.Now(),
 		watchlistID,
 	)
-
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -261,6 +258,58 @@ func (c *WatchlistItemService) DeleteWatchlistItemByID(watchlistItemID int, watc
 	return nil
 }
 
+// Updates the "checkmarked" boolean of the particular watchlist_item. Updates the updated_at field of watchlist item belongs to
+func (c *WatchlistItemService) UpdateCheckmarkedBooleanByWatchlistItemByID(watchlistItemID int, watchlistItem models.WatchlistItem, watchlistID int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+	
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	booleanUpdateQuery := `
+		UPDATE watchlist_item
+		SET checkmarked = $1
+		WHERE id = $2
+		`
+	_, err = tx.ExecContext(
+		ctx,
+		booleanUpdateQuery,
+		watchlistItem.Checkmarked,
+		watchlistItemID,
+	)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	
+	// Update Watchlist's updated_at time field
+	updateWatchlistQuery := `
+		UPDATE watchlist
+		SET updated_at = $1
+		WHERE id = $2
+	`
+	_, err = tx.ExecContext(
+		ctx,
+		updateWatchlistQuery,
+		time.Now(),
+		watchlistID,
+	)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Send in transaction
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+/*
 // Updates the "checkmarked" boolean of the particular watchlist_item
 func (c *WatchlistItemService) UpdateCheckmarkedBooleanByWatchlistItemByID(watchlistItemID int, watchlistItem models.WatchlistItem) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
@@ -281,7 +330,7 @@ func (c *WatchlistItemService) UpdateCheckmarkedBooleanByWatchlistItemByID(watch
 	}
 	return nil
 }
-
+*/
 
 /*
 HELPER FUNCTIONS
