@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import '../css/MovieSearchBar.css';
 import { ThemeProvider } from '@mui/material/styles';
 import { muiTheme } from '../css/MuiThemeProvider.js';
+import SearchIcon from '@mui/icons-material/Search';
 
 
 function MovieSearchBar() {
@@ -20,7 +21,10 @@ function MovieSearchBar() {
     <div className="search-bar">
       <TextField
         label="Search for a movie..."
-        variant="outlined"
+        type="search"
+        variant="filled"
+        color="primary"
+        style={{background:"#e0e0e0"}}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         fullWidth
@@ -32,15 +36,14 @@ function MovieSearchBar() {
         }}
       />
       <Button 
-      className="search-button" 
-      variant="contained" 
-      onClick={handleSearch}
+        className="search-button" 
+        variant="contained" 
+        onClick={handleSearch}
       >
-        Search
+        <SearchIcon />
       </Button>
     </div>
     </ThemeProvider>
   );
 }
-
 export default MovieSearchBar;

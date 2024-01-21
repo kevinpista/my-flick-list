@@ -3,12 +3,13 @@ import { Button, Container, Row, Col } from 'react-bootstrap';
 import '../css/Home.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavBar from './NavBar';
+import MovieSearchBar from './MovieSearchBar.js';
 
 function Home() {
 
   return (
     <div className="home">
-      <NavBar/>
+      <NavBar />
 
       {/* Custom Jumbotron */}
       <div className="jumbotron">
@@ -24,6 +25,7 @@ function Home() {
 
       {/* React Bootstrap */}
       <Container>
+        <MovieSearchBar />
         <Row>
           <Col md={4}>
             <h2>Search</h2>
