@@ -15,6 +15,7 @@ import Button from '@mui/material/Button';
 
 import ClearSharpIcon from '@mui/icons-material/ClearSharp';
 import { ThemeProvider } from '@mui/material/styles';
+import { muiTheme } from '../../css/MuiThemeProvider.js';
 import * as themeStyles from '../../styling/ThemeStyles';
 
 // MUI Checkbox component for 'checkmarked' state
@@ -176,6 +177,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
+          <ThemeProvider theme={muiTheme}>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -203,12 +205,13 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseConfirmation}>Cancel</Button>
-          <Button onClick={() => handleConfirmDelete(deleteItemId)} autoFocus>
+          <Button variant = "contained" onClick={handleCloseConfirmation}>Cancel</Button>
+          <Button variant = "contained" onClick={() => handleConfirmDelete(deleteItemId)} autoFocus>
             Confirm
           </Button>
         </DialogActions>
       </Dialog>
+      </ThemeProvider>
     </div>
   );
 };
