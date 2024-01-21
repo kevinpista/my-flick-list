@@ -99,3 +99,42 @@ func (c *WatchlistItemNoteService) GetNotesTest() ([]*models.WatchlistItemNote, 
 
 	return notes, nil // Case where query did not find any match itemnotes 
 }
+
+
+/*
+HELPER FUNCTIONS
+*/
+
+// Checks if watchlist_item exists
+func (c *WatchlistItemNoteService) CheckIfWatchlistItemExists(watchListItemID int) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `
+		SELECT EXISTS (SELECT 1 FROM watchlist_item WHERE id = $1)
+		`
+	var exists bool
+	err := db.QueryRowContext(ctx, query, watchListItemID).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}
+
+// Checks if a watchlist_item_note exists
+func (c *WatchlistItemNoteService) CheckIfWatchlistItemNoteExists(watchListItemID int) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `
+		SELECT EXISTS (SELECT 1 FROM watchlist_item_note WHERE watchlist_item_id = $1)
+		`
+	var exists bool
+	err := db.QueryRowContext(ctx, query, watchListItemID).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}
