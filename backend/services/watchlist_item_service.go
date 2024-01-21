@@ -2,7 +2,7 @@ package services
 
 import (
 	"context"
-	"errors"
+	// "errors"
 	"strconv"
 	"strings"
 	"time"
@@ -17,6 +17,7 @@ type WatchlistItemService struct {
 }
 
 var movieQuery TMDBMovieService
+var watchlistItemHelper WatchlistItemService
 
 // Fetches all watchlist items that belongs to a specific watchlist via its watchlistID
 func (c *WatchlistItemService) GetAllWatchlistItemsByWatchlistID(watchlistID int) ([]*models.WatchlistItem, error) {
@@ -130,6 +131,28 @@ func (c *WatchlistItemService) CreateWatchlistItemByWatchlistID(watchlistItem mo
 		return nil, err
 	}
 
+	// Check if movie with movie_id exists in the database
+	movieExists, err := watchlistItemHelper.CheckIfMovieExists(watchlistItem.MovieID)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	// Query TMDB API to add to database if movie does not exist
+	if !movieExists {
+		// Convert movieID integer to a string to correctly send query to TMDB API service function
+		movieIDString := strconv.Itoa(watchlistItem.MovieID)
+
+		// Service function call to query TMDB API and add to local database
+		addToDatabaseErr := movieQuery.TMDBGetMovieByIDAddToLocalDatabase(movieIDString)
+		if addToDatabaseErr != nil {
+			// Error related to TMDBGetMovieByIDAddToLocalDatabase
+			tx.Rollback()
+			return nil, addToDatabaseErr
+		}
+	}
+
+	// At this point, the movie should exists in database, create watchlist_item in database
 	query := `
 		INSERT INTO watchlist_item (watchlist_id, movie_id, checkmarked, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5) returning *
@@ -153,50 +176,17 @@ func (c *WatchlistItemService) CreateWatchlistItemByWatchlistID(watchlistItem mo
 
 	if err != nil {
 		// Check if err is related to the movie not existing
-		movieNotInDataBase := strings.Contains(strings.ToLower(err.Error()), "watchlist_item_movie_id_fkey") // Returns true if error message contains string
+		movieNotInDataBase := strings.Contains(strings.ToLower(err.Error()), "watchlist_item_movie_id_fkey") // Returns true if error message contains exact string error from DB
 		if movieNotInDataBase {
-			// This block executes if true, therefore movie data with this movie_id is not in DB
-
-			// Convert movieID integer to a string to correctly send query to TMDB API service function
-			movieIDString := strconv.Itoa(watchlistItem.MovieID)
-
-			// Service function call to query TMDB API and add to local database
-			addToDatabaseErr := movieQuery.TMDBGetMovieByIDAddToLocalDatabase(movieIDString)
-			if addToDatabaseErr != nil {
-				// Error related to TMDBGetMovieByIDAddToLocalDatabase
-				tx.Rollback()
-				return nil, addToDatabaseErr
-			}
-
-			// At this point, movie that was not in database should be added now. Attempt to re-add watchlist_item again.
-			err := tx.QueryRowContext(
-				ctx,
-				query,
-				watchlistItem.WatchlistID,
-				watchlistItem.MovieID,
-				watchlistItem.Checkmarked,
-				time.Now(),
-				time.Now(),
-			).Scan(
-				&watchlistItem.ID,
-				&watchlistItem.WatchlistID,
-				&watchlistItem.MovieID,
-				&watchlistItem.Checkmarked,
-				&watchlistItem.CreatedAt,
-				&watchlistItem.UpdatedAt,
-			)
-		
-			if err != nil {
-				tx.Rollback()
-				return nil, errors.New("failed to create watchlist_item after adding movie to db")
-
-			}
+			tx.Rollback()
+			return nil, err // Movie not in DB
 		} else {
 			// Error unrelated to 'movie not in database'
 			tx.Rollback()
 			return nil, err
-		}
-	} 
+		} 
+	}
+
 	// Update Watchlist's updated_at time field
 	updateWatchlistQuery := `
 		UPDATE watchlist
@@ -330,4 +320,21 @@ func (c *WatchlistItemService) GetWatchlistItemWatchlistId(watchlistItemID int) 
 	}
 
 	return watchlist_id, nil
+}
+
+// Checks if a movie with the movieID exists in the local database yet
+func (c *WatchlistItemService) CheckIfMovieExists(movieID int) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `
+		SELECT EXISTS (SELECT 1 FROM movie WHERE id = $1)
+		`
+	var exists bool
+	err := db.QueryRowContext(ctx, query, movieID).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
 }
