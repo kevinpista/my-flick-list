@@ -64,3 +64,38 @@ func (c *WatchlistItemNoteService) CreateWatchlistItemNote(watchlistItemNote mod
 	}
 	return &watchlistItemNote, nil
 }
+
+// Fetches all notes in database. Testing purposes only
+func (c *WatchlistItemNoteService) GetNotesTest() ([]*models.WatchlistItemNote, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+	query := `
+		SELECT watchlist_item_id, item_notes, created_at, updated_at FROM watchlist_item_note
+	`
+	rows, err := db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var notes []*models.WatchlistItemNote // holds multiple movie pointers. a slice called 'movies' holding pointers of type Movie struct
+	for rows.Next() {   // for every row we get from our db query
+		var note models.WatchlistItemNote // we create a var called movie with type Movie struct and append it to our movies slice
+		// order should follow the order of your query
+		// scan each row from our query and assigns the column field data from our query to each movie Movie struct field
+		err := rows.Scan(
+			&note.WatchlistItemID,
+			&note.ItemNotes,
+			&note.CreatedAt,
+			&note.UpdatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		notes = append(notes, &note)
+	}
+
+	return notes, nil // Case where query did not find any match itemnotes 
+}

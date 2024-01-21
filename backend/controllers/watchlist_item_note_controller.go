@@ -50,3 +50,16 @@ func CreateWatchlistItemNote(w http.ResponseWriter, r *http.Request) {
 	}
 	helpers.WriteJSON(w, http.StatusOK, watchlistItemNoteCreated)
 }
+
+// Fetches all notes in database. Testing purposes only
+// GET/watchlist-item-note
+func GetNotesTest(w http.ResponseWriter, r *http.Request) {
+
+	watchlistItemNoteData, watchlistItemNoteErr := watchlistItemNote.GetNotesTest()
+    if watchlistItemNoteErr != nil {
+            helpers.ErrorJSON(w, watchlistItemNoteErr, http.StatusBadRequest)
+        
+        return
+    }
+	helpers.WriteJSON(w, http.StatusOK, watchlistItemNoteData)
+}
