@@ -68,6 +68,10 @@ type TMDBMovieForDatabaseEntry struct {
 	Revenue       uint64  `json:"revenue"`
 	Rating        float32 `json:"vote_average"`
 	Votes         uint32  `json:"vote_count"`
+	Genres        []struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"genres"`
 	// (Handled in services) CreatedAt     time.Time `json:"created_at"`
 	// (Handled in services) UpdatedAt     time.Time `json:"updated_at"`
 }

@@ -63,7 +63,7 @@ func (c *TMDBMovieService) TMDBGetMovieByID(query string) (*models.TMDBMovie, er
 // Responsible for querying TMDB API by the movie_id and then taking the decoding the received movie data and adding it to the database. 
 // Returns nil to watchlist_item services which gives it the go ahead to attempt to connect a user's watchlist_item to the new locally added movie.
 // Received movie data from TMDB API is decoded into a models.TMDBMovieDatabaseEntry struct which was required to accomodate for TMDB's json name
-// field difference of 'Rating' and 'Votes'.
+// field difference of 'Rating' and 'Votes'. Also adds genre into 'genre' table.
 func (c *TMDBMovieService) TMDBGetMovieByIDAddToLocalDatabase(movieID string) (error) {
 	apiUrl := baseMovieAPIUrl + movieID + "?api_key=" + APIKey
 	// Send GET request to TMDB
@@ -107,15 +107,23 @@ func (c *TMDBMovieService) TMDBGetMovieByIDAddToLocalDatabase(movieID string) (e
 		return err
 	}
 
+	// Database service
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
-	query := `
+
+	// Use 'tx' to ensure atomicity of operations since 2 tables are being inserted (Genre + Movie)
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	movieInsertQuery := `
 		INSERT INTO movie (id, original_title, overview, tagline, release_date, poster_path, backdrop_path, runtime, adult, budget, revenue, rating, votes, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
 	`
-	_, err = db.ExecContext(
+	_, err = tx.ExecContext(
 		ctx,
-		query,
+		movieInsertQuery,
 		movieDataToBeStored.ID,
 		movieDataToBeStored.OriginalTitle,
 		movieDataToBeStored.Overview,
@@ -133,9 +141,38 @@ func (c *TMDBMovieService) TMDBGetMovieByIDAddToLocalDatabase(movieID string) (e
 		time.Now(), // movie.UpdatedAt
 	)
 
-	if err != nil {
-		return err
-	}
-	
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
+
+	// Update genre table with every genre item in the Genres struct.
+    // Insert the genres into the 'genre' table
+    genreInsertQuery := `
+        INSERT INTO genre (movie_id, genre_id, genre)
+        VALUES ($1, $2, $3)
+    `
+	// Loop through the Genre array provided by TMDB API. Create a row in 'genre' table for every genre
+	// the particular movie is categorized under
+    for _, genre := range movieDataToBeStored.Genres {
+        _, err := tx.ExecContext(
+            ctx,
+            genreInsertQuery,
+            movieDataToBeStored.ID,
+            genre.ID,
+            genre.Name,
+        )
+
+        if err != nil {
+            tx.Rollback()
+            return err
+        }
+    }
+
+    // Commit the transaction
+    if err := tx.Commit(); err != nil {
+        return err
+    }
+
 	return nil
 }
