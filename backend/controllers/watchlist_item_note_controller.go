@@ -12,6 +12,7 @@ import (
 	"github.com/kevinpista/my-flick-list/backend/helpers"
 	"github.com/kevinpista/my-flick-list/backend/tokens"
 	"github.com/kevinpista/my-flick-list/backend/services"
+	"github.com/kevinpista/my-flick-list/backend/helpers/error_constants"
 )
 
 var watchlistItemNote services.WatchlistItemNoteService
@@ -49,7 +50,7 @@ func CreateWatchlistItemNote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Verify user's JWT Token
-	_, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
+	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
 	if tokenErr != nil {
 		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized) // tokenErr will be a errors.New(error_constants) object
 		return
@@ -64,7 +65,7 @@ func CreateWatchlistItemNote(w http.ResponseWriter, r *http.Request) {
 	}
 	// If does not exists, no watchlist_item for the note to reference
 	if !watchlistItemExists {
-		helpers.MessageLogs.ErrorLog.Println("watchlist_item does not exist. note cannot be created")
+		helpers.MessageLogs.ErrorLog.Println("Watchlist_item does not exist. Note cannot be created")
 		helpers.ErrorJSON(w, errors.New("watchlist_item not found"), http.StatusBadRequest)
 		return
 	}
@@ -78,8 +79,22 @@ func CreateWatchlistItemNote(w http.ResponseWriter, r *http.Request) {
 	}
 	// If exists, cannot create a new one. Return error.
 	if watchlistItemNoteExists {
-		helpers.MessageLogs.ErrorLog.Println("watchlist_item_note already created. Must use PATCH endpoint to update")
+		helpers.MessageLogs.ErrorLog.Println("Watchlist_item_note already created. Must use PATCH endpoint to update")
 		helpers.ErrorJSON(w, errors.New("watchlist_item_note already exists. cannot create new note object"), http.StatusBadRequest)
+		return
+	}
+
+	// Check if user is the owner of the watchlist_item_note > watchlist_item > watchlist
+	userIsOwner, err := watchlistItemNote.CheckIfUserOwnsWatchlistItem(userID, watchlistItemNoteData.WatchlistItemNote.WatchlistItemID)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+
+	if !userIsOwner {
+		helpers.MessageLogs.ErrorLog.Println("User is not the owner if this watchlist_item. Unable to create note")
+        helpers.ErrorJSON(w, errors.New(error_constants.UnauthorizedRequest), http.StatusUnauthorized)
 		return
 	}
 
@@ -104,7 +119,7 @@ func UpdateWatchlistItemNote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Verify user's JWT Token
-	_, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
+	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
 	if tokenErr != nil {
 		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized) // tokenErr will be a errors.New(error_constants) object
 		return
@@ -120,7 +135,7 @@ func UpdateWatchlistItemNote(w http.ResponseWriter, r *http.Request) {
 
 	// If does not exists, no watchlist_item for the note to reference
 	if !watchlistItemExists {
-		helpers.MessageLogs.ErrorLog.Println("watchlist_item does not exist. note cannot be created")
+		helpers.MessageLogs.ErrorLog.Println("Watchlist_item does not exist. Note cannot be created")
 		helpers.ErrorJSON(w, errors.New("watchlist_item not found"), http.StatusBadRequest)
 		return
 	}
@@ -134,8 +149,22 @@ func UpdateWatchlistItemNote(w http.ResponseWriter, r *http.Request) {
 	}
 	// If does not exist, cannot update note. Must create one first
 	if !watchlistItemNoteExists {
-		helpers.MessageLogs.ErrorLog.Println("watchlist_item_note not created yet. Must use POST endpoint to create first")
+		helpers.MessageLogs.ErrorLog.Println("Watchlist_item_note not created yet. Must use POST endpoint to create first")
 		helpers.ErrorJSON(w, errors.New("watchlist_item_note does not exist - cannot update note"), http.StatusBadRequest)
+		return
+	}
+
+	// Check if user is the owner of the watchlist_item_note > watchlist_item > watchlist
+	userIsOwner, err := watchlistItemNote.CheckIfUserOwnsWatchlistItem(userID, watchlistItemNoteData.WatchlistItemNote.WatchlistItemID)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+
+	if !userIsOwner {
+		helpers.MessageLogs.ErrorLog.Println("User is not the owner if this watchlist_item. Unable to update note")
+        helpers.ErrorJSON(w, errors.New(error_constants.UnauthorizedRequest), http.StatusUnauthorized)
 		return
 	}
 

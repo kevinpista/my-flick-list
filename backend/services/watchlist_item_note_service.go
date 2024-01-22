@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/kevinpista/my-flick-list/backend/models"
 )
 
@@ -162,6 +163,29 @@ func (c *WatchlistItemNoteService) CheckIfWatchlistItemNoteExists(watchListItemI
 		`
 	var exists bool
 	err := db.QueryRowContext(ctx, query, watchListItemID).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}
+
+// Checks if a user_id is the owner of the watchlist_item_note > watchlist_item > watchlist
+func (c *WatchlistItemNoteService) CheckIfUserOwnsWatchlistItem(userID uuid.UUID, watchListItemID int) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `
+		SELECT EXISTS (
+			SELECT 1
+			FROM watchlist_item
+			JOIN watchlist ON watchlist_item.watchlist_id = watchlist.id
+			WHERE watchlist_item.id = $1
+			AND watchlist.users_id = $2
+		)
+	`
+	var exists bool
+	err := db.QueryRowContext(ctx, query, watchListItemID, userID).Scan(&exists)
 	if err != nil {
 		return false, err
 	}
