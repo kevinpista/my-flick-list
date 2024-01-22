@@ -55,6 +55,7 @@ func Routes() http.Handler {
     router.Post("/api/watchlist-item-note", controllers.CreateWatchlistItemNote) // POST create watchlist item note for a specific watchlist item
     router.Get("/api/watchlist-item-note/{watchlistItemID}", controllers.GetWatchlistItemNoteByWatchlistItemID) // GET fetch the note for a specific watchlist item
     router.Get("/api/watchlist-item-note", controllers.GetNotesTest) // GET fetch all notes in database. Testing purposes only
+	router.Patch("/api/watchlist-item-note", controllers.UpdateWatchlistItemNote) // PATCH watchlist_item_note 'item notes'. Passed through JSON body
 
 	// Genre resources
     router.Post("/api/genre", controllers.CreateGenreDataByMovieID) // POST add genre data for a movie

@@ -62,7 +62,7 @@ func CreateWatchlistItemNote(w http.ResponseWriter, r *http.Request) {
 		helpers.ErrorJSON(w, err, http.StatusBadRequest)
 		return
 	}
-	// If does not exists, no watchlist_item to for the note to reference
+	// If does not exists, no watchlist_item for the note to reference
 	if !watchlistItemExists {
 		helpers.MessageLogs.ErrorLog.Println("watchlist_item does not exist. note cannot be created")
 		helpers.ErrorJSON(w, errors.New("watchlist_item not found"), http.StatusBadRequest)
@@ -92,23 +92,61 @@ func CreateWatchlistItemNote(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteJSON(w, http.StatusOK, watchlistItemNoteCreated)
 }
 
-/*
-// POST/watchlist-item-note
-func CreateWatchlistItemNote(w http.ResponseWriter, r *http.Request) {
+// PATCH/watchlist-item-note
+func UpdateWatchlistItemNote(w http.ResponseWriter, r *http.Request) {
 	var watchlistItemNoteData services.WatchlistItemNoteService
 
 	err := json.NewDecoder(r.Body).Decode(&watchlistItemNoteData.WatchlistItemNote)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
 	}
 
-	watchlistItemNoteCreated, err := watchlistItemNoteData.CreateWatchlistItemNote(watchlistItemNoteData.WatchlistItemNote)
+	// Verify user's JWT Token
+	_, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
+	if tokenErr != nil {
+		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized) // tokenErr will be a errors.New(error_constants) object
+		return
+	}
+
+	// Check if the particular watchlist_item even exists in the watchlist_item DB table
+	watchlistItemExists, err := watchlistItemNote.CheckIfWatchlistItemExists(watchlistItemNoteData.WatchlistItemNote.WatchlistItemID)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
 	}
-	helpers.WriteJSON(w, http.StatusOK, watchlistItemNoteCreated)
+
+	// If does not exists, no watchlist_item for the note to reference
+	if !watchlistItemExists {
+		helpers.MessageLogs.ErrorLog.Println("watchlist_item does not exist. note cannot be created")
+		helpers.ErrorJSON(w, errors.New("watchlist_item not found"), http.StatusBadRequest)
+		return
+	}
+
+	// Check if watchlist_item_note already exists 
+	watchlistItemNoteExists, err := watchlistItemNote.CheckIfWatchlistItemNoteExists(watchlistItemNoteData.WatchlistItemNote.WatchlistItemID)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+	// If does not exist, cannot update note. Must create one first
+	if !watchlistItemNoteExists {
+		helpers.MessageLogs.ErrorLog.Println("watchlist_item_note not created yet. Must use POST endpoint to create first")
+		helpers.ErrorJSON(w, errors.New("watchlist_item_note does not exist - cannot update note"), http.StatusBadRequest)
+		return
+	}
+
+	// At this point, user is verified, watchlist_item exists, and note exists.
+	updatedWatchlistItemNote, err := watchlistItemNoteData.UpdateWatchlistItemNote(watchlistItemNoteData.WatchlistItemNote)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		return
+	}
+	helpers.WriteJSON(w, http.StatusOK, updatedWatchlistItemNote)
 }
-*/
 
 // Fetches all notes in database. Testing purposes only
 // GET/watchlist-item-note

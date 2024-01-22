@@ -12,8 +12,6 @@ type WatchlistItemNoteService struct {
 	WatchlistItemNote models.WatchlistItemNote
 }
 
-// TODO - handle the case of this, do not want to actually return a real error because having an
-// watchlist item note is optional. But probably deal with it in a batch request for watchlist page itself
 func (c *WatchlistItemNoteService) GetWatchlistItemNoteByWatchlistItemID(id int) (*models.WatchlistItemNote, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -44,7 +42,6 @@ func (c *WatchlistItemNoteService) GetWatchlistItemNoteByWatchlistItemID(id int)
 }
 
 func (c *WatchlistItemNoteService) CreateWatchlistItemNote(watchlistItemNote models.WatchlistItemNote) (*models.WatchlistItemNote, error) {
-	/// watchlist item id passed via the json body
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	query := `
@@ -57,12 +54,45 @@ func (c *WatchlistItemNoteService) CreateWatchlistItemNote(watchlistItemNote mod
 		watchlistItemNote.WatchlistItemID,
 		watchlistItemNote.ItemNotes,
 		time.Now(), // watchlistItemNote.CreatedAt
-		time.Now(), // watchlistItemNote.CreatedAt
+		time.Now(), // watchlistItemNote.UpdatedAt
 	)
 	if err != nil{
 		return nil, err
 	}
 	return &watchlistItemNote, nil
+}
+
+// Updates watchlist_item_note text
+func (c *WatchlistItemNoteService) UpdateWatchlistItemNote(watchlistItemNote models.WatchlistItemNote) (*models.WatchlistItemNote, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `
+		UPDATE watchlist_item_note
+		SET item_notes = $1, updated_at = $2
+		WHERE watchlist_item_id = $3
+		RETURNING watchlist_item_id, item_notes, created_at, updated_at
+	`
+	var updatedWatchlistItemNote models.WatchlistItemNote
+
+	err := db.QueryRowContext(
+		ctx,
+		query,
+		watchlistItemNote.ItemNotes,
+		time.Now(),// watchlistItemNote.UpdatedAt
+		watchlistItemNote.WatchlistItemID,
+	).Scan(
+		&updatedWatchlistItemNote.WatchlistItemID,
+		&updatedWatchlistItemNote.ItemNotes,
+		&updatedWatchlistItemNote.CreatedAt,
+		&updatedWatchlistItemNote.UpdatedAt,
+	)
+
+	if err != nil{
+		return nil, err
+	}
+
+	return &updatedWatchlistItemNote, nil
 }
 
 // Fetches all notes in database. Testing purposes only
