@@ -52,7 +52,7 @@ func (c *WatchlistItemService) GetAllWatchlistItemsByWatchlistID(watchlistID int
 	return watchlistItems, nil
 }
 
-// Fetches watchlist name & description + all watchlist items and its movie data
+// Fetches watchlist name & description + all watchlist items and its movie data + watchlist_item_note if exists
 func (c *WatchlistItemService) GetWatchlistWithWatchlistItemsByWatchlistID(watchlistID int) ([]*models.WatchlistItemWithMovie, string, string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -65,14 +65,20 @@ func (c *WatchlistItemService) GetWatchlistWithWatchlistItemsByWatchlistID(watch
 	}
 
 	// Fetch watchlist items belonging to the watchlist
+	// If a watchlist_item does not have a watchlist_note belonging to it, the COALESCE function will return
+	// the values of NULL to the item_notes, notes_created_at field etc.  
 	query := `
 		SELECT 
 			wi.id, wi.watchlist_id, wi.movie_id, wi.checkmarked, wi.created_at, wi.updated_at,
 			m.original_title, m.overview, m.tagline, m.release_date, m.poster_path, m.backdrop_path, m.runtime, m.adult,
-			m.budget, m.revenue, m.rating, m.votes, m.created_at AS movie_created_at, m.updated_at AS movie_updated_at
+			m.budget, m.revenue, m.rating, m.votes, m.created_at AS movie_created_at, m.updated_at AS movie_updated_at,
+			COALESCE(win.item_notes, NULL) AS item_notes,
+			COALESCE(win.created_at, NULL) AS note_created_at,
+			COALESCE(win.updated_at, NULL) AS note_updated_at
 		FROM watchlist_item wi
 		JOIN movie m ON wi.movie_id = m.id
 		JOIN watchlist w ON wi.watchlist_id = w.id
+		LEFT JOIN watchlist_item_note win ON wi.id = win.watchlist_item_id
 		WHERE wi.watchlist_id = $1
 	`
 
@@ -106,6 +112,9 @@ func (c *WatchlistItemService) GetWatchlistWithWatchlistItemsByWatchlistID(watch
 			&watchlistItemWithMovie.Votes,
 			&watchlistItemWithMovie.MovieCreatedAt,
 			&watchlistItemWithMovie.MovieUpdatedAt,
+			&watchlistItemWithMovie.ItemNotes,        // WatchlistItemNote
+			&watchlistItemWithMovie.NoteCreatedAt,    // WatchlistItemNote
+			&watchlistItemWithMovie.NoteUpdatedAt,    // WatchlistItemNote
 		)
 
 		if err != nil {
@@ -115,6 +124,41 @@ func (c *WatchlistItemService) GetWatchlistWithWatchlistItemsByWatchlistID(watch
 	}
 	return watchlistItemsWithMovies, watchlistName, watchlistDescription, nil
 }
+
+/*
+// Fetches all watchlist items that belongs to a specific watchlist via its watchlistID
+func (c *WatchlistItemService) GetAllWatchlistItemsByWatchlistID(watchlistID int) ([]*models.WatchlistItem, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+	query := `
+		SELECT id, watchlist_id, movie_id, checkmarked, created_at, updated_at FROM watchlist_item 
+		WHERE watchlist_id = $1
+	`
+	rows, err := db.QueryContext(ctx, query, watchlistID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var watchlistItems []*models.WatchlistItem
+	for rows.Next() {
+		var watchlistItem models.WatchlistItem
+		err := rows.Scan(
+			&watchlistItem.ID,
+			&watchlistItem.WatchlistID,
+			&watchlistItem.MovieID,
+			&watchlistItem.Checkmarked,
+			&watchlistItem.CreatedAt,
+			&watchlistItem.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		watchlistItems = append(watchlistItems, &watchlistItem)
+	}
+	return watchlistItems, nil
+}
+*/
 
 // Important TWO-PART service function
 // Creates a watchlist_item with a movie_id with the watchlist ID it belongs to.
