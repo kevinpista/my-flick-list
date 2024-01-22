@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 	"database/sql"
 	"errors"
 
@@ -48,6 +49,8 @@ func CreateWatchlistItemNote(w http.ResponseWriter, r *http.Request) {
 		helpers.ErrorJSON(w, err, http.StatusBadRequest)
 		return
 	}
+	// Trim any trailing white space
+	watchlistItemNoteData.WatchlistItemNote.ItemNotes = strings.TrimSpace(watchlistItemNoteData.WatchlistItemNote.ItemNotes)
 
 	// Verify user's JWT Token
 	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
@@ -117,6 +120,9 @@ func UpdateWatchlistItemNote(w http.ResponseWriter, r *http.Request) {
 		helpers.ErrorJSON(w, err, http.StatusBadRequest)
 		return
 	}
+
+	// Trim any trailing white space
+	watchlistItemNoteData.WatchlistItemNote.ItemNotes = strings.TrimSpace(watchlistItemNoteData.WatchlistItemNote.ItemNotes)
 
 	// Verify user's JWT Token
 	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
