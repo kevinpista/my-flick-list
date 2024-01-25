@@ -30,8 +30,6 @@ import InfoIcon from '@mui/icons-material/Info';
 import NoteIcon from '@mui/icons-material/Note';
 import TextField from '@mui/material/TextField';
 
-// TODO
-// My notes icon popup module
 
 // watchlistItems is a JSON object holding 1 array containing individual movie data for each watchlistItem
 const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchlistItems }) => {
@@ -93,13 +91,14 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     setSelectedWatchlistItemId(watchlistItemId)
     setEditedNote(itemNote); // Set the initial value of the text field to the current note
     setOpenNoteDialog(true);
-
   };
 
   const handleNoteDialogClose = () => {
     setOpenNoteDialog(false);
     setSelectedNote('');
-    if (!isEditingNote) {
+
+    if (isEditingNote && editedNote === selectedNote) {
+      // Only set isEditingNote dialog is open and there were no edits made
       setIsEditingNote(false);
     }
   };
@@ -136,6 +135,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
         });
         // Set the updated state
         setWatchlistItems({ 'watchlist-items': updatedWatchlistItems });
+        setSelectedNote(response.data.item_notes);
         setIsEditingNote(false);
       }
     } catch (error) {
@@ -203,7 +203,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     { 
       field: 'noteIcon', 
       headerName: 'Notes', 
-      width: 150, 
+      width: 100, 
       headerAlign: 'center', 
       align: 'center', 
       renderCell: (params) => (
@@ -213,14 +213,6 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
           </IconButton>
         </Tooltip>
       ),
-    },
-    {
-      field: 'item_notes',
-      headerName: 'Item Notes',
-      width: 150,
-      headerAlign: 'center',
-      align: 'center',
-      renderCell: (params) => params.row.item_notes !== null ? params.row.item_notes : '',
     },
 
     {
@@ -307,7 +299,6 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
               onChange={(e) => {
                 setEditedNote(e.target.value);
               }}
-              onBlur={handleNoteDialogClose}
             />
           ) : (
             <DialogContentText>{selectedNote}</DialogContentText>
@@ -315,7 +306,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
         </DialogContent>
 
         <DialogActions>
-          <Button variant = "contained" onClick={handleNoteDialogClose} color="primary" autoFocus>
+          <Button variant = "contained" onClick={handleNoteDialogClose} color="primary" >
               Close
           </Button>
           {isEditingNote ? (
