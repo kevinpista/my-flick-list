@@ -14,6 +14,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+import InputAdornment from '@mui/material/InputAdornment';
 
 import ClearSharpIcon from '@mui/icons-material/ClearSharp';
 import { ThemeProvider } from '@mui/material/styles';
@@ -288,14 +289,26 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       onClose={handleNoteDialogClose}
       fullWidth={true}
       >
-        <DialogTitle>Your Notes</DialogTitle>
+        <DialogTitle>Your Movie Notes</DialogTitle>
         <DialogContent>
           {isEditingNote ? (
             <TextField
               multiline
+              label="Add your notes for this movie.."
               fullWidth
-              rows={4}
+              rows={10}
+              maxRows={10}
               value={editedNote}
+              margin="dense"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                  <span style={{ color: editedNote.length > 2000 ? 'red' : 'inherit' }}>
+                    {editedNote.length}/{2000}
+                  </span>
+                </InputAdornment>
+                ),
+              }}
               onChange={(e) => {
                 setEditedNote(e.target.value);
               }}
@@ -305,12 +318,19 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
           )}
         </DialogContent>
 
-        <DialogActions>
+        <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
           <Button variant = "contained" onClick={handleNoteDialogClose} color="primary" >
               Close
           </Button>
           {isEditingNote ? (
-            <Button variant = "contained" onClick={handleNoteUpdateSubmit} color="primary">
+            <Button
+            variant = "contained"
+            onClick={handleNoteUpdateSubmit}
+            color="primary"
+            disabled={
+            editedNote.length > 2000
+            }
+            >
               Save
             </Button>
           ) : (
