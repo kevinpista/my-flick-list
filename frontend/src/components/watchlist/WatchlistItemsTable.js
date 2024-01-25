@@ -287,9 +287,14 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       <Dialog 
       open={openNoteDialog} 
       onClose={handleNoteDialogClose}
+      maxWidth="md"
       fullWidth={true}
       >
-        <DialogTitle>Your Movie Notes</DialogTitle>
+        <DialogTitle
+        style={{paddingLeft: '30px', paddingTop: '30px', paddingBottom: '18px'}}
+        >
+          Your Movie Notes
+        </DialogTitle>
         <DialogContent>
           {isEditingNote ? (
             <TextField
@@ -313,7 +318,11 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
               }}
             />
           ) : (
-            <DialogContentText>{selectedNote}</DialogContentText>
+            <DialogContentText
+            style={{ paddingLeft: '10px', paddingRight: '10px'}}
+            >
+              {selectedNote}
+            </DialogContentText>
           )}
         </DialogContent>
 

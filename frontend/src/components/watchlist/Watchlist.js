@@ -440,7 +440,7 @@ const handleAlertClose = () => {
                 <span style={{ color: newWatchlistDescription.length > 500 ? 'red' : 'inherit' }}>
                   {newWatchlistDescription.length}/{500}
                 </span>
-              </InputAdornment>
+                </InputAdornment>
               ),
             }}
           />
