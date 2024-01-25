@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import { formatReleaseDate, formatRuntime, formatFinancialData } from '../../utils/formatUtils';
-import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
+import { getJwtTokenFromCookies } from '../../utils/authTokenUtils';
+import { editWatchlistItemNoteAPI } from '../../api/watchlistAPI';
+import * as errorConstants from '../../api/errorConstants';
 import axios from 'axios';
 
 // MUI Dialog component to confirm watchlist item deletion
@@ -21,6 +23,12 @@ import * as themeStyles from '../../styling/ThemeStyles';
 // MUI Checkbox component for 'checkmarked' state
 import Checkbox from '@mui/material/Checkbox';
 
+// Item Note icons
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import InfoIcon from '@mui/icons-material/Info';
+import NoteIcon from '@mui/icons-material/Note';
+import TextField from '@mui/material/TextField';
 
 // TODO
 // My notes icon popup module
@@ -33,6 +41,12 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
 
   const [editRowsModel, setEditRowsModel] = useState({});
 
+  const [openNoteDialog, setOpenNoteDialog] = useState(false);
+  const [selectedNote, setSelectedNote] = useState('');
+  const [editedNote, setEditedNote] = useState('');
+  const [selectedWatchlistItemId, setSelectedWatchlistItemId] = useState(null);
+  const [isEditingNote, setIsEditingNote] = useState(false);
+  
   const handleToWatchClick = async (event, row) => {
     event.stopPropagation();
     try {
@@ -74,6 +88,21 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     }
   };
   
+  const handleNoteIconClick = (itemNote, watchlistItemId) => {
+    setSelectedNote(itemNote);
+    setSelectedWatchlistItemId(watchlistItemId)
+    setEditedNote(itemNote); // Set the initial value of the text field to the current note
+    setOpenNoteDialog(true);
+
+  };
+
+  const handleNoteDialogClose = () => {
+    setOpenNoteDialog(false);
+    setSelectedNote('');
+    if (!isEditingNote) {
+      setIsEditingNote(false);
+    }
+  };
 
   const handleDeleteClick = (event, watchlistItemId) => {
     event.stopPropagation();
@@ -90,7 +119,34 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     handleCloseConfirmation();
     onDeleteWatchlistItem(watchlistItemId); // Call this function with the watchlistItemId to be deleted
   };
-  
+
+  const handleNoteUpdateSubmit = async () => {
+    try {
+      const response = await editWatchlistItemNoteAPI(selectedWatchlistItemId, editedNote); // selectedNote gets updated in dialog textfield
+      if (response.status === 200) {
+        // Update the item_notes in the local state. Loop original array of data until edited row found
+        const updatedWatchlistItems = watchlistItems['watchlist-items'].map((watchlistItem) => {
+          if (watchlistItem.id === selectedWatchlistItemId) {
+            return {
+              ...watchlistItem,
+              item_notes: response.data.item_notes, // Using the updated note from the API response
+            };
+          }
+          return watchlistItem; // Catch all in case selecetedWatchlistItemId is not found
+        });
+        // Set the updated state
+        setWatchlistItems({ 'watchlist-items': updatedWatchlistItems });
+        setIsEditingNote(false);
+      }
+    } catch (error) {
+    if (error.message === errorConstants.ERROR_BAD_REQUEST) {
+        console.log('hello there bad request error')
+      } else {
+        console.log('hello there else error')
+      }
+    };
+  };
+
 
   const getRowId = (row) => row.id;
 
@@ -144,7 +200,28 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     { field: 'rating', headerName: 'Ratings', width: 120, headerAlign: 'center', align: 'center' },
     { field: 'budget', headerName: 'Budget', width: 120, headerAlign: 'center', align: 'center' },
     { field: 'revenue', headerName: 'Revenue', width: 120, headerAlign: 'center', align: 'center' },
-    { field: 'notes', headerName: 'Notes', width: 120, headerAlign: 'center', align: 'center' },
+    { 
+      field: 'noteIcon', 
+      headerName: 'Notes', 
+      width: 150, 
+      headerAlign: 'center', 
+      align: 'center', 
+      renderCell: (params) => (
+        <Tooltip title={params.row.item_notes ? 'Click to view note' : 'No note available'}>
+          <IconButton onClick={() => handleNoteIconClick(params.row.item_notes, params.row.id)}>
+            {params.row.item_notes ? <NoteIcon color="primary" /> : <InfoIcon color="disabled" />}
+          </IconButton>
+        </Tooltip>
+      ),
+    },
+    {
+      field: 'item_notes',
+      headerName: 'Item Notes',
+      width: 150,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params) => params.row.item_notes !== null ? params.row.item_notes : '',
+    },
 
     {
       field: 'deleteButton',
@@ -173,11 +250,12 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     rating: watchlistItem.rating,
     budget: formatFinancialData(watchlistItem.budget),
     revenue: formatFinancialData(watchlistItem.revenue),
+    item_notes: watchlistItem.item_notes !== null ? watchlistItem.item_notes : '',
   }));
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
-          <ThemeProvider theme={muiTheme}>
+      <ThemeProvider theme={muiTheme}>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -211,7 +289,47 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
           </Button>
         </DialogActions>
       </Dialog>
-      </ThemeProvider>
+
+      {/* Dialog for displaying notes */}
+      <Dialog 
+      open={openNoteDialog} 
+      onClose={handleNoteDialogClose}
+      fullWidth={true}
+      >
+        <DialogTitle>Your Notes</DialogTitle>
+        <DialogContent>
+          {isEditingNote ? (
+            <TextField
+              multiline
+              fullWidth
+              rows={4}
+              value={editedNote}
+              onChange={(e) => {
+                setEditedNote(e.target.value);
+              }}
+              onBlur={handleNoteDialogClose}
+            />
+          ) : (
+            <DialogContentText>{selectedNote}</DialogContentText>
+          )}
+        </DialogContent>
+
+        <DialogActions>
+          <Button variant = "contained" onClick={handleNoteDialogClose} color="primary" autoFocus>
+              Close
+          </Button>
+          {isEditingNote ? (
+            <Button variant = "contained" onClick={handleNoteUpdateSubmit} color="primary">
+              Save
+            </Button>
+          ) : (
+            <Button variant = "contained" onClick={() => setIsEditingNote(true)} color="primary">
+              Edit
+            </Button>
+          )}
+        </DialogActions>
+      </Dialog>
+          </ThemeProvider>
     </div>
   );
 };
