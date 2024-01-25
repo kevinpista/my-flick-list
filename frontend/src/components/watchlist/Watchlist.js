@@ -400,7 +400,7 @@ const handleAlertClose = () => {
             </Typography>
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
           <Button variant="contained" onClick={handleEditNameDialogClose}>Cancel</Button>
           <Button
           variant="contained"
@@ -450,7 +450,7 @@ const handleAlertClose = () => {
             </Typography>
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
           <Button variant="contained" onClick={handleEditDescriptionDialogClose}>Cancel</Button>
           <Button
           variant="contained"

@@ -295,9 +295,8 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
             <TextField
               multiline
               label="Add your notes for this movie.."
-              fullWidth
+              fullWidth={true}
               rows={10}
-              maxRows={10}
               value={editedNote}
               margin="dense"
               InputProps={{
@@ -306,7 +305,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
                   <span style={{ color: editedNote.length > 2000 ? 'red' : 'inherit' }}>
                     {editedNote.length}/{2000}
                   </span>
-                </InputAdornment>
+                  </InputAdornment>
                 ),
               }}
               onChange={(e) => {
