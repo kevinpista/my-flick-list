@@ -175,7 +175,7 @@ const handleAlertClose = () => {
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           style={{ top: '50px' }}
           open={successAlertOpen || errorAlertOpen}
-          autoHideDuration={5000}
+          autoHideDuration={4000}
           onClose={handleAlertClose}
         >
           <Alert
@@ -326,7 +326,7 @@ const handleAlertClose = () => {
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           style={{ top: '50px' }}
           open={successAlertOpen || errorAlertOpen}
-          autoHideDuration={5000}
+          autoHideDuration={4000}
           onClose={handleAlertClose}
         >
           <Alert
