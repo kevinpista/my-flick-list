@@ -28,19 +28,20 @@ import TextField from '@mui/material/TextField';
 
 // watchlistItems is a JSON object holding 1 array containing individual movie data for each watchlistItem
 const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchlistItems }) => {
-  // Dialog component useState
-  const [openConfirmation, setOpenConfirmation] = useState(false);
+  // useStates for Deletion Confirmation Dialog box
+  const [openDeletionConfirmation, setOpenDeletionConfirmation] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState(null);    
 
-  const [editRowsModel, setEditRowsModel] = useState({});
-
+  // useStates for Note Dialog box
   const [openNoteDialog, setOpenNoteDialog] = useState(false);
   const [selectedNote, setSelectedNote] = useState('');
   const [editedNote, setEditedNote] = useState('');
-  const [selectedWatchlistItemId, setSelectedWatchlistItemId] = useState(null);
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [dialogNoteErrorMessage, setDialogNoteErrorMessage] = useState(''); // Dialog error display for editing notes 
   
+  const [editRowsModel, setEditRowsModel] = useState({});
+  const [selectedWatchlistItemId, setSelectedWatchlistItemId] = useState(null);
+
   const handleToWatchClick = async (event, row) => {
     event.stopPropagation();
     try {
@@ -95,7 +96,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     setDialogNoteErrorMessage('');
 
     if (isEditingNote && editedNote === selectedNote) {
-      // Only set isEditingNote dialog is open and there were no edits made
+      // Only set if dialog is open and there were no edits made
       setIsEditingNote(false);
     }
   };
@@ -103,11 +104,11 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   const handleDeleteClick = (event, watchlistItemId) => {
     event.stopPropagation();
     setDeleteItemId(watchlistItemId);
-    setOpenConfirmation(true);
+    setOpenDeletionConfirmation(true);
   };
 
   const handleCloseConfirmation = () => {
-    setOpenConfirmation(false);
+    setOpenDeletionConfirmation(false);
     setDeleteItemId(null);
   };
 
@@ -261,7 +262,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       />
       {/* Confirmation Dialog for Deletion */}
       <Dialog
-        open={openConfirmation}
+        open={openDeletionConfirmation}
         onClose={handleCloseConfirmation}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
