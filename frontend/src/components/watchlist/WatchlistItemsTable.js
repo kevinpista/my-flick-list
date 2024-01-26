@@ -7,13 +7,7 @@ import { editWatchlistItemNoteAPI } from '../../api/watchlistAPI';
 import * as errorConstants from '../../api/errorConstants';
 import axios from 'axios';
 
-// MUI Dialog component to confirm watchlist item deletion
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Typography } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import ClearSharpIcon from '@mui/icons-material/ClearSharp';
@@ -45,6 +39,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   const [editedNote, setEditedNote] = useState('');
   const [selectedWatchlistItemId, setSelectedWatchlistItemId] = useState(null);
   const [isEditingNote, setIsEditingNote] = useState(false);
+  const [dialogNoteErrorMessage, setDialogNoteErrorMessage] = useState(''); // Dialog error display for editing notes 
   
   const handleToWatchClick = async (event, row) => {
     event.stopPropagation();
@@ -97,6 +92,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   const handleNoteDialogClose = () => {
     setOpenNoteDialog(false);
     setSelectedNote('');
+    setDialogNoteErrorMessage('');
 
     if (isEditingNote && editedNote === selectedNote) {
       // Only set isEditingNote dialog is open and there were no edits made
@@ -138,12 +134,13 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
         setWatchlistItems({ 'watchlist-items': updatedWatchlistItems });
         setSelectedNote(response.data.item_notes);
         setIsEditingNote(false);
+        setDialogNoteErrorMessage('');
       }
     } catch (error) {
     if (error.message === errorConstants.ERROR_BAD_REQUEST) {
-        console.log('hello there bad request error')
+        setDialogNoteErrorMessage('Bad request, please try again.');
       } else {
-        console.log('hello there else error')
+        setDialogNoteErrorMessage(`Error updating note: ${error.message}`);
       }
     };
   };
@@ -317,12 +314,18 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
                 setEditedNote(e.target.value);
               }}
             />
+
           ) : (
             <DialogContentText
             style={{ paddingLeft: '10px', paddingRight: '10px'}}
             >
               {selectedNote}
             </DialogContentText>
+          )}
+          {dialogNoteErrorMessage && (
+            <Typography color="error" variant="body2">
+              {dialogNoteErrorMessage}
+            </Typography>
           )}
         </DialogContent>
 
