@@ -241,7 +241,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     rating: watchlistItem.rating,
     budget: formatFinancialData(watchlistItem.budget),
     revenue: formatFinancialData(watchlistItem.revenue),
-    item_notes: watchlistItem.item_notes !== null ? watchlistItem.item_notes : '',
+    item_notes: watchlistItem.item_notes,
   }));
 
   return (
@@ -317,17 +317,17 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
             />
 
           ) : (
-            <DialogContentText
-            style={{ paddingLeft: '10px', paddingRight: '10px'}}
-            >
-              {selectedNote}
+            <DialogContentText style={{ paddingLeft: '10px', paddingRight: '10px'}}>
+              {selectedNote === null ? 'No note for this movie yet.' : selectedNote}
             </DialogContentText>
           )}
+
           {dialogNoteErrorMessage && (
             <Typography color="error" variant="body2">
               {dialogNoteErrorMessage}
             </Typography>
           )}
+
         </DialogContent>
 
         <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
