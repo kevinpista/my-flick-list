@@ -21,8 +21,9 @@ import Checkbox from '@mui/material/Checkbox';
 // Item Note icons
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import InfoIcon from '@mui/icons-material/Info';
-import NoteIcon from '@mui/icons-material/Note';
+import ChatIcon from '@mui/icons-material/Chat';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+
 import TextField from '@mui/material/TextField';
 
 
@@ -241,9 +242,15 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       headerAlign: 'center', 
       align: 'center', 
       renderCell: (params) => (
-        <Tooltip title={params.row.item_notes ? 'Click to view note' : 'No note available'}>
+        <Tooltip title={params.row.item_notes ? 'Click to view note' : 'No notes found'}>
           <IconButton onClick={() => handleNoteIconClick(params.row.item_notes, params.row.id)}>
-            {params.row.item_notes ? <NoteIcon color="primary" /> : <InfoIcon color="disabled" />}
+          {params.row.item_notes === null ? (
+            <ChatBubbleIcon color='primary'/>  
+          ) : params.row.item_notes === "" ? (
+            <ChatBubbleIcon color='primary' />
+          ) : (
+            <ChatIcon color='primary' />
+          )}
           </IconButton>
         </Tooltip>
       ),
@@ -319,13 +326,13 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   // Initial display if notes is NULL
   const renderCreateNoteContent = () => (
     <DialogContentText style={{ paddingLeft: '10px', paddingRight: '10px', fontStyle: 'italic', color: 'navy' }}>
-      Let's create a note for this movie!
+      Let's create your first note for this movie!
     </DialogContentText>
   );
   // Initial display if notes is ''
   const renderEmptyNoteContent = () => (
     <DialogContentText style={{ paddingLeft: '10px', paddingRight: '10px', fontStyle: 'italic', color: 'purple' }}>
-      Note is empty for this movie. Let's add something!
+      Note is empty.. let's add something!
     </DialogContentText>
   );
   
