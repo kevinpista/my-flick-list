@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import { formatReleaseDate, formatRuntime, formatFinancialData } from '../../utils/formatUtils';
 import { getJwtTokenFromCookies } from '../../utils/authTokenUtils';
-import { editWatchlistItemNoteAPI } from '../../api/watchlistAPI';
+import { editWatchlistItemNoteAPI, createWatchlistItemNoteAPI } from '../../api/watchlistAPI';
 import * as errorConstants from '../../api/errorConstants';
 import axios from 'axios';
 
@@ -37,6 +37,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   const [selectedNote, setSelectedNote] = useState('');
   const [editedNote, setEditedNote] = useState('');
   const [isEditingNote, setIsEditingNote] = useState(false);
+  const [isCreatingNote, setIsCreatingNote] = useState(false);
   const [dialogNoteErrorMessage, setDialogNoteErrorMessage] = useState(''); // Dialog error display for editing notes 
   
   const [editRowsModel, setEditRowsModel] = useState({});
@@ -86,7 +87,11 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   const handleNoteIconClick = (itemNote, watchlistItemId) => {
     setSelectedNote(itemNote);
     setSelectedWatchlistItemId(watchlistItemId)
-    setEditedNote(itemNote); // Set the initial value of the text field to the current note
+    if (itemNote === null) {
+      setEditedNote(''); // Sets initial editing TextField
+    } else {
+      setEditedNote(itemNote); // Set the initial value of the text field to the current note
+    }
     setOpenNoteDialog(true);
   };
 
@@ -97,6 +102,11 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
 
     if (isEditingNote && editedNote === selectedNote) {
       // Only set if dialog is open and there were no edits made
+      setIsEditingNote(false);
+    }
+    if (isCreatingNote && editedNote === selectedNote) {
+      // Only set if dialog is open and there were no creations made
+      setIsCreatingNote(false);
       setIsEditingNote(false);
     }
   };
@@ -117,11 +127,11 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     onDeleteWatchlistItem(watchlistItemId); // Call this function with the watchlistItemId to be deleted
   };
 
-  const handleNoteUpdateSubmit = async () => {
+  const handleNoteCreateSubmit = async () => {
     try {
-      const response = await editWatchlistItemNoteAPI(selectedWatchlistItemId, editedNote); // selectedNote gets updated in dialog textfield
+      const response = await createWatchlistItemNoteAPI(selectedWatchlistItemId, editedNote); // selectedNote gets updated in dialog textfield
       if (response.status === 200) {
-        // Update the item_notes in the local state. Loop original array of data until edited row found
+        // Create and stores the item_notes in the local state. Loop original array of data until edited row found
         const updatedWatchlistItems = watchlistItems['watchlist-items'].map((watchlistItem) => {
           if (watchlistItem.id === selectedWatchlistItemId) {
             return {
@@ -132,6 +142,34 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
           return watchlistItem; // Catch all in case selecetedWatchlistItemId is not found
         });
         // Set the updated state
+        setWatchlistItems({ 'watchlist-items': updatedWatchlistItems });
+        setSelectedNote(response.data.item_notes);
+        setIsEditingNote(false);
+        setIsCreatingNote(false);
+        setDialogNoteErrorMessage('');
+      }
+    } catch (error) {
+    if (error.message === errorConstants.ERROR_BAD_REQUEST) {
+        setDialogNoteErrorMessage('Bad request, please try again.');
+      } else {
+        setDialogNoteErrorMessage(`Error creating note: ${error.message}`);
+      }
+    };
+  };
+
+  const handleNoteUpdateSubmit = async () => {
+    try {
+      const response = await editWatchlistItemNoteAPI(selectedWatchlistItemId, editedNote); // selectedNote gets updated in dialog textfield
+      if (response.status === 200) {
+        const updatedWatchlistItems = watchlistItems['watchlist-items'].map((watchlistItem) => {
+          if (watchlistItem.id === selectedWatchlistItemId) {
+            return {
+              ...watchlistItem,
+              item_notes: response.data.item_notes,
+            };
+          }
+          return watchlistItem;
+        });
         setWatchlistItems({ 'watchlist-items': updatedWatchlistItems });
         setSelectedNote(response.data.item_notes);
         setIsEditingNote(false);
@@ -146,11 +184,8 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     };
   };
 
-
   const getRowId = (row) => row.id;
-
   const rowHeight = 140; // Fixed height for each row
-
   const columns = [
     {
       field: 'toWatch',
@@ -245,9 +280,9 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   }));
 
   // Components to render for item notes dialog based on 3 cases
-  // Note exists, show current note, show edit option, submit sends PATCH
-  // Note exists but is empty "", show different message, show edit option, submit sends PATCH
-  // Note does not exist, show option to create a note. Text field opens create, submit sends POST
+  // Note exists, show current note, show edit option, submit sends PATCH request
+  // Note exists but is empty "", show 'note is empty' message, show edit option, submit sends PATCH request
+  // Note does not exist, show option to create a note, Textfield opens with create button, submit sends POST request
   const renderDialogContent = () => {
     if (isEditingNote) {
       return (
@@ -303,7 +338,23 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   
   // Buttons to accompany dialog boxes based on conditions
   const renderDialogActions = () => {
-    if (isEditingNote) {
+    if (isCreatingNote) {
+      return (
+        <DialogActions style={{ paddingBottom: '15px', paddingRight: '18px' }}>
+          <Button variant="contained" onClick={handleNoteDialogClose} color="primary">
+            Close
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleNoteCreateSubmit}
+            color="primary"
+            disabled={editedNote.length > 2000}
+          >
+            Create
+          </Button>
+        </DialogActions>
+      );    
+    } else if (isEditingNote) {
       return (
         <DialogActions style={{ paddingBottom: '15px', paddingRight: '18px' }}>
           <Button variant="contained" onClick={handleNoteDialogClose} color="primary">
@@ -336,7 +387,8 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       <Button
         variant="contained"
         onClick={() => {
-          setIsEditingNote(true);
+          setIsEditingNote(true); // Opens text field
+          setIsCreatingNote(true); // Renders button to use POST endpoint
           setEditedNote('');
         }}
         color="primary"
@@ -345,7 +397,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       </Button>
     </DialogActions>
   );
-  
+
   // Appears if a note object is created, regardless if it is empty or not
   const renderEditNoteActions = () => (
     <DialogActions style={{ paddingBottom: '15px', paddingRight: '18px' }}>

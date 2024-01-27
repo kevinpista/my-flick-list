@@ -334,9 +334,10 @@ export function addWatchlistItemAPI(watchlistID, movieID) {
         });
     }
 
-// router.Patch("/api/watchlist-item-note", controllers.UpdateWatchlistItemNote) // PATCH watchlist_item_note 'item notes'. Passed through JSON body
-export function editWatchlistItemNoteAPI (watchlistItemId, newItemNote) {
+// router.Post("/api/watchlist-item-note", controllers.CreateWatchlistItemNote) // POST create watchlist item note for a specific watchlist item
+export function createWatchlistItemNoteAPI (watchlistItemId, newItemNote) {
     // Fetch the user's stored JWT token from cookies
+    console.log('post api hit')
     const token = getJwtTokenFromCookies();
     if (!token) {
         console.error('Token not available or expired');
@@ -351,6 +352,42 @@ export function editWatchlistItemNoteAPI (watchlistItemId, newItemNote) {
     const data = {
         'watchlist_item_id': watchlistItemId,
         'item_notes': newItemNote,
+    };
+
+    return axios.post(url, data, {headers})
+        .then(response => {
+            console.log(response)
+            return response; // Returns entire response with headers to front. Data contains user's updated data
+        })
+        .catch(error => { // Will catch any error thrown by extractToken
+            if (error.response) {
+                const errorMessage = error.response.data.message;
+                console.error('Error:', errorMessage);
+                throw new Error(errorMessage);
+            } else { 
+                console.error('Network or other error:', error); 
+                throw error;
+            }
+        });
+    }
+
+// router.Patch("/api/watchlist-item-note", controllers.UpdateWatchlistItemNote) // PATCH watchlist_item_note 'item notes'. Passed through JSON body
+export function editWatchlistItemNoteAPI (watchlistItemId, editedItemNote) {
+    // Fetch the user's stored JWT token from cookies
+    const token = getJwtTokenFromCookies();
+    if (!token) {
+        console.error('Token not available or expired');
+        // For now, will use a Promise.reject method instead of redirect
+        return Promise.reject('Token not available or expired');
+        }
+
+    const headers = {
+        Authorization: `Bearer ${token}`,
+    };
+    const url = 'http://localhost:8080/api/watchlist-item-note';
+    const data = {
+        'watchlist_item_id': watchlistItemId,
+        'item_notes': editedItemNote,
     };
 
     return axios.patch(url, data, {headers})
