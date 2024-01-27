@@ -244,6 +244,124 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     item_notes: watchlistItem.item_notes,
   }));
 
+  // Components to render for item notes dialog based on 3 cases
+  // Note exists, show current note, show edit option, submit sends PATCH
+  // Note exists but is empty "", show different message, show edit option, submit sends PATCH
+  // Note does not exist, show option to create a note. Text field opens create, submit sends POST
+  const renderDialogContent = () => {
+    if (isEditingNote) {
+      return (
+        <TextField
+          multiline
+          label="Add your notes for this movie.."
+          fullWidth
+          rows={10}
+          value={editedNote}
+          margin="dense"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <span style={{ color: editedNote.length > 2000 ? 'red' : 'inherit' }}>
+                  {editedNote.length}/{2000}
+                </span>
+              </InputAdornment>
+            ),
+          }}
+          onChange={(e) => setEditedNote(e.target.value)}
+        />
+      );
+    } else {
+      if (selectedNote === null) {
+        return renderCreateNoteContent();
+      } else if (selectedNote === '') {
+        return renderEmptyNoteContent();
+      } else {
+        return renderExistingNoteContent();
+      }
+    }
+  };
+
+  // Initial display if notes is NULL
+  const renderCreateNoteContent = () => (
+    <DialogContentText style={{ paddingLeft: '10px', paddingRight: '10px', fontStyle: 'italic', color: 'navy' }}>
+      Let's create a note for this movie!
+    </DialogContentText>
+  );
+  // Initial display if notes is ''
+  const renderEmptyNoteContent = () => (
+    <DialogContentText style={{ paddingLeft: '10px', paddingRight: '10px', fontStyle: 'italic', color: 'purple' }}>
+      Note is empty for this movie. Let's add something!
+    </DialogContentText>
+  );
+  
+  // Initial display if a note exists with text
+  const renderExistingNoteContent = () => (
+    <DialogContentText style={{ paddingLeft: '10px', paddingRight: '10px' }}>
+      {selectedNote}
+    </DialogContentText>
+  );
+  
+  // Buttons to accompany dialog boxes based on conditions
+  const renderDialogActions = () => {
+    if (isEditingNote) {
+      return (
+        <DialogActions style={{ paddingBottom: '15px', paddingRight: '18px' }}>
+          <Button variant="contained" onClick={handleNoteDialogClose} color="primary">
+            Close
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleNoteUpdateSubmit}
+            color="primary"
+            disabled={editedNote.length > 2000}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      );
+    } else {
+      if (selectedNote === null) {
+        return renderCreateNoteActions();
+      } else {
+        return renderEditNoteActions();
+      }
+    }
+  };
+
+  const renderCreateNoteActions = () => (
+    <DialogActions style={{ paddingBottom: '15px', paddingRight: '18px' }}>
+      <Button variant="contained" onClick={handleNoteDialogClose} color="primary">
+        Close
+      </Button>
+      <Button
+        variant="contained"
+        onClick={() => {
+          setIsEditingNote(true);
+          setEditedNote('');
+        }}
+        color="primary"
+      >
+        Create Note
+      </Button>
+    </DialogActions>
+  );
+  
+  // Appears if a note object is created, regardless if it is empty or not
+  const renderEditNoteActions = () => (
+    <DialogActions style={{ paddingBottom: '15px', paddingRight: '18px' }}>
+      <Button variant="contained" onClick={handleNoteDialogClose} color="primary">
+        Close
+      </Button>
+      <Button
+        variant="contained"
+        onClick={() => setIsEditingNote(true)}
+        color="primary"
+      >
+        Edit
+      </Button>
+    </DialogActions>
+  );
+
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <ThemeProvider theme={muiTheme}>
@@ -260,6 +378,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
         rowHeight={rowHeight}
         hideFooterPagination
       />
+
       {/* Confirmation Dialog for Deletion */}
       <Dialog
         open={openDeletionConfirmation}
@@ -288,39 +407,12 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       maxWidth="md"
       fullWidth={true}
       >
-        <DialogTitle
-        style={{paddingLeft: '30px', paddingTop: '30px', paddingBottom: '18px'}}
-        >
+        <DialogTitle style={{ paddingLeft: '30px', paddingTop: '30px', paddingBottom: '18px' }}>
           Your Movie Notes
         </DialogTitle>
-        <DialogContent>
-          {isEditingNote ? (
-            <TextField
-              multiline
-              label="Add your notes for this movie.."
-              fullWidth={true}
-              rows={10}
-              value={editedNote}
-              margin="dense"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                  <span style={{ color: editedNote.length > 2000 ? 'red' : 'inherit' }}>
-                    {editedNote.length}/{2000}
-                  </span>
-                  </InputAdornment>
-                ),
-              }}
-              onChange={(e) => {
-                setEditedNote(e.target.value);
-              }}
-            />
 
-          ) : (
-            <DialogContentText style={{ paddingLeft: '10px', paddingRight: '10px'}}>
-              {selectedNote === null ? 'No note for this movie yet.' : selectedNote}
-            </DialogContentText>
-          )}
+        <DialogContent>
+          {renderDialogContent()}
 
           {dialogNoteErrorMessage && (
             <Typography color="error" variant="body2">
@@ -331,26 +423,9 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
         </DialogContent>
 
         <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
-          <Button variant = "contained" onClick={handleNoteDialogClose} color="primary" >
-              Close
-          </Button>
-          {isEditingNote ? (
-            <Button
-            variant = "contained"
-            onClick={handleNoteUpdateSubmit}
-            color="primary"
-            disabled={
-            editedNote.length > 2000
-            }
-            >
-              Save
-            </Button>
-          ) : (
-            <Button variant = "contained" onClick={() => setIsEditingNote(true)} color="primary">
-              Edit
-            </Button>
-          )}
+          {renderDialogActions()}
         </DialogActions>
+
       </Dialog>
           </ThemeProvider>
     </div>
