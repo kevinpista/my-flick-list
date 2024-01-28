@@ -15,6 +15,8 @@ function MovieSearchBar({ sizeSx ="medium", labelText="Search for any movie..."}
     const encodedQuery = encodeURIComponent(searchQuery);
     window.location.href = `/movie-search?query=${encodedQuery}`;
   };
+  // Checks length of
+  const searchDoesNotQueryExists = searchQuery.trim().length === 0;
 
   return (
     <ThemeProvider theme={muiTheme}>
@@ -39,7 +41,7 @@ function MovieSearchBar({ sizeSx ="medium", labelText="Search for any movie..."}
       <Button 
         className="search-button" 
         variant="contained" 
-        onClick={handleSearch}
+        onClick={searchDoesNotQueryExists ? null: handleSearch}
       >
         <SearchIcon />
       </Button>
