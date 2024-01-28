@@ -191,7 +191,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       }
     };
   };
-
+  // 'Last Updated At' date found in the Notes Dialog
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const options = {
@@ -202,14 +202,12 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       minute: '2-digit',
       hour12: true,
     };
-  const formattedDate = date.toLocaleString('en-US', options);
+    const formattedDate = date.toLocaleString('en-US', options);
 
-  // Extract date & time parts, removing comma from date part
-  const datePart = formattedDate.slice(0, formattedDate.lastIndexOf(',')).trim();
-  const timePart = formattedDate.slice(formattedDate.lastIndexOf(' ') -5);
-
-  // Combine with "at"
-  return `${datePart} at ${timePart}`;
+    // Extract date & time parts, removing comma from date part
+    const datePart = formattedDate.slice(0, formattedDate.lastIndexOf(',')).trim();
+    const timePart = formattedDate.slice(formattedDate.lastIndexOf(' ') -5);
+    return `${datePart} at ${timePart}`;
   };
   
   const getRowId = (row) => row.id;
@@ -444,7 +442,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
         onClick={() => setIsEditingNote(true)}
         color="primary"
       >
-        Edit
+        Edit Note
       </Button>
     </DialogActions>
   );
@@ -479,7 +477,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
             Are you sure you want to remove this movie from your watchlist?
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
           <Button variant = "contained" onClick={handleCloseConfirmation}>Cancel</Button>
           <Button variant = "contained" onClick={() => handleConfirmDelete(deleteItemId)} autoFocus>
             Confirm
@@ -514,7 +512,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
           
         </DialogContent>
 
-        <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
+        <DialogActions style={{ paddingBottom: '6px', paddingRight: '1px' }}>
           {renderDialogActions()}
         </DialogActions>
 
