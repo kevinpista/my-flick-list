@@ -268,10 +268,20 @@ func (c *WatchlistItemService) DeleteWatchlistItemByID(watchlistItemID int, watc
 		return err
 	}
 
-	deleteQuery := `
+    // Delete watchlist_item_note (if any) that references the watchlist_item
+    deleteWatchlistItemNoteQuery := `
+        DELETE FROM watchlist_item_note WHERE watchlist_item_id = $1
+    `
+    _, err = tx.ExecContext(ctx, deleteWatchlistItemNoteQuery, watchlistItemID)
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
+
+	deleteWatchlistItemQuery := `
 		DELETE FROM watchlist_item WHERE id = $1
 	`
-	_, err = tx.ExecContext(ctx, deleteQuery, watchlistItemID)
+	_, err = tx.ExecContext(ctx, deleteWatchlistItemQuery, watchlistItemID)
 	if err != nil {
 		tx.Rollback()
 		return err
