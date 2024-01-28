@@ -309,7 +309,7 @@ const MoviePage = () => {
                         )}
                     </Select>
                 </DialogContent>
-                <DialogActions>
+                <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
                     <Button variant="contained" onClick={handleCloseDialog} color="primary">
                     Cancel
                     </Button>

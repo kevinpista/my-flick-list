@@ -236,7 +236,7 @@ const handleCreateWatchlistDialogSubmit = async () => {
             </Typography>
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
           <Button variant="contained" onClick={handleCreateWatchlistButtonClose}>
             Exit</Button>
 
@@ -337,7 +337,7 @@ const handleCreateWatchlistDialogSubmit = async () => {
           </Typography>
         )}
       </DialogContent>
-      <DialogActions>
+      <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
         <Button variant="contained" onClick={handleCreateWatchlistButtonClose}>
           Exit</Button>
 

@@ -173,7 +173,7 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
             Are you sure you want to delete this watchlist?
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
           <Button variant="contained" onClick={handleCloseConfirmation}>Cancel</Button>
           <Button variant="contained" onClick={() => handleConfirmDelete(deleteWatchlistId)} autoFocus>
             Confirm
