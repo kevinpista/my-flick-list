@@ -36,6 +36,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   // useStates for Note Dialog box
   const [openNoteDialog, setOpenNoteDialog] = useState(false);
   const [selectedNote, setSelectedNote] = useState('');
+  const [selectedNoteUpdatedAt, setSelectedNoteUpdatedAt] = useState(null);
   const [editedNote, setEditedNote] = useState('');
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [isCreatingNote, setIsCreatingNote] = useState(false);
@@ -85,7 +86,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     }
   };
   
-  const handleNoteIconClick = (itemNote, watchlistItemId) => {
+  const handleNoteIconClick = (itemNote, watchlistItemId, itemNoteUpdatedAt) => {
     setSelectedNote(itemNote);
     setSelectedWatchlistItemId(watchlistItemId)
     if (itemNote === null) {
@@ -93,12 +94,16 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     } else {
       setEditedNote(itemNote); // Set the initial value of the text field to the current note
     }
+    if (itemNoteUpdatedAt !== null) {
+      setSelectedNoteUpdatedAt(formatDate(itemNoteUpdatedAt)) 
+    }
     setOpenNoteDialog(true);
   };
 
   const handleNoteDialogClose = () => {
     setOpenNoteDialog(false);
     setSelectedNote('');
+    setSelectedNoteUpdatedAt(null);
     setDialogNoteErrorMessage('');
 
     if (isEditingNote && editedNote === selectedNote) {
@@ -148,6 +153,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
         setIsEditingNote(false);
         setIsCreatingNote(false);
         setDialogNoteErrorMessage('');
+        setSelectedNoteUpdatedAt(formatDate(new Date().toISOString())); // Set to current time
       }
     } catch (error) {
     if (error.message === errorConstants.ERROR_BAD_REQUEST) {
@@ -175,6 +181,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
         setSelectedNote(response.data.item_notes);
         setIsEditingNote(false);
         setDialogNoteErrorMessage('');
+        setSelectedNoteUpdatedAt(formatDate(new Date().toISOString())); // Set to current time
       }
     } catch (error) {
     if (error.message === errorConstants.ERROR_BAD_REQUEST) {
@@ -185,6 +192,26 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     };
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = {
+      month: '2-digit',
+      day: 'numeric',
+      year: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    };
+  const formattedDate = date.toLocaleString('en-US', options);
+
+  // Extract date & time parts, removing comma from date part
+  const datePart = formattedDate.slice(0, formattedDate.lastIndexOf(',')).trim();
+  const timePart = formattedDate.slice(formattedDate.lastIndexOf(' ') -5);
+
+  // Combine with "at"
+  return `${datePart} at ${timePart}`;
+  };
+  
   const getRowId = (row) => row.id;
   const rowHeight = 140; // Fixed height for each row
   const columns = [
@@ -243,7 +270,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       align: 'center', 
       renderCell: (params) => (
         <Tooltip title={params.row.item_notes ? 'Click to view note' : 'No notes found'}>
-          <IconButton onClick={() => handleNoteIconClick(params.row.item_notes, params.row.id)}>
+          <IconButton onClick={() => handleNoteIconClick(params.row.item_notes, params.row.id, params.row.note_updated_at)}>
           {params.row.item_notes === null ? (
             <ChatBubbleIcon color='primary'/>  
           ) : params.row.item_notes === "" ? (
@@ -284,6 +311,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     budget: formatFinancialData(watchlistItem.budget),
     revenue: formatFinancialData(watchlistItem.revenue),
     item_notes: watchlistItem.item_notes,
+    note_updated_at: watchlistItem.note_updated_at
   }));
 
   // Components to render for item notes dialog based on 3 cases
@@ -338,7 +366,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   
   // Initial display if a note exists with text
   const renderExistingNoteContent = () => (
-    <DialogContentText style={{ paddingLeft: '10px', paddingRight: '10px' }}>
+    <DialogContentText style={{ paddingLeft: '10px', paddingRight: '10px', color:'black' }}>
       {selectedNote}
     </DialogContentText>
   );
@@ -466,8 +494,13 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       maxWidth="md"
       fullWidth={true}
       >
-        <DialogTitle style={{ paddingLeft: '30px', paddingTop: '30px', paddingBottom: '18px' }}>
+        <DialogTitle style={{ paddingLeft: '30px', paddingTop: '30px', paddingBottom: '18px', display: 'flex', alignItems: 'center'  }}>
           Your Movie Notes
+          {selectedNoteUpdatedAt && (
+            <Typography variant='body2' color='textSecondary' sx={{ ml: 1, fontStyle: 'italic'}}>
+              - Last Updated: {selectedNoteUpdatedAt}
+            </Typography>
+          )}
         </DialogTitle>
 
         <DialogContent>
@@ -478,7 +511,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
               {dialogNoteErrorMessage}
             </Typography>
           )}
-
+          
         </DialogContent>
 
         <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
