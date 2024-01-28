@@ -189,17 +189,36 @@ func (c *WatchlistService) DeleteWatchlistByID(watchlistID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	// Delete associated watchlist_items first
-	_, err := db.ExecContext(ctx, "DELETE FROM watchlist_item WHERE watchlist_id = $1", watchlistID)
-	if err != nil {
-		return err
-	}
+	tx, err := db.BeginTx(ctx, nil)
+    if err != nil {
+        return err
+    }
+	
+    // Delete associated watchlist_item_notes first
+    _, err = tx.ExecContext(ctx, "DELETE FROM watchlist_item_note WHERE watchlist_item_id IN (SELECT id FROM watchlist_item WHERE watchlist_id = $1)", watchlistID)
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
+	
+    // Delete associated watchlist_items
+    _, err = tx.ExecContext(ctx, "DELETE FROM watchlist_item WHERE watchlist_id = $1", watchlistID)
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
 
-	// Delete watchlist itself
-	_, err = db.ExecContext(ctx, "DELETE FROM watchlist WHERE id = $1", watchlistID)
-	if err != nil {
-		return err
-	}
+    // Delete watchlist itself
+    _, err = tx.ExecContext(ctx, "DELETE FROM watchlist WHERE id = $1", watchlistID)
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
+
+    // Commit the transaction
+    if err := tx.Commit(); err != nil {
+        return err
+    }
 
 	return nil
 }
