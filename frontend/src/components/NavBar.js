@@ -6,7 +6,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import '../css/NavBar.css'; // Import the CSS file
-import { removeTokenFromCookie } from '../utils/authTokenUtils';
+import { removeTokenFromCookie, getJwtTokenFromCookies } from '../utils/authTokenUtils';
 
 
 // TODO - make height smaller, Add Logo
@@ -15,12 +15,17 @@ function NavBar() {
   const navigate = useNavigate();
   // const handleClick = () => navigate('/');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(getJwtTokenFromCookies() !== undefined);
 
   const handleLogout = () => {
     removeTokenFromCookie();
     setSnackbarOpen(true);
     setTimeout(() => {
-      navigate('/');
+      if (window.location.pathname === '/') {
+        window.location.reload();
+      } else {
+        navigate('/');
+      }
     }, 1500); // Redirect after 1.5 seconds delay
   };
 
@@ -44,12 +49,15 @@ function NavBar() {
               <Nav.Link onClick={() => navigate('/watchlist')} className='custom-font'>
                 Watchlists
               </Nav.Link>
+              {isLoggedIn ? (
+              <Nav.Link onClick={handleLogout} className='custom-font'>
+                Logout
+              </Nav.Link>   
+              ) : (
               <Nav.Link onClick={() => navigate('/user-login')} className='custom-font'>
                 Login
               </Nav.Link>
-              <Nav.Link onClick={handleLogout} className='custom-font'>
-                Logout
-              </Nav.Link>                
+              )}             
             </Nav>
         </Navbar.Collapse>
       </Container>
