@@ -17,40 +17,17 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import SearchIcon from '@mui/icons-material/Search';
+import TheatersOutlinedIcon from '@mui/icons-material/TheatersOutlined';
 
-const pages = ['Movies', 'Watchlists', 'Logout'];
 
 // TODO - make height smaller, Add Logo
 function NavBar() {
-  // Nav bar itself
-  const [anchorElNav, setAnchorElNav] = useState(null);
-  const [anchorElUser, setAnchorElUser] = useState(null);
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
-  // Messaging and redirect
+  // Logout alert message and navigation
   const navigate = useNavigate();
-  // const handleClick = () => navigate('/');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(getJwtTokenFromCookies() !== undefined);
 
@@ -72,12 +49,11 @@ function NavBar() {
 
   return (
     <ThemeProvider theme={muiTheme}>
-
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          {/* Logo Text + Icon*/}
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          {/* Logo Icon + Name */}
+          <TheatersOutlinedIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1.5, fontSize: '30px' }} />
           <Typography
             variant="h6"
             noWrap
@@ -88,7 +64,7 @@ function NavBar() {
               display: { xs: 'none', md: 'flex' },
               fontFamily: 'monospace',
               fontWeight: 700,
-              letterSpacing: '.1rem',
+              letterSpacing: '.05rem',
               color: 'inherit',
               textDecoration: 'none',
             }}
@@ -96,43 +72,6 @@ function NavBar() {
             My Flick List
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
           <Typography
             variant="h5"
             noWrap
@@ -151,40 +90,67 @@ function NavBar() {
           >
             LOGO
           </Typography>
+          {/* Left side of nav */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             <Button
-            onClick={() => navigate('/movie-search')}
-            sx={{ my: 2, color: 'white', display: 'block' }}
+              onClick={() => navigate('/movie-search')}
+              sx={{ my: 2, color: 'white', display: 'block' }}
             >
               Movies
             </Button>
             <Button
-            onClick={() => navigate('/watchlist')}
-            sx={{ my: 2, color: 'white', display: 'block' }}
+              onClick={() => navigate('/watchlist')}
+              sx={{ my: 2, color: 'white', display: 'block' }}
             >
               Watchlists
             </Button>
+            {!isLoggedIn &&
+              <Button
+                onClick={() => navigate('/user-login')}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                Demo
+              </Button>
+            }
+
+            <Button
+              onClick={() => { window.open('https://github.com/kevinpista/my-flick-list', '_blank'); }}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Git Repo
+            </Button>
+          </Box>
+
+          {/* Right side of nav */}
+          <Box sx={{ flexGrow: 0, display: { xs: 'none', md: 'flex' } }}>
             {isLoggedIn ? (
               <Button
                 onClick={handleLogout}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{ my: 2, color: 'white', display: 'block', marginRight: 1 }}
               >
                 Logout
               </Button>
               ) : (
               <Button
                 onClick={() => navigate('/user-login')}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{ my: 2, color: 'white', display: 'block', marginRight: 2 }}
               >
                 Login
               </Button>
             )}
+            <Tooltip title="Search for a movie">
+              <IconButton onClick={() => navigate('/movie-search')} sx={{ p: 0 }}>
+                <SearchIcon sx={{ my: 2, color: 'white', display: 'block', fontSize: '30px'}}
+                />
+              </IconButton>
+            </Tooltip>
           </Box>
-          </Toolbar>
+
+        </Toolbar>
       </Container>
-      
     </AppBar>
 
+    {/* Alerts for when user clicks LOGOUT */}
     <Snackbar
       open={snackbarOpen}
       autoHideDuration={2000}
@@ -199,7 +165,6 @@ function NavBar() {
       </Alert>
     </Snackbar>
     </ThemeProvider>
-
   );
 }
 export default NavBar;
