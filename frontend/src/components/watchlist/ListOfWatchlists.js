@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography } from '@mui/material';
+import { Container, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, Link } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import NavBar from '../NavBar.js';
@@ -148,8 +148,12 @@ const handleCreateWatchlistDialogSubmit = async () => {
               Sign Up
             </Button>
           </div>
-          <Typography variant="h7" >
-            Click "LOG IN" and use the demo account!
+          <Typography variant="h7">
+            Use a{' '}
+            <Link href="/user-login" underline="always">
+                demo account
+            </Link>
+            {' '} instead.
           </Typography>
         </Paper>
         </Container>
