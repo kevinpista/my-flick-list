@@ -109,13 +109,13 @@ export function fetchWatchlistsAPI () {
 
 // 	router.Get("/api/watchlists/movie/{movieID}", controllers.GetWatchlistsByUserIDWithMovieIDCheck)
 // GET all watchlists belong to user + watchlist_item count for each + boolean if queried movieID is in the watchlist
+// Used to render watchlist belonging to a user on the Movies page.
 export function fetchWatchlistsByUserIDWithMovieIDCheck (movieID) {
     // Fetch the user's stored JWT token from cookies
     const token = getJwtTokenFromCookies();
     if (!token) {
-        console.error('Token not available or expired');
-        // For now, will use a Promise.reject method instead of redirect
-        return Promise.reject('Token not available or expired');
+        // Alerts frontend that the user is not logged in. Returns null for component to handle
+        return null; 
         }
 
     const headers = {
@@ -337,6 +337,7 @@ export function addWatchlistItemAPI(watchlistID, movieID) {
 // router.Post("/api/watchlist-item-note", controllers.CreateWatchlistItemNote) // POST create watchlist item note for a specific watchlist item
 export function createWatchlistItemNoteAPI (watchlistItemId, newItemNote) {
     // Fetch the user's stored JWT token from cookies
+    console.log('post api hit')
     const token = getJwtTokenFromCookies();
     if (!token) {
         console.error('Token not available or expired');
@@ -355,6 +356,7 @@ export function createWatchlistItemNoteAPI (watchlistItemId, newItemNote) {
 
     return axios.post(url, data, {headers})
         .then(response => {
+            console.log(response)
             return response; // Returns entire response with headers to front. Data contains user's updated data
         })
         .catch(error => { // Will catch any error thrown by extractToken
@@ -390,6 +392,7 @@ export function editWatchlistItemNoteAPI (watchlistItemId, editedItemNote) {
 
     return axios.patch(url, data, {headers})
         .then(response => {
+            console.log(response)
             return response; // Returns entire response with headers to front. Data contains user's updated data
         })
         .catch(error => { // Will catch any error thrown by extractToken

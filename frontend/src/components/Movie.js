@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import { Container, Paper, Typography, Button, InputLabel } from '@mui/material';
+import { Container, Paper, Typography, Button, InputLabel, Link } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import NavBar from './NavBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -8,6 +8,7 @@ import { getMovieDataTMDB } from '../api/movieDataTMDB';
 import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
 import { useParams } from 'react-router-dom';
 import { fetchWatchlistsByUserIDWithMovieIDCheck, addWatchlistItemAPI } from '../api/watchlistAPI'
+import { useNavigate } from 'react-router-dom';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -50,6 +51,7 @@ const MoviePage = () => {
 
     const [error, setError] = useState(null);
     const { movieID } = useParams(); // Extract movieID from the URL params
+    const navigate = useNavigate();
 
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedWatchlistID, setSelectedWatchlistID] = useState('');
@@ -110,11 +112,15 @@ const MoviePage = () => {
                 
                 // Fetch user's watchlist on mount
                 const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheck(movieID)
-                setUserWatchlists(fetchedWatchlists)
-                // Calculate the longest watchlist name for proper styling in dialog <MenuItem>
-                setLongestWatchlistNameLength(fetchedWatchlists['watchlists'].reduce((max, watchlist) => {
-                    return Math.max(max, watchlist.name.length);
-                  }, 0));
+                if (fetchedWatchlists === null) { // User is not logged in as API returns null
+                    setUserWatchlists(null)
+                } else {
+                    setUserWatchlists(fetchedWatchlists)
+                    // Calculate the longest watchlist name for proper styling in dialog <MenuItem>
+                    setLongestWatchlistNameLength(fetchedWatchlists['watchlists'].reduce((max, watchlist) => {
+                        return Math.max(max, watchlist.name.length);
+                      }, 0));
+                }
 
             } catch (error) {
                 setError(error);
@@ -255,6 +261,34 @@ const MoviePage = () => {
             )
         )}
         {/* Watchlist dropdown menu */}
+            {userWatchlists === null ? (
+                <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+                style={{ textAlign: 'center' }}
+                >
+                    <Paper elevation={6} style={{ padding: '25px 70px' }}>
+                    <Typography variant="h6">
+                        Please sign up or log in to add to a watchlist.
+                    </Typography>
+                    <div style ={{ margin: '10px' }}>
+                        <Button variant="contained" color="primary" onClick={() => navigate('/user-login')} style={{ margin: '10px' }}>
+                        Log In
+                        </Button>
+                        <Button variant="outlined" color="secondary" onClick={() => navigate('/user-registration')} style={{ margin: '10px' }}>
+                        Sign Up
+                        </Button>
+                    </div>
+                    <Typography variant="h7">
+                    Use a{' '}
+                    <Link href="/user-login" underline="always">
+                        demo account
+                    </Link>
+                    {' '} instead.
+                    </Typography>
+                    </Paper>
+                </Dialog>
+            ) : (
             <Dialog
                 open={openDialog}
                 onClose={handleCloseDialog}
@@ -318,6 +352,7 @@ const MoviePage = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            )}
         </Container>
         </React.Fragment>
         </ThemeProvider>
