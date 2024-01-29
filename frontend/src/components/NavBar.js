@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import '../css/NavBar.css'; // Import the CSS file
+// import Nav from 'react-bootstrap/Nav';
+// import Navbar from 'react-bootstrap/Navbar';
+// import '../css/NavBar.css'; // Import the CSS file
 import { removeTokenFromCookie, getJwtTokenFromCookies } from '../utils/authTokenUtils';
 
 import { ThemeProvider } from '@mui/material/styles';
@@ -19,12 +19,10 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import AdbIcon from '@mui/icons-material/Adb';
 import SearchIcon from '@mui/icons-material/Search';
 import TheatersOutlinedIcon from '@mui/icons-material/TheatersOutlined';
 
 
-// TODO - make height smaller, Add Logo
 function NavBar() {
   // Logout alert message and navigation
   const navigate = useNavigate();
@@ -49,9 +47,9 @@ function NavBar() {
 
   return (
     <ThemeProvider theme={muiTheme}>
-    <AppBar position="static">
+    <AppBar position="static" sx={{marginTop:'-40px'}}>
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
+        <Toolbar disableGutters >
           {/* Logo Icon + Name */}
           <TheatersOutlinedIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1.5, fontSize: '30px' }} />
           <Typography
@@ -72,24 +70,27 @@ function NavBar() {
             My Flick List
           </Typography>
 
+          {/* Logo Icon + Name for small screens */}
+          <TheatersOutlinedIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1.5, fontSize: '30px' }} />
           <Typography
             variant="h5"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },
               flexGrow: 1,
               fontFamily: 'monospace',
               fontWeight: 700,
-              letterSpacing: '.3rem',
+              letterSpacing: '.05rem',
               color: 'inherit',
               textDecoration: 'none',
             }}
           >
-            LOGO
+            My Flick List
           </Typography>
+
           {/* Left side of nav */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             <Button
