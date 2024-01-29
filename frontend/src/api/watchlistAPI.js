@@ -110,7 +110,7 @@ export function fetchWatchlistsAPI () {
 // 	router.Get("/api/watchlists/movie/{movieID}", controllers.GetWatchlistsByUserIDWithMovieIDCheck)
 // GET all watchlists belong to user + watchlist_item count for each + boolean if queried movieID is in the watchlist
 // Used to render watchlist belonging to a user on the Movies page.
-export function fetchWatchlistsByUserIDWithMovieIDCheck (movieID) {
+export function fetchWatchlistsByUserIDWithMovieIDCheckAPI (movieID) {
     // Fetch the user's stored JWT token from cookies
     const token = getJwtTokenFromCookies();
     if (!token) {
@@ -126,7 +126,7 @@ export function fetchWatchlistsByUserIDWithMovieIDCheck (movieID) {
     return axios.get(url, { headers })
         .then(response => {
             if (response.status === 204) {
-                throw new Error('You haven\'t created any watchlists yet.');
+                return response // Return full response for component to handle NoContent status
                 }
             return response.data; // Returning list of watchlists
         })

@@ -1,5 +1,7 @@
 import React, { useState, useEffect} from 'react';
-import { Container, Paper, Typography, Button, InputLabel, Link } from '@mui/material';
+import { Container, Paper, Typography, Button, InputLabel, Link, TextField } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import NavBar from './NavBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -7,8 +9,10 @@ import '../css/Movie.css';
 import { getMovieDataTMDB } from '../api/movieDataTMDB';
 import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
 import { useParams } from 'react-router-dom';
-import { fetchWatchlistsByUserIDWithMovieIDCheck, addWatchlistItemAPI } from '../api/watchlistAPI'
+import { fetchWatchlistsByUserIDWithMovieIDCheckAPI, addWatchlistItemAPI } from '../api/watchlistAPI'
 import { useNavigate } from 'react-router-dom';
+import { createWatchlistAPI } from '../api/watchlistAPI.js'
+import * as errorConstants from '../api/errorConstants';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -63,6 +67,46 @@ const MoviePage = () => {
     const [errorAlertOpen, setErrorAlertOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
 
+    const [isCreateWatchlistDialogOpen, setCreateWatchlistDialogOpen] = useState(false);
+    const [newWatchlistName, setNewWatchlistName] = useState('');
+    const [newWatchlistDescription, setNewWatchlistDescription] = useState('');
+  
+    const [dialogErrorMessage, setDialogErrorMessage] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    // Handle Create Watchlist
+    const handleCreateWatchlistButtonClick = () => {
+        setCreateWatchlistDialogOpen(true);
+    };
+    const handleCreateWatchlistButtonClose = () => {
+        setCreateWatchlistDialogOpen(false);
+        setDialogErrorMessage(''); // Clear error message when the dialog is closed
+      };
+
+    // createWatchlistAPI Call
+    const handleCreateWatchlistDialogSubmit = async () => {
+        setLoading(true)
+        try {
+        const response = await createWatchlistAPI(newWatchlistName, newWatchlistDescription);
+        if (response) {
+            const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheckAPI(movieID);           setCreateWatchlistDialogOpen(false);
+            setUserWatchlists(fetchedWatchlists);
+            setLongestWatchlistNameLength(fetchedWatchlists['watchlists'].reduce((max, watchlist) => {
+                return Math.max(max, watchlist.name.length, 30);
+              }, 0));
+            setCreateWatchlistDialogOpen(false);
+            handleWatchlistSuccessAlertOpen();
+        }
+        } catch (error) {
+        if (error.message === errorConstants.ERROR_BAD_REQUEST) {
+            setLoading(false)
+            setDialogErrorMessage('Error: Bad request. Please try again.');
+        } else {
+            setLoading(false)
+            setDialogErrorMessage(`Error: ${error.message}`);
+        } 
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -111,14 +155,16 @@ const MoviePage = () => {
                 setValidMovie(true);
                 
                 // Fetch user's watchlist on mount
-                const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheck(movieID)
+                const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheckAPI(movieID)
                 if (fetchedWatchlists === null) { // User is not logged in as API returns null
                     setUserWatchlists(null)
+                } else if (fetchedWatchlists.status === 204) {
+                    setUserWatchlists({"watchlists": []})
                 } else {
                     setUserWatchlists(fetchedWatchlists)
                     // Calculate the longest watchlist name for proper styling in dialog <MenuItem>
                     setLongestWatchlistNameLength(fetchedWatchlists['watchlists'].reduce((max, watchlist) => {
-                        return Math.max(max, watchlist.name.length);
+                        return Math.max(max, watchlist.name.length, 30);
                       }, 0));
                 }
 
@@ -150,8 +196,7 @@ const MoviePage = () => {
     try {
         const response = await addWatchlistItemAPI(selectedWatchlistID, movieID)
         if (response.status === 200) {
-            console.log("Movie added successfully to watchlist")
-            const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheck(movieID)
+            const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheckAPI(movieID)
             setUserWatchlists(fetchedWatchlists)
             handleSuccessAlertOpen();
         } else {
@@ -159,7 +204,6 @@ const MoviePage = () => {
             handleErrorAlertOpen(`Request failed with status: ${response.status}`);
         }
     } catch (error) {
-        console.log(error)
         handleErrorAlertOpen(`Error: ${error.message}`);
     } finally { // Closes dialog regardless of a successful or failed API request
         handleCloseDialog();
@@ -168,7 +212,7 @@ const MoviePage = () => {
 
     // Handles alert messages related to when a user submits the watchlist + movie they want to add
     const handleSuccessAlertOpen = () => {
-        setAlertMessage('Watchlist Added Successfully!');
+        setAlertMessage('Movie added to Watchlist successfully!');
         setSuccessAlertOpen(true);
     };
     
@@ -181,6 +225,11 @@ const MoviePage = () => {
         setSuccessAlertOpen(false);
         setErrorAlertOpen(false);
         setAlertMessage('');
+    };
+    // Message related to creating a watchlist
+    const handleWatchlistSuccessAlertOpen = () => {
+        setAlertMessage('Watchlist created sucessfully!');
+        setSuccessAlertOpen(true);
     };
 
     // RENDER COMPONENT
@@ -261,6 +310,7 @@ const MoviePage = () => {
             )
         )}
         {/* Watchlist dropdown menu */}
+        {/* 2 Edge Cases - User Not Logged In (null) or Logged In But No Watchlists (.length === 0) */}
             {userWatchlists === null ? (
                 <Dialog
                 open={openDialog}
@@ -288,6 +338,107 @@ const MoviePage = () => {
                     </Typography>
                     </Paper>
                 </Dialog>
+            ) : userWatchlists['watchlists'].length === 0 ? (
+                <>
+                <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+                style={{ textAlign: 'center' }}
+                >
+                    <Paper elevation={6} style={{ padding: '25px 70px' }}>
+                    <Typography variant="h6">
+                        Let's Create Your First Watchlist
+                    </Typography>
+                    <div style ={{ margin: '10px' }}>
+                    <Button variant="contained" color="primary" size="large" onClick={handleCreateWatchlistButtonClick} style={{ width: '200px', margin: '10px' }}>
+                        Create Watchlist
+                    </Button>
+                    </div>
+                    <Typography variant="h7">
+                    Use a{' '}
+                    <Link href="/user-login" underline="always">
+                        demo account
+                    </Link>
+                    {' '} instead.
+                    </Typography>
+                    </Paper>
+                </Dialog>
+                {/* Modal creating a watchlist */}
+                <Dialog
+                open={isCreateWatchlistDialogOpen}
+                onClose={handleCreateWatchlistButtonClose}
+                maxWidth="md"
+                fullWidth={true}
+                >
+                <DialogTitle><b>Create a New Watchlist</b></DialogTitle>
+                <DialogContent>
+                    <TextField
+                    autoFocus
+                    id="watchlist-name"
+                    label="Watchlist Name"
+                    value={newWatchlistName}
+                    onChange={(e) => setNewWatchlistName(e.target.value)}
+                    multiline
+                    fullWidth
+                    margin="dense"
+                    variant="standard"
+                    // Display character limit and changes text to red if user goes over limit
+                    InputProps={{
+                        endAdornment: (
+                        <InputAdornment position="end">
+                        <span style={{ color: newWatchlistName.length > 60 ? 'red' : 'inherit' }}>
+                            {newWatchlistName.length}/{60}
+                        </span>
+                        </InputAdornment>
+                        ),
+                    }}
+                    />
+                    <TextField
+                    autoFocus
+                    id="watchlist-description"
+                    label="Watchlist Description"
+                    value={newWatchlistDescription}
+                    onChange={(e) => setNewWatchlistDescription(e.target.value)}
+                    multiline
+                    fullWidth
+                    margin="dense"
+                    variant="standard"
+                    // Display character limit and changes text to red if user goes over limit
+                    InputProps={{
+                        endAdornment: (
+                        <InputAdornment position="end">
+                        <span style={{ color: newWatchlistDescription.length > 500 ? 'red' : 'inherit' }}>
+                            {newWatchlistDescription.length}/{500}
+                        </span>
+                        </InputAdornment>
+                        ),
+                    }}
+                    />
+                    {dialogErrorMessage && (
+                    <Typography color="error" variant="body2">
+                        {dialogErrorMessage}
+                    </Typography>
+                    )}
+                </DialogContent>
+                <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
+                    <Button variant="contained" onClick={handleCreateWatchlistButtonClose}>
+                    Exit</Button>
+
+                    <LoadingButton 
+                    variant="contained"
+                    loading={loading}
+                    onClick={handleCreateWatchlistDialogSubmit}
+                    disabled={
+                    newWatchlistName.length > 60 || // Character limit for watchlist name
+                    newWatchlistDescription.length > 500 // Character limit for watchlist description
+                    }
+                    >
+                    Create
+                    </LoadingButton>
+
+                </DialogActions>
+                </Dialog>
+                </>
             ) : (
             <Dialog
                 open={openDialog}
@@ -348,7 +499,7 @@ const MoviePage = () => {
                     Cancel
                     </Button>
                     <Button variant="contained" onClick={handleConfirm} color="primary" disabled={!selectedWatchlistID || selectedWatchlistID === 'placeholder'}>
-                    Confirm
+                    Add Movie
                     </Button>
                 </DialogActions>
             </Dialog>
