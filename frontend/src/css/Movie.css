@@ -1,24 +1,63 @@
 /* Movie.css */
+.background-header {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  border-bottom: 1px solid rgba(var(--lightGrey),1);
+  border-style: none;
+}
+
+.background-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 50px 30px;
+}
+
 .movie-content {
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1200px; /* Set maximum width for responsiveness */
+  gap: 1em;
   align-items: center;
-  justify-content: space-evenly;
+  color: white;
+}
+
+.movie-poster {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.poster-small {
+  width: 100%;
+  object-fit: cover;
+}
+
+.movie-details {
+  flex: 2;
 }
 
 .movie-paper {
-  height: 570px;
+  height: 100%;
   padding: 40px;
   max-width: 100%;
   overflow: auto; 
   display: flex;
   align-items: center;
+  gap: 1em;
 }
+
 
 .movie-poster {
-  flex: 1; /* Take up 1/3 of the available space */
-  margin-left: 10px;
+  /*flex: 1; /* Take up 1/3 of the available space */
+ /* margin-left: 10px; */
+/* position: relative;
+ z-index: 1;*/
 }
 
+/*
 .poster-small {
   max-width: 300px;
   max-height: 450px;
@@ -26,13 +65,17 @@
 }
 
 .movie-details {
+  flex: 1;
   flex-wrap: wrap;
   align-items: flex-start;
   align-content: center;
   padding-left: 40px;
   overflow: hidden;
   max-width: 80%;
+  position: relative;
+  z-index: 1;
 }
+*/
 
 .movie-tagline {
   font-style: italic;
@@ -42,12 +85,23 @@
   margin-bottom: 3px;
 }
 
+.overview {
+  margin-top: 20px;
+  font-size: 1.5rem;
+}
+
 .movie-financials {
   margin-bottom: 15px;
 }
 
 .movie-ratings {
   margin-bottom: 15px;
+}
+
+.movie-title{
+  font-weight: 600;
+  font-size: 2.2rem;
+  width: 100%;
 }
 
 .error {

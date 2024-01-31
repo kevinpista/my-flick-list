@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import { Container, Paper, Typography, Button, InputLabel, Link, TextField } from '@mui/material';
+import { Paper, Typography, Button, InputLabel, Link, TextField } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
@@ -36,12 +36,12 @@ import { muiTheme } from '../css/MuiThemeProvider.js';
 // 4. Movie details currently shifts all the way to the right if the content isn't long enough to fill the 2/3 space. Format so that 
 // movie details always begins aligned left next to the movie poster regardless of overall content lenght. Can see this difference based on the movie data
 
-// 5. TEST 'setLongestWatchlistNameLength(fetchedWatchlists['watchlists']... ' line in useEffect
-// when a new user who has no watchlists on file and see if component handles it correctly
+
 
 const MoviePage = () => {
     // Movie data variables
     const [moviePosterPath, setMoviePosterPath] = useState('');
+    const [movieBackdropPath, setMovieBackdropPath] = useState('');
     const [movieTitle, setMovieTitle] = useState('');
     const [movieReleaseDate, setMovieReleaseDate] = useState('');
     const [movieGenres, setMovieGenres] = useState([]); // Possibly more than 1 genre
@@ -115,8 +115,10 @@ const MoviePage = () => {
         const fetchData = async () => {
             try {
                 const data = await getMovieDataTMDB(movieID)
+                console.log(data)
                 // Extract the movie data from the single JSON response
                 const moviePosterPathFromTMDBAPI = data.movie.poster_path;
+                const movieBackdropPathFromTMDBAPI = data.movie.backdrop_path;
                 const movieTitleFromTMDBAPI = data.movie.original_title;
                 // Format the release_date data as it is provided as "YYYY-MM-DD"
                 const movieReleaseDateFromTMDBAPI = data.movie.release_date;
@@ -145,6 +147,7 @@ const MoviePage = () => {
                 const formattedBudget = formatFinancialData(movieBudgetFromTMDBAPI);
 
                 setMoviePosterPath(moviePosterPathFromTMDBAPI);
+                setMovieBackdropPath(movieBackdropPathFromTMDBAPI);
                 setMovieTitle(movieTitleFromTMDBAPI);
                 setMovieReleaseDate(formattedReleaseDate);
                 setMovieRuntime(formattedRuntime);
@@ -156,7 +159,6 @@ const MoviePage = () => {
                 setMovieRevenue(formattedRevenue);
                 setMovieBudget(formattedBudget);
                 setValidMovie(true);
-                
                 // Fetch user's watchlist on mount
                 const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheckAPI(movieID)
                 if (fetchedWatchlists === null) { // User is not logged so API call will return null
@@ -181,6 +183,7 @@ const MoviePage = () => {
         }, [movieID]);
       
     const moviePosterBaseUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2";
+    const movieBackdropBaseUrl = "https://image.tmdb.org/t/p/w1920_and_h800_multi_faces";
 
     // Handles functions related to when user clicks "Add To Watchlist". 
     const handleOpenWatchlistDropdownDialog = () => {
@@ -239,7 +242,6 @@ const MoviePage = () => {
         <ThemeProvider theme={muiTheme}>
         <React.Fragment>
         <NavBar />
-        <Container maxWidth="fluid">
             <Snackbar
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                 style={{ top: '50px' }}
@@ -258,57 +260,81 @@ const MoviePage = () => {
                 <h1 className='error'><u>Error loading movie:</u> {movieError.message}</h1>
             ) : ( 
             validMovie && (
-            <Paper elevation={3} className="movie-paper">
-                <div className="movie-poster">
-                    <img className="poster-small" src={`${moviePosterBaseUrl}${moviePosterPath}`} alt="Movie Poster" />
+                <section className='background-header'
+                style={{
+                    backgroundImage: `url(${movieBackdropBaseUrl}${movieBackdropPath})`, 
+                    borderBottom: '1px solid var(--primaryColor)',
+                    backgroundPosition: 'left calc((50vw - 170px) - 340px) top',
+                    backgroundSize: 'cover',
+                    backgroundRepeat: 'no-repeat'
+                }}
+                >
+             <section className='background-overlay'
+                  style={{backgroundImage: `linear-gradient(to right, rgba(10.5, 31.5, 31.5, 1) calc((50vw - 170px) - 340px), rgba(10.5, 31.5, 31.5, 0.84) 50%, rgba(10.5, 31.5, 31.5, 0.84) 100%)`}}
+             >
+                <div className="movie-content">
+
+                    <div className="movie-poster">
+                        <img className="poster-small" src={`${moviePosterBaseUrl}${moviePosterPath}`} alt="Movie Poster" />
+                    </div>
+
+                    <div className="movie-details" >
+                        <h2 className="movie-title">
+                            {movieTitle}
+                        </h2>
+
+                        <div className="movie-description">
+                            <Typography variant="body4">
+                                {movieReleaseDate} | {movieGenres.join(', ')} | {movieRuntime}              
+                            </Typography>
+                        </div>
+
+                        <div className="movie-ratings">
+                            <Typography variant="body3" >
+                                Ratings: {movieVoteAverage} out of 10 | ({movieVoteCount})
+                            </Typography>
+                        </div>
+
+                        <Typography variant="body4" gutterBottom className="movie-tagline">
+                            {movieTagline}
+                        </Typography>
+
+                        <h5 className="overview">
+                            Overview
+                        </h5>
+                        
+                        <Typography variant="body1" paragraph>
+                            {movieOverview}
+                        </Typography>
+                        
+                        <div className="movie-financials">
+                            <Typography variant="body1" gutterBottom>
+                                Revenue: {movieRevenue} || Budget: {movieBudget}
+                            </Typography>
+                        </div>
+                        
+                        <Button
+                            onClick={handleOpenWatchlistDropdownDialog} 
+                            variant="contained"
+                            color="primary"
+                            size="large" 
+                            className="add-to-watchlist-btn"
+                            endIcon={<AddIcon />}
+                            sx={{
+                                boxShadow: `0px 0px 2px rgba(255, 255, 255, 0.2),
+                                0px 0px 6px rgba(255, 255, 255, 0.1),
+                                0px 0px 10px rgba(255, 255, 255, 0.05)`,   
+
+                                border: `1px solid rgba(255, 255, 255, 0.25)`,
+                                // boxShadow: `-2px 4px 6px rgba(255, 255, 255, 0.25)`, alternative white drop shadow
+                                }}
+                            >
+                            ADD TO WATCHLIST
+                        </Button>
+                    </div>
                 </div>
-
-                <div className="movie-details">
-                    <Typography variant="h3" className="movie-title" fontWeight="bold">
-                        {movieTitle}
-                    </Typography>
-                    <div className="movie-description">
-                        <Typography variant="body4">
-                            {movieReleaseDate} | {movieGenres.join(', ')} | {movieRuntime}              
-                        </Typography>
-                    </div>
-
-                    <div className="movie-ratings">
-                        <Typography variant="body3" >
-                            Ratings: {movieVoteAverage} out of 10 | ({movieVoteCount})
-                        </Typography>
-                    </div>
-
-                    <Typography variant="body4" gutterBottom className="movie-tagline">
-                        {movieTagline}
-                    </Typography>
-
-                    <Typography variant="h5" className="movie-description">
-                        Overview
-                    </Typography>
-                    
-                    <Typography variant="body1" paragraph>
-                        {movieOverview}
-                    </Typography>
-                    
-                    <div className="movie-financials">
-                        <Typography variant="body1" gutterBottom>
-                            Revenue: {movieRevenue} || Budget: {movieBudget}
-                        </Typography>
-                    </div>
-                    
-                    <Button
-                        onClick={handleOpenWatchlistDropdownDialog} 
-                        variant="contained"
-                        color="primary"
-                        size="large" 
-                        className="add-to-watchlist-btn"
-                        endIcon={<AddIcon />}
-                        >
-                        ADD TO WATCHLIST
-                    </Button>
-                </div>
-            </Paper>
+            </section>
+            </section>
             )
         )}
         {/* Watchlist dropdown menu */}
@@ -503,7 +529,6 @@ const MoviePage = () => {
                 </DialogActions>
             </Dialog>
             )}
-        </Container>
         </React.Fragment>
         </ThemeProvider>
   );
