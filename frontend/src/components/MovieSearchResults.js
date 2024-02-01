@@ -12,45 +12,41 @@ const MovieSearchResults = ({ id, title, releaseDate, description, posterURL }) 
     const formatedReleaseDate = formatReleaseDate(releaseDate)
 
     return (
-    <div id={`card_movie_${id}`} className="card tight">
-      <div className="wrapper">
-        <div className="image">
-          <div className="poster">
-            <a
-              data-id={id}
-              className="result"
-              href={`/movie/${id}?language=en-US`}
-            >
+      <div id={`card_movie_${id}`} className="card tight">
+        <div className="poster-wrapper">
+          <a
+            data-id={id}
+            className="result"
+            href={`/movie/${id}?language=en-US`}
+          >
               <img
                 className="poster"
                 src={finalPosterURL}
-                srcSet={`${finalPosterURL} 1x, ${finalPosterURL} 2x`}
                 alt={title}
               />
-            </a>
-          </div>
+          </a>
         </div>
 
         <div className="details">
-          <div className="wrapper">
-            <div className="title">
-                <a
-                  data-id={id}
-                  className="result"
-                  href={`/movie/${id}?language=en-US`}
-                >
-                  <h2>{title}</h2>
-                </a>
+          <a
+            data-id={id}
+            className="result"
+            href={`/movie/${id}?language=en-US`}
+          >
+            <h2 className="title">
+              {title}
+            </h2>
+          </a>
 
-              <span className="release_date">{formatedReleaseDate}</span>
-            </div>
-          </div>
+          <span className="release_date">
+            {formatedReleaseDate}
+          </span>
 
-          <div className="overview">
-            <p>{description}</p>
-          </div>
+          <p className="overview">
+            {description}
+          </p>
+
         </div>
-      </div>
     </div>
   );
 };
