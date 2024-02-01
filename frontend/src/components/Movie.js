@@ -25,6 +25,7 @@ import Snackbar from '@mui/material/Snackbar';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { muiTheme } from '../css/MuiThemeProvider.js';
+import no_image_placeholder from '../static/no_image_placeholder.jpg';
 
 // TODO
 // 1. Change AddIcon button and icon to "Added" with CheckMark icon when successfully added to someone's watchlist
@@ -182,8 +183,9 @@ const MoviePage = () => {
         fetchData();
         }, [movieID]);
       
-    const moviePosterBaseUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2";
+    const moviePosterBaseUrl = "https://image.tmdb.org/t/p/w600_and_h900_bestv2";
     const movieBackdropBaseUrl = "https://image.tmdb.org/t/p/w1920_and_h800_multi_faces";
+    const finalMoviePosterUrl = moviePosterPath === "" ? no_image_placeholder : moviePosterBaseUrl + "" + moviePosterPath;
 
     // Handles functions related to when user clicks "Add To Watchlist". 
     const handleOpenWatchlistDropdownDialog = () => {
@@ -236,7 +238,6 @@ const MoviePage = () => {
         setAlertMessage('Watchlist created sucessfully!');
         setSuccessAlertOpen(true);
     };
-
     // RENDER COMPONENT
     return (
         <ThemeProvider theme={muiTheme}>
@@ -275,7 +276,7 @@ const MoviePage = () => {
                 <div className="movie-content">
 
                     <div className="movie-poster">
-                        <img className="poster-small" src={`${moviePosterBaseUrl}${moviePosterPath}`} alt="Movie Poster" />
+                        <img className="poster-small" src={finalMoviePosterUrl} alt="Movie Poster" />
                     </div>
 
                     <div className="movie-details" >
