@@ -20,13 +20,14 @@ function MovieSearchBar({ sizeSx ="medium", labelText="Search for any movie..."}
 
   return (
     <ThemeProvider theme={muiTheme}>
-    <div className="search-bar">
+    <div className="search-bar-wrapper">
       <TextField
+        className="search-text-field"
         label={labelText}
         type="search"
         variant="filled"
         color="primary"
-        style={{background:"#e0e0e0"}}
+        style={{background:"#ededed"}}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         fullWidth
