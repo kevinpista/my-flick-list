@@ -105,6 +105,9 @@ const MovieSearch = () => {
     return (
         <React.Fragment>
             <NavBar />
+            <section className='background-overlay'
+                  style={{backgroundImage: `linear-gradient(to right, rgba(10.5, 31.5, 31.5, 1) calc((40vw - 170px) - 100px), rgba(10.5, 31.5, 31.5, 0.90) 40%, rgba(10.5, 31.5, 31.5, 0.98) 100%)`}}
+             >
             <Container >
             <MovieSearchBar/>
             {query === null ? (
@@ -143,13 +146,13 @@ const MovieSearch = () => {
                             <Button onClick={handlePrevPage} disabled={currentPage === 1}>
                                 Previous
                             </Button>
-                            <Typography variant="h6" className="page-indicator" style={{ margin: '0 15px' }}>
+                            <Typography variant="h6" className="page-indicator" style={{ margin: '0 15px', fontSize: "1.1rem" }}>
                                 Page {currentPage} of {totalPages}
                             </Typography>
                             <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
                                 Next Page
                             </Button>
-                            <Typography variant="h6" className="page-indicator" style={{ margin: '0 15px' }}>
+                            <Typography variant="h6" className="page-indicator" style={{ margin: '0 15px', fontSize: "1.1rem" }}>
                             Total results: {totalResultsCount}
                             </Typography>
                         </div>
@@ -157,6 +160,7 @@ const MovieSearch = () => {
                 )
                 )}
             </Container>
+            </section>
         </React.Fragment>
   );
 };
