@@ -1,41 +1,53 @@
 .custom-font {
-    font-family: 'Source Sans Pro', Arial, sans-serif;
+  font-family: 'Source Sans Pro', Arial, sans-serif;
 }
 
 .watchlist-item-grid-container {
-    margin-top: 2%;
-    font-family: 'Source Sans Pro', Arial, sans-serif;
+  margin-top: 2%;
+  font-family: 'Source Sans Pro', Arial, sans-serif;
+}
+
+.watchlist-name-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  font-family: "Source Sans Pro", Arial, sans-serif;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 .watchlist-name {
-    text-align: center;
+  text-align: center;
+}
+.watchlist-description {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
 .error {
-    font-family: 'Source Sans Pro', Arial, sans-serif;
-    font-size: 2em;
-    text-align: center;
-    color: white;
-    background-color: gray;
-    padding: 0.5em 1em;
-    border: 5px solid black;
-    border-radius: 10px;
-    margin-top: 20px;
+  font-family: 'Source Sans Pro', Arial, sans-serif;
+  font-size: 2em;
+  text-align: center;
+  color: white;
+  background-color: gray;
+  padding: 0.5em 1em;
+  border: 5px solid black;
+  border-radius: 10px;
+  margin-top: 20px;
 }
 
-  .watchlist-root {
-    display: flex;
-    /* gap: 20px; /* Gap between buttons table & container div */
-    align-items: flex-start; /* Align items at the(top) of the flex  div */
-  }
-  
-  .watchlist-buttons-table {
-    display: flex;
-    flex-direction: column;
-    gap: 10px; /* Gap between buttons */
-    justify-content: center; /* Center items vertically within the table */
-    margin: auto; /* Center the container horizontally within parent */
-    margin-top: 9%; /* Place buttons always fixed towards top of page */
-    padding: 20px;
-    min-width: 18%;
-  }
+.watchlist-root {
+  display: flex;
+  /* gap: 20px; /* Gap between buttons table & container div */
+  align-items: flex-start; /* Align items at the(top) of the flex  div */
+}
+
+.watchlist-buttons-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Gap between buttons */
+  justify-content: center; /* Center items vertically within the table */
+  margin: auto; /* Center the container horizontally within parent */
+  margin-top: 9%; /* Place buttons always fixed towards top of page */
+  padding: 20px;
+  min-width: 18%;
+}

@@ -186,7 +186,7 @@ const handleAlertClose = () => {
           </Alert>
         </Snackbar>
         <div className="watchlist-name-div">
-          <h1 className="watchlist-name">{watchlistName}</h1>
+          <h1 className="watchlist-name-title">{watchlistName}</h1>
         </div>
 
         <p className="watchlist-description">{watchlistDescription}</p>
@@ -338,7 +338,7 @@ const handleAlertClose = () => {
         </Snackbar>
 
         <div className="watchlist-name-div">
-          <h1 className="watchlist-name">{watchlistName}</h1>
+          <h1 className="watchlist-name-title">{watchlistName}</h1>
         </div>
 
         <p className="watchlist-description">{watchlistDescription}</p>
