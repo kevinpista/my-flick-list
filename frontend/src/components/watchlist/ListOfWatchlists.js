@@ -4,7 +4,7 @@ import { Container, Paper, Button, Dialog, DialogTitle, DialogContent, DialogAct
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import NavBar from '../NavBar.js';
-import '../../css/Watchlist.css';
+import '../../css/ListOfWatchlists.css';
 import { fetchWatchlistsAPI, createWatchlistAPI, deleteWatchlistAPI } from '../../api/watchlistAPI.js'
 import * as errorConstants from '../../api/errorConstants';
 
