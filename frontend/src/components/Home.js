@@ -12,6 +12,14 @@ import Square from '../static/Square.jpg';
 import { ThemeProvider } from '@mui/material/styles';
 import { muiTheme } from '../css/MuiThemeProvider.js';
 
+import SC1 from '../static/Showcase_1_big.jpg';
+import SC2 from '../static/Showcase_2_big.jpg';
+import SC3 from '../static/Showcase_3_small.jpg';
+import SC4 from '../static/Showcase_11_small.jpg';
+import SC5 from '../static/Showcase_12_small.jpg';
+import SC6 from '../static/Showcase_13_small.jpg';
+
+
 function Home() {
   const navigate = useNavigate();
 
@@ -25,7 +33,7 @@ function Home() {
       <NavBar />
       <div 
         className="jumbotron"
-        style={{ backgroundImage: `url(${Square})` }} 
+        style={{ backgroundImage: `url(${Rectangle_Movies})` }} 
       >
         <div className="gradient-overlay">
           <div className="banner-details">
@@ -54,24 +62,48 @@ function Home() {
       {/* React Bootstrap */}
       <Container style={{ marginTop: '20px' }}>
         <MovieSearchBar />
-        <Row>
-          <Col md={4}>
-            <h2>Search</h2>
-            <p>Search for new movies to add to your watchlist.</p>
-          </Col>
+        <div class="features-headline">
 
-          <Col md={4}>
-            <h2>Watchlist</h2>
-            <p>View and manage your personal watchlist.</p>
-          </Col>
+            <h2>Over 850,000 Movies</h2>
+            <p>Search for nearly every movie that was ever made. All powered by 'The Movie Database' (TMDB).</p>
 
-          <Col md={4}>
-            <h2>History</h2>
-            <p>See what movies you've already watched.</p>
-          </Col>
-        </Row>
+        </div>
       </Container>
 
+
+
+      <Container class="features">
+      <div class="features-row">
+        <div class="text">
+          <h2>Search for Any Movie</h2>
+          <p>
+            Use the search function powered by TMDB API. See detailed overviews, 
+            release dates, ratings, and finacials for each movie
+          </p>
+        </div>
+        <div class="image"><img src={SC6} alt="movie page"/></div>
+      </div>
+      <div class="features-row">
+      <div class="image"><img src={SC6} alt="list of watchlist page" /></div>
+
+        <div class="text">
+          <h2>Create Your Watchlist</h2>
+          <p>Curate a watchlist and add any movie. Personalize by your mood, genre,
+            favorite director, actors, or anything that sparks you desire to group your movies into 
+            one place.
+             </p>
+        </div>
+      </div>
+      <div class="features-row">
+        <div class="text">
+          <h2>Take Notes & Check Off</h2>
+          <p>Jot down your own notes about each movie before or after you watch. Organize by checkmarking 
+            whenever you've finished watching a movie. 
+          </p>
+        </div>
+        <div class="image"><img src={SC6}  alt="watchlist page" /></div>
+      </div>
+        </Container>
     </div>
     </ThemeProvider>
   );

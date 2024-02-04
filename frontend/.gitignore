@@ -25,3 +25,10 @@ yarn-error.log*
 /src/components/Test.js
 /src/components/TestTwo.js
 /src/css/Test.js
+
+/src/static/Showcase_1_big.jpg
+/src/static/Showcase_2_big.jpg
+/src/static/Showcase_3_small.jpg
+/src/static/Showcase_11_small.jpg
+/src/static/Showcase_12_small.jpg
+/src/static/Showcase_13_small.jpg
