@@ -75,6 +75,7 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
   const columns = [
     { 
         field: 'name', 
+        flex: 2,
         renderHeader: () => (
           <span className="columnHeader">
             Watchlist Name
@@ -91,6 +92,7 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
      },
     { 
         field: 'description', 
+        flex: 2,
         renderHeader: () => (
           <span className="columnHeader">
             Description
@@ -103,6 +105,7 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
     },
     { 
         field: 'updated_at', 
+        flex: 1,
         renderHeader: () => (
           <span className="columnHeader">
             Last Updated
@@ -118,6 +121,7 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
      },
     { 
         field: 'created_at', 
+        flex: 1,
         renderHeader: () => (
           <span className="columnHeader">
             Created
@@ -133,6 +137,7 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
     },
     {
         field: 'deleteButton',
+        flex: 1,
         renderHeader: () => (
           <span className="columnHeader">
             Delete
