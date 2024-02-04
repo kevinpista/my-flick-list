@@ -51,7 +51,7 @@ function Home() {
       </div>
 
       {/* React Bootstrap */}
-      <Container>
+      <Container style={{ marginTop: '20px' }}>
         <MovieSearchBar />
         <Row>
           <Col md={4}>

@@ -48,7 +48,7 @@ function NavBar() {
   return (
     <ThemeProvider theme={muiTheme}>
     <AppBar position="static" sx={{marginTop:'-40px'}}>
-      <Container maxWidth="xl">
+      <Container maxWidth="xl" style={{ marginTop: '50px' }}>
         <Toolbar disableGutters >
           {/* Logo Icon + Name */}
           <TheatersOutlinedIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1.5, fontSize: '30px' }} />
