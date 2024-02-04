@@ -271,7 +271,7 @@ const handleCreateWatchlistDialogSubmit = async () => {
       <Button variant="contained" onClick={handleCreateWatchlistButtonClick}>
         Create a Watchlist
       </Button>
-      <h1 className="watchlist-name">Your Watchlists</h1>
+      <h1 className="watchlist-page-title ">Your Watchlists</h1>
       {error ? (
         <h1 className='error'><u>Error:</u> {error.message}</h1>
       ) : (
