@@ -31,7 +31,7 @@ function Home() {
           <h1>Curate. Watch. Repeat.</h1>
           <p>
             Create endless watchlists of your favorite movies, 
-            add notes, and track when you  finish watching it.
+            add notes, and track when you  finish watching.
           </p>
           <Button
             variant="contained" 
