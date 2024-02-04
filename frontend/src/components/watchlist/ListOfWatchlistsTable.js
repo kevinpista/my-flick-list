@@ -13,6 +13,7 @@ import Button from '@mui/material/Button';
 import ClearSharpIcon from '@mui/icons-material/ClearSharp';
 import { ThemeProvider } from '@mui/material/styles';
 import * as themeStyles from '../../styling/ThemeStyles';
+import '../../css/ListOfWatchlistsTable.css';
 
 
 // watchlistData is a JSON object holding 1 array containing individual watchlists
@@ -74,7 +75,11 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
   const columns = [
     { 
         field: 'name', 
-        headerName: 'Watchlist Name', 
+        renderHeader: () => (
+          <span className="columnHeader">
+            Watchlist Name
+          </span>
+        ),
         width: 400, 
         headerAlign: 'left', 
         align: 'left',
@@ -86,7 +91,11 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
      },
     { 
         field: 'description', 
-        headerName: 'Description', 
+        renderHeader: () => (
+          <span className="columnHeader">
+            Description
+          </span>
+        ),
         width: 600, 
         headerAlign: 'left', 
         align: 'left', 
@@ -94,7 +103,11 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
     },
     { 
         field: 'updated_at', 
-        headerName: 'Last Updated', 
+        renderHeader: () => (
+          <span className="columnHeader">
+            Last Updated
+          </span>
+        ),
         width: 160, 
         headerAlign: 'center', 
         align: 'center',
@@ -105,7 +118,11 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
      },
     { 
         field: 'created_at', 
-        headerName: 'Created', 
+        renderHeader: () => (
+          <span className="columnHeader">
+            Created
+          </span>
+        ), 
         width: 160, 
         headerAlign: 'center', 
         align: 'center' ,
@@ -116,7 +133,11 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
     },
     {
         field: 'deleteButton',
-        headerName: 'Delete',
+        renderHeader: () => (
+          <span className="columnHeader">
+            Delete
+          </span>
+        ),
         width: 100,
         headerAlign: 'center',
         align: 'center',
