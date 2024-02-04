@@ -8,6 +8,7 @@ import NavBar from './NavBar';
 import MovieSearchBar from './MovieSearchBar.js';
 import Rectangle_Movies from '../static/Rectangle_Movies.jpg';
 import Sqaure_Movies from '../static/Square_Movies.jpg';
+import Sqaure from '../static/Sqaure.jpg';
 import { ThemeProvider } from '@mui/material/styles';
 import { muiTheme } from '../css/MuiThemeProvider.js';
 
@@ -24,7 +25,7 @@ function Home() {
       <NavBar />
       <div 
         className="jumbotron"
-        style={{ backgroundImage: `url(${Rectangle_Movies})` }} 
+        style={{ backgroundImage: `url(${Sqaure})` }} 
       >
         <div className="gradient-overlay">
           <div className="banner-details">
