@@ -92,7 +92,7 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
      },
     { 
         field: 'description', 
-        flex: 2,
+        flex: 3,
         renderHeader: () => (
           <span className="columnHeader">
             Description
@@ -103,6 +103,18 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
         align: 'left', 
         renderCell: (params) => <ExpandableCell {...params} />,
     },
+    { 
+      field: 'watchlist_item_count', 
+      flex: 1,
+      renderHeader: () => (
+        <span className="columnHeader">
+          Movie Count
+        </span>
+      ),
+      width: 160, 
+      headerAlign: 'center', 
+      align: 'center',
+   },
     { 
         field: 'updated_at', 
         flex: 1,
@@ -160,6 +172,7 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
     id: watchlist.id, // watchlist id
     name: watchlist.name,
     description: watchlist.description,
+    watchlist_item_count: watchlist.watchlist_item_count,
     updated_at: new Date(watchlist.updated_at), // Set as ISO string first. Use valueFormatter to convert into Mon, DD, YYYY format
     created_at: new Date(watchlist.created_at),
   }));
