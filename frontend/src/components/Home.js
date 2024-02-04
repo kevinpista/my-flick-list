@@ -1,26 +1,53 @@
 // Home.js 
-import { Button, Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
+import Button from '@mui/material/Button';
+import { useNavigate } from 'react-router-dom';
 import '../css/Home.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavBar from './NavBar';
 import MovieSearchBar from './MovieSearchBar.js';
+import Rectangle_Movies from '../static/Rectangle_Movies.jpg';
+import Sqaure_Movies from '../static/Square_Movies.jpg';
+import { ThemeProvider } from '@mui/material/styles';
+import { muiTheme } from '../css/MuiThemeProvider.js';
 
 function Home() {
+  const navigate = useNavigate();
+
+  const handleGetStartedClick = () => {
+    navigate('/user-registration')
+  };
 
   return (
+    <ThemeProvider theme={muiTheme}>
     <div className="home">
       <NavBar />
-
-      {/* Custom Jumbotron */}
-      <div className="jumbotron">
-        <h1>My Flick List </h1>
-        <p>
-          Welcome to my flick list. A movie watch list app that allows you to seamlessly
-          add movies to a watchlist, track your notes, and track off when you finish watching it.
-        </p>
-        <Button variant="primary" size="lg">
-          Get Started 
-        </Button>
+      <div 
+        className="jumbotron"
+        style={{ backgroundImage: `url(${Rectangle_Movies})` }} 
+      >
+        <div className="gradient-overlay">
+          <div className="banner-details">
+          <h1>Curate. Watch. Repeat.</h1>
+          <p>
+            Create endless watchlists of your favorite movies, 
+            add notes, and track when you  finish watching it.
+          </p>
+          <Button
+            variant="contained" 
+            onClick={handleGetStartedClick}
+            back="primary" // Use bg instead of color
+            sx={{
+            boxShadow: `0px 0px 2px rgba(255, 255, 255, 1),
+                        0px 0px 6px rgba(255, 255, 255, 0.1),
+                        0px 0px 10px rgba(255, 255, 255, 0.05)`,   
+            border: `1px solid rgba(255, 255, 255, 0.25)`,
+            }}
+          >
+            Get Started
+          </Button>
+          </div>
+        </div>
       </div>
 
       {/* React Bootstrap */}
@@ -45,6 +72,7 @@ function Home() {
       </Container>
 
     </div>
+    </ThemeProvider>
   );
 }
 
