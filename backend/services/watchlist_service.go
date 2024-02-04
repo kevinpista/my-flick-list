@@ -109,6 +109,47 @@ func (c *WatchlistService) GetAllWatchlistsByUserID(userID uuid.UUID) ([]*models
 	return watchlists, nil
 }
 
+// Gets all watchlist data and returns count
+func (c *WatchlistService) GetWatchlistsByUserIDWithMovieCount(userID uuid.UUID) ([]*models.WatchlistWithItemCount, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+	query := `
+		SELECT w.id,
+			w.name,
+			w.description,
+			COUNT(wi.id) AS watchlist_item_count,
+			w.created_at,
+			w.updated_at
+		FROM watchlist w
+		LEFT JOIN watchlist_item wi ON w.id = wi.watchlist_id
+		WHERE w.users_id = $1
+		GROUP BY w.id, w.name, w.description, w.created_at, w.updated_at;
+	`
+
+	rows, err := db.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var watchlists []*models.WatchlistWithItemCount
+	for rows.Next() {
+		var watchlist models.WatchlistWithItemCount
+		err := rows.Scan(
+            &watchlist.ID,
+			&watchlist.Name,
+			&watchlist.Description,
+			&watchlist.WatchlistItemCount,
+			&watchlist.CreatedAt,
+			&watchlist.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		watchlists = append(watchlists, &watchlist)
+	}
+	return watchlists, nil
+}
+
 // Fetches all watchlists belonging to a user. Takes a movieID parameter. 
 // Returns all watchlists with the count of all watchlist_items belonging to each watchlist
 // and also a boolean of "contains_movie" on whether or not there are any watchlists that
