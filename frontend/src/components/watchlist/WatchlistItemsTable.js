@@ -14,6 +14,7 @@ import ClearSharpIcon from '@mui/icons-material/ClearSharp';
 import { ThemeProvider } from '@mui/material/styles';
 import { muiTheme } from '../../css/MuiThemeProvider.js';
 import * as themeStyles from '../../styling/ThemeStyles';
+import '../../css/WatchlistItemsTable.css';
 
 // MUI Checkbox component for 'checkmarked' state
 import Checkbox from '@mui/material/Checkbox';
@@ -215,7 +216,11 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   const columns = [
     {
       field: 'toWatch',
-      headerName: 'Checkmark',
+      renderHeader: () => (
+        <span className="columnHeader">
+          Watched
+        </span>
+      ),      
       width: 100,
       headerAlign: 'center',
       align: 'center',
@@ -229,7 +234,11 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     },
     {
       field: 'moviePoster',
-      headerName: 'Poster',
+      renderHeader: () => (
+        <span className="columnHeader">
+          Poster
+        </span>
+      ),     
       width: 80,
       headerAlign: 'center',
       align: 'center',
@@ -245,7 +254,11 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     },
     { 
       field: 'title', 
-      headerName: 'Title', 
+      renderHeader: () => (
+        <span className="columnHeader">
+          Title
+        </span>
+      ),        
       width: 300, 
       headerAlign: 'center', 
       align: 'center',
@@ -255,14 +268,18 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
         </Link>
       ),
      },
-    { field: 'releaseDate', headerName: 'Release Date', width: 150, headerAlign: 'center', align: 'center' },
-    { field: 'runtime', headerName: 'Runtime', width: 120, headerAlign: 'center', align: 'center' },
-    { field: 'rating', headerName: 'Ratings', width: 120, headerAlign: 'center', align: 'center' },
-    { field: 'budget', headerName: 'Budget', width: 120, headerAlign: 'center', align: 'center' },
-    { field: 'revenue', headerName: 'Revenue', width: 120, headerAlign: 'center', align: 'center' },
+    { field: 'releaseDate', renderHeader: () => (<span className="columnHeader">Release Date</span>), width: 150, headerAlign: 'center', align: 'center' },
+    { field: 'runtime', renderHeader: () => (<span className="columnHeader">Runtime</span>), width: 120, headerAlign: 'center', align: 'center' },
+    { field: 'rating', renderHeader: () => (<span className="columnHeader">Ratings</span>), width: 120, headerAlign: 'center', align: 'center' },
+    { field: 'budget', renderHeader: () => (<span className="columnHeader">Budget</span>), width: 120, headerAlign: 'center', align: 'center' },
+    { field: 'revenue', renderHeader: () => (<span className="columnHeader">Revenue</span>), width: 120, headerAlign: 'center', align: 'center' },
     { 
       field: 'noteIcon', 
-      headerName: 'Notes', 
+      renderHeader: () => (
+        <span className="columnHeader">
+          Notes
+        </span>
+      ),       
       width: 100, 
       headerAlign: 'center', 
       align: 'center', 
@@ -283,7 +300,11 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
 
     {
       field: 'deleteButton',
-      headerName: 'Delete',
+      renderHeader: () => (
+        <span className="columnHeader">
+          Delete
+        </span>
+      ),             
       width: 100,
       headerAlign: 'center',
       align: 'center',
