@@ -271,7 +271,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
         </Link>
       ),
      },
-    { field: 'releaseDate', flex: 1, renderHeader: () => (<span className="columnHeader">Release Date</span>), width: 150, headerAlign: 'center', align: 'center' },
+    { field: 'releaseDate', flex: 1.5, renderHeader: () => (<span className="columnHeader">Release Date</span>), width: 150, headerAlign: 'center', align: 'center' },
     { field: 'runtime', flex: 1, renderHeader: () => (<span className="columnHeader">Runtime</span>), width: 120, headerAlign: 'center', align: 'center' },
     { field: 'rating', flex: 1, renderHeader: () => (<span className="columnHeader">Ratings</span>), width: 120, headerAlign: 'center', align: 'center' },
     { field: 'budget', flex: 1, renderHeader: () => (<span className="columnHeader">Budget</span>), width: 120, headerAlign: 'center', align: 'center' },
