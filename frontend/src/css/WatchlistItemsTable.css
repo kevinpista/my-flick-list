@@ -3,3 +3,10 @@
     text-decoration: underline;
     color: #032541;
 }
+
+/* Responsible for wrapping any overflow titles */
+.watchlist-items-table .MuiDataGrid-root .MuiDataGrid-cell {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    text-align: center !important;
+  }

@@ -216,6 +216,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   const columns = [
     {
       field: 'toWatch',
+      flex: 1,
       renderHeader: () => (
         <span className="columnHeader">
           Watched
@@ -234,6 +235,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     },
     {
       field: 'moviePoster',
+      flex: 1,
       renderHeader: () => (
         <span className="columnHeader">
           Poster
@@ -253,10 +255,11 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       ),
     },
     { 
-      field: 'title', 
+      field: 'title',
+      flex: 2, 
       renderHeader: () => (
         <span className="columnHeader">
-          Title
+          Movie Title
         </span>
       ),        
       width: 300, 
@@ -268,13 +271,14 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
         </Link>
       ),
      },
-    { field: 'releaseDate', renderHeader: () => (<span className="columnHeader">Release Date</span>), width: 150, headerAlign: 'center', align: 'center' },
-    { field: 'runtime', renderHeader: () => (<span className="columnHeader">Runtime</span>), width: 120, headerAlign: 'center', align: 'center' },
-    { field: 'rating', renderHeader: () => (<span className="columnHeader">Ratings</span>), width: 120, headerAlign: 'center', align: 'center' },
-    { field: 'budget', renderHeader: () => (<span className="columnHeader">Budget</span>), width: 120, headerAlign: 'center', align: 'center' },
-    { field: 'revenue', renderHeader: () => (<span className="columnHeader">Revenue</span>), width: 120, headerAlign: 'center', align: 'center' },
+    { field: 'releaseDate', flex: 1, renderHeader: () => (<span className="columnHeader">Release Date</span>), width: 150, headerAlign: 'center', align: 'center' },
+    { field: 'runtime', flex: 1, renderHeader: () => (<span className="columnHeader">Runtime</span>), width: 120, headerAlign: 'center', align: 'center' },
+    { field: 'rating', flex: 1, renderHeader: () => (<span className="columnHeader">Ratings</span>), width: 120, headerAlign: 'center', align: 'center' },
+    { field: 'budget', flex: 1, renderHeader: () => (<span className="columnHeader">Budget</span>), width: 120, headerAlign: 'center', align: 'center' },
+    { field: 'revenue', flex: 1, renderHeader: () => (<span className="columnHeader">Revenue</span>), width: 120, headerAlign: 'center', align: 'center' },
     { 
-      field: 'noteIcon', 
+      field: 'noteIcon',
+      flex: 1, 
       renderHeader: () => (
         <span className="columnHeader">
           Notes
@@ -300,6 +304,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
 
     {
       field: 'deleteButton',
+      flex: 1,
       renderHeader: () => (
         <span className="columnHeader">
           Delete
@@ -471,20 +476,21 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <ThemeProvider theme={muiTheme}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={5}
-        disableRowSelectionOnClick
-        editRowsModel={editRowsModel}
-        onEditRowsModelChange={(newModel) => setEditRowsModel(newModel)}
-        autoHeight={false}
-        disableMultipleRowSelection={true}
-        getRowId={getRowId}
-        rowHeight={rowHeight}
-        hideFooterPagination
-      />
-
+      <div className="watchlist-items-table">
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pageSize={5}
+          disableRowSelectionOnClick
+          editRowsModel={editRowsModel}
+          onEditRowsModelChange={(newModel) => setEditRowsModel(newModel)}
+          autoHeight={false}
+          disableMultipleRowSelection={true}
+          getRowId={getRowId}
+          rowHeight={rowHeight}
+          hideFooterPagination
+        />
+      </div>
       {/* Confirmation Dialog for Deletion */}
       <Dialog
         open={openDeletionConfirmation}
