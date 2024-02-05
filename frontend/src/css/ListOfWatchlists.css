@@ -1,7 +1,21 @@
-.watchlist-page-title {
+.header-row {
+  display: flex;
+  align-items: center;
+}
+
+.header-row h1{
+  text-align: center;
   font-size: 2.5rem;
   font-weight: bold;
   font-family: "Source Sans Pro", Arial, sans-serif;
+  align-items: center;
+  margin-bottom: 1.4rem;
+  margin-right: 10rem; /* header is on same row as button, off-set towards left to 'center' header */
+  color: #032541;
+}
+
+.title-wrapper {
+  flex: 1;
   text-align: center;
-  margin-bottom: 30px;
+  align-items: center;
 }

@@ -268,10 +268,14 @@ const handleCreateWatchlistDialogSubmit = async () => {
     <React.Fragment>
       <NavBar />
     <Container maxWidth={"xl"} className="watchlist-item-grid-container">
-      <Button variant="contained" onClick={handleCreateWatchlistButtonClick}>
-        Create a Watchlist
-      </Button>
-      <h1 className="watchlist-page-title ">Your Watchlists</h1>
+      <div className="header-row">
+        <Button sx={{ height: '2.5rem', marginBottom: '1.4rem' }} variant="contained" onClick={handleCreateWatchlistButtonClick}>
+          Create a Watchlist
+        </Button>
+        <div class="title-wrapper">
+          <h1>Your Watchlists</h1>        
+        </div>
+      </div>
       {error ? (
         <h1 className='error'><u>Error:</u> {error.message}</h1>
       ) : (
