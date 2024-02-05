@@ -12,16 +12,13 @@
   font-weight: bold;
   font-family: "Source Sans Pro", Arial, sans-serif;
   text-align: center;
-  margin-bottom: 10px;
-}
-
-.watchlist-name {
-  text-align: center;
+  margin-bottom: 0.6rem;
+  color: #032541;
 }
 
 .watchlist-description {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 1.6rem;
 }
 
 .error {
