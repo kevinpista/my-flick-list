@@ -266,7 +266,7 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       headerAlign: 'center', 
       align: 'center',
       renderCell: (params) => (
-        <Link to={`/movie/${params.row.movie_id}`} style={{ color: 'black', textDecoration: 'none' }}>
+        <Link to={`/movie/${params.row.movie_id}`} underline="hover" style={{ textDecoration: 'underline', color: 'black' }}>
         {params.row.title}
         </Link>
       ),

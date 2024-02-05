@@ -12,6 +12,7 @@ import Button from '@mui/material/Button';
 
 import ClearSharpIcon from '@mui/icons-material/ClearSharp';
 import { ThemeProvider } from '@mui/material/styles';
+import { muiTheme } from '../../css/MuiThemeProvider.js';
 import * as themeStyles from '../../styling/ThemeStyles';
 import '../../css/ListOfWatchlistsTable.css';
 
@@ -179,6 +180,7 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
+    <ThemeProvider theme={muiTheme}>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -219,6 +221,7 @@ const ListOfWatchlistsTable = ({ watchlistData, onDeleteWatchlist, setWatchlistD
           </Button>
         </DialogActions>
       </Dialog>
+      </ThemeProvider>
     </div>
   );
 };
