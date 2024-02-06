@@ -1,5 +1,6 @@
 import {BrowserRouter, Route, Routes} from 'react-router-dom'; 
 import Home from './components/Home'
+import ParaTest from './components/ParaTest'
 import Movie from './components/Movie'
 import Test from './components/Test'
 import TestTwo from './components/TestTwo'
@@ -15,7 +16,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route exact ={true} path="/" element={<Home />} />        
+        <Route exact ={true} path="/" element={<Home />} />      
+        <Route exact ={true} path="/para-test" element={<ParaTest />} />          
         <Route exact ={true} path="/movie/:movieID" element={<Movie />} />       
         <Route path="/test" element={<Test />} />  
         <Route exact ={true} path="/test-two" element={<TestTwo />} />  
