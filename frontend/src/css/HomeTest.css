@@ -15,10 +15,20 @@
 
 .home {
     background-image: linear-gradient(to right, 
-    rgba(10.5, 31.5, 31.5, 1) calc((40vw - 170px) - 100px), 
-    rgba(10.5, 31.5, 31.5, 0.96) 40%, 
-    rgba(10.5, 31.5, 31.5, 1) 100%);}
+    rgba(10, 31, 31, 1) calc((40vw - 170px) - 100px), 
+    rgba(10, 31, 31, 0.96) 40%, 
+    rgba(10, 31, 31, 1) 100%);
+}
 
+/*
+
+`linear-gradient(
+            to right,
+            rgba(10, 31, 31, 0.78) calc((40vw - 170px) - 100px),
+            rgba(10, 31, 31, 0.74) 50%,
+            rgba(10, 31, 31, 0.78) 100%
+          )`,
+*/
 .features {
     width: 90%;
     margin: auto;
