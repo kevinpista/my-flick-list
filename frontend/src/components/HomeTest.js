@@ -39,36 +39,85 @@ function HomeTest() {
 
                 <div className="first-feature">
                     <div className="feature-info">
-                    <div class="feature-subtitle">Get Started</div>
+                        <div class="feature-subtitle">
+                            Over 850,000 Titles
+                        </div>
                         <div class="feature-headline">
                             Search for Any Movie
                         </div>
                         <div class="feature-body">
-                            Determining what level of hiker you are can be an important
-                            tool when planning future hikes. This hiking level guide will
-                            help you plan hikes according to different hike ratings set by
-                            various websites like All Trails and Modern Hiker. What type
-                            of hiker are you – novice, moderate, advanced moderate,
-                            expert, or expert backpacker?
+                            Find nearly every movie that was ever made.
+                            Discover spin-offs and highly acclaimed fan made movies of your favorite flicks that you
+                            didn't know existed. All powered by 'The Movie Database' (TMDB).
                         </div>
-
                         <div class="feature-info-footer">
                             <a href="#">
                                 <button>
-                                    Try Search Tool
-                                </button></a>
+                                    Find a Movie
+                                </button>
+                            </a>
                         </div>   
-
                     </div>
-                    
+            
+                    <div className="feature-image">
+                        <img src={SC7} />
+                    </div>
+
+                </div>
+
+                <div className="first-feature">
+                    <div className="feature-image">
+                        <img src={SC7} />
+                    </div>
+
+                    <div className="feature-info">
+                        <div class="feature-subtitle">
+                            Make It Yours
+                        </div>
+                        <div class="feature-headline">
+                            Create Your Watchlist
+                        </div>
+                        <div class="feature-body">
+                            Curate a watchlist and add any movie to it. Personalize by mood,
+                            genre, favorite director, actors, or anything that sparks your desire
+                            to organize all your movies into one place.
+                        </div>
+                        <div class="feature-info-footer">
+                            <a href="#">
+                                <button>
+                                    Get Started
+                                </button>
+                            </a>
+                        </div>   
+                    </div>
+                </div>
+
+                <div className="first-feature">
+                    <div className="feature-info">
+                        <div class="feature-subtitle">
+                            Jot Down Your Thoughts
+                        </div>
+                        <div class="feature-headline">
+                            Take Notes & Check Off
+                        </div>
+                        <div class="feature-body">
+                            Add notes to each movie before or after you watch with timestamps on when you
+                            last updated them. Stay organized by easily checking off when you finished watching a movie.
+                        </div>
+                        <div class="feature-info-footer">
+                            <a href="#">
+                                <button>
+                                    Personalize Now
+                                </button>
+                            </a>
+                        </div>   
+                    </div>
                     <div className="feature-image">
                         <img src={SC7} />
                     </div>
                 </div>
 
-
             </div>
-            
         </div>
     </div>
 
