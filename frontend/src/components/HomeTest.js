@@ -33,6 +33,7 @@ function HomeTest() {
   return (
     <div className="home">
       <NavBar />
+      <Parallax />
         <div className="features-container">
             <div className="features">
 
