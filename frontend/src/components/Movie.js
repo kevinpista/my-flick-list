@@ -7,7 +7,7 @@ import NavBar from './NavBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/Movie.css';
 import { getMovieDataTMDB } from '../api/movieDataTMDB';
-import { formatReleaseDate, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
+import { formatReleaseDate, formatReleaseYear, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
 import { useParams } from 'react-router-dom';
 import { fetchWatchlistsByUserIDWithMovieIDCheckAPI, addWatchlistItemAPI } from '../api/watchlistAPI'
 import { useNavigate } from 'react-router-dom';
@@ -45,6 +45,7 @@ const MoviePage = () => {
     const [movieBackdropPath, setMovieBackdropPath] = useState('');
     const [movieTitle, setMovieTitle] = useState('');
     const [movieReleaseDate, setMovieReleaseDate] = useState('');
+    const [movieReleaseYear, setMovieReleaseYear] = useState(null);
     const [movieGenres, setMovieGenres] = useState([]); // Possibly more than 1 genre
     const [movieRuntime, setMovieRuntime] = useState('');
     const [movieTagline, setMovieTagline] = useState('');
@@ -124,6 +125,7 @@ const MoviePage = () => {
                 // Format the release_date data as it is provided as "YYYY-MM-DD"
                 const movieReleaseDateFromTMDBAPI = data.movie.release_date;
                 const formattedReleaseDate = formatReleaseDate(movieReleaseDateFromTMDBAPI);
+                const formattedReleaseYear = formatReleaseYear(movieReleaseDateFromTMDBAPI);
 
                 // Format the runtime data as it's provided as "minutes"
                 const movieRuntimeFromTMDBAPI = data.movie.runtime;
@@ -151,6 +153,7 @@ const MoviePage = () => {
                 setMovieBackdropPath(movieBackdropPathFromTMDBAPI);
                 setMovieTitle(movieTitleFromTMDBAPI);
                 setMovieReleaseDate(formattedReleaseDate);
+                setMovieReleaseYear(formattedReleaseYear);
                 setMovieRuntime(formattedRuntime);
                 setMovieVoteCount(formattedVoteCount);
                 setMovieVoteAverage(formattedVoteAverage);
@@ -281,7 +284,8 @@ const MoviePage = () => {
 
                     <div className="movie-details" >
                         <h2 className="movie-title">
-                            {movieTitle}
+                            {movieTitle} 
+                            {movieReleaseYear && <span className="release-year">({movieReleaseYear})</span>}
                         </h2>
 
                         <div className="movie-description">

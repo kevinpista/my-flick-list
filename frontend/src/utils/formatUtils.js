@@ -8,6 +8,15 @@ export const formatReleaseDate = (dateString) => {
     return date.toLocaleDateString('en-US', options);
 };
 
+// Function to format the release_date data from "YYYY-MM-DD" into "numericYear" format
+export const formatReleaseYear = (dateString) => {
+    if (!dateString || !/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        return null;
+      }
+    const year = new Date(dateString).getFullYear();
+    return year
+};
+
 // Function to format the runtime data from "minutes" into "0h, 0m" format
 export const formatRuntime = (minutes) => {
     const hours = Math.floor(minutes / 60);

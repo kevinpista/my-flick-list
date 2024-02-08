@@ -6,10 +6,10 @@ import '../css/Parallax.css';
 // import fullImage from '../static/image-full.png';
 import bottomImage from '../static/image-bottom.png';
 
-import SC7 from '../static/2.png';
-import SC8 from '../static/4.png';
+// import SC7 from '../static/2.png';
+// import SC8 from '../static/4.png';
 import SC10 from '../static/high.png';
-import SC13 from '../static/low4.png';
+// import SC13 from '../static/low4.png';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { muiTheme } from '../css/MuiThemeProvider.js';
@@ -59,7 +59,7 @@ function Parallax() {
       <motion.div
         className="full-image "
         style={{
-          backgroundImage: `url(${SC8})`,
+          backgroundImage: `url(${SC10})`,
           backgroundPosition: "bottom",
           backgroundSize: "cover",
           y: backgroundY,
@@ -93,7 +93,7 @@ function Parallax() {
       <motion.div
         className="bottom-image"
         style={{
-          backgroundImage: `url(${SC13})`,
+          backgroundImage: `url(${SC10})`,
           backgroundPosition: "bottom",
           backgroundSize: "cover",
         }}
