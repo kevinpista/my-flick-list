@@ -289,9 +289,11 @@ const MoviePage = () => {
                         </h2>
 
                         <div className="movie-description">
-                            <Typography variant="body4">
-                                {movieReleaseDate} | {movieGenres.join(', ')} | {movieRuntime}              
-                            </Typography>
+                        <Typography variant="body4">
+                            <span className="release">{movieReleaseDate}</span>
+                            <span className="genres">{movieGenres.join(', ')}</span> 
+                            <span className="runtime">{movieRuntime}</span>            
+                        </Typography>
                         </div>
 
                         <div className="movie-ratings">
