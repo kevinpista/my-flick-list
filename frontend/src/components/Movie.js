@@ -11,6 +11,7 @@ import { getMovieDataTMDB, getMovieTrailerTMDB } from '../api/movieDataTMDB.js';
 import { formatReleaseDate, formatReleaseYear, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
 import { useParams } from 'react-router-dom';
 import { fetchWatchlistsByUserIDWithMovieIDCheckAPI, addWatchlistItemAPI } from '../api/watchlistAPI'
+import YouTubeModal from './YouTubeModal.js'
 import { useNavigate } from 'react-router-dom';
 import { createWatchlistAPI } from '../api/watchlistAPI.js'
 import * as errorConstants from '../api/errorConstants';
@@ -30,15 +31,8 @@ import { muiTheme } from '../css/MuiThemeProvider.js';
 import no_image_placeholder from '../static/no_image_placeholder.jpg';
 
 // TODO
-// 1. Change AddIcon button and icon to "Added" with CheckMark icon when successfully added to someone's watchlist
-// popup menu of which watchlist to add to -- or dropdown to let them pick which watchlist they want to add to.
 
-// 2. Make revenue and budget side by side with nicer icons.
-
-// 3. Move the moive poster image more to the right along with the movie content accordingly-; padding / flex adjustments
-// 4. Movie details currently shifts all the way to the right if the content isn't long enough to fill the 2/3 space. Format so that 
-// movie details always begins aligned left next to the movie poster regardless of overall content lenght. Can see this difference based on the movie data
-
+// 1. Make revenue and budget side by side with nicer icons.
 
 
 const MoviePage = () => {
@@ -61,6 +55,7 @@ const MoviePage = () => {
     const [movieError, setMovieError] = useState(null);
     const { movieID } = useParams(); // Extract movieID from the URL params
     const [movieTrailerYouTubeID, setMovieTrailerYouTubeID] = useState(null);
+    const [isYouTubeModalOpen, setIsYouTubeModalOpen] = useState(false);
     const navigate = useNavigate();
 
     // Add to Watchlist Dropdown List variables
@@ -173,7 +168,7 @@ const MoviePage = () => {
                 const trailerData = await getMovieTrailerTMDB(movieID);
                 setMovieTrailerYouTubeID(trailerData.youtube_video_id)
                 console.log(trailerData)
-                
+
                 // Fetch user's watchlist on mount
                 const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheckAPI(movieID)
                 if (fetchedWatchlists === null) { // User is not logged so API call will return null
@@ -245,6 +240,9 @@ const MoviePage = () => {
     const moviePosterBaseUrl = "https://image.tmdb.org/t/p/w600_and_h900_bestv2";
     const movieBackdropBaseUrl = "https://image.tmdb.org/t/p/w1920_and_h800_multi_faces";
     const finalMoviePosterUrl = moviePosterPath === "" ? no_image_placeholder : moviePosterBaseUrl + "" + moviePosterPath;
+
+
+    const handleOnClickPlayTrailer = () => setIsYouTubeModalOpen(true);
 
     // Handles functions related to when user clicks "Add To Watchlist". 
     const handleOpenWatchlistDropdownDialog = () => {
@@ -364,6 +362,13 @@ const MoviePage = () => {
                             movieVoteAverage={movieVoteAverage}                      
                             />
                         </div>
+
+                        { movieTrailerYouTubeID && (
+                            <button onClick={handleOnClickPlayTrailer}>
+                                Play Trailer
+                            </button>
+                        )}
+                        { isYouTubeModalOpen && <YouTubeModal isOpen={isYouTubeModalOpen} videoId={movieTrailerYouTubeID} /> }
 
                         <Typography variant="body4" gutterBottom className="movie-tagline">
                             {movieTagline}
