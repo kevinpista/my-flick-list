@@ -7,7 +7,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import NavBar from './NavBar';
 import '../css/Movie.css';
-import { getMovieDataTMDB } from '../api/movieDataTMDB';
+import { getMovieDataTMDB, getMovieTrailerTMDB } from '../api/movieDataTMDB.js';
 import { formatReleaseDate, formatReleaseYear, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
 import { useParams } from 'react-router-dom';
 import { fetchWatchlistsByUserIDWithMovieIDCheckAPI, addWatchlistItemAPI } from '../api/watchlistAPI'
@@ -60,6 +60,7 @@ const MoviePage = () => {
     const [validMovie, setValidMovie] = useState(null);
     const [movieError, setMovieError] = useState(null);
     const { movieID } = useParams(); // Extract movieID from the URL params
+    const [movieTrailerYouTubeID, setMovieTrailerYouTubeID] = useState(null);
     const navigate = useNavigate();
 
     // Add to Watchlist Dropdown List variables
@@ -167,6 +168,12 @@ const MoviePage = () => {
                 setMovieRevenue(formattedRevenue);
                 setMovieBudget(formattedBudget);
                 setValidMovie(true);
+                
+                // Fetch movie's trailer video
+                const trailerData = await getMovieTrailerTMDB(movieID);
+                setMovieTrailerYouTubeID(trailerData.youtube_video_id)
+                console.log(trailerData)
+                
                 // Fetch user's watchlist on mount
                 const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheckAPI(movieID)
                 if (fetchedWatchlists === null) { // User is not logged so API call will return null
