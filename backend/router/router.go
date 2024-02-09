@@ -77,5 +77,9 @@ func Routes() http.Handler {
     router.Get("/api/tmdb-movie", tmdb_controllers.TMDBGetMovieByID)
     // expects "?query={movie_id}" query paramter
 
+	// TMDB GET movie trailer resources
+	router.Get("/api/tmdb-trailer", tmdb_controllers.TMDBGetMovieTrailerByID)
+	// expects "?query={movie_id}" query paramter
+
 	return router
 }

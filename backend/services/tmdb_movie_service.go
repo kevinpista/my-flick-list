@@ -13,6 +13,7 @@ import (
 
 type TMDBMovieService struct {
 	Movie models.TMDBMovie // Struct used to display info on frontend's individual movie page
+	Trailer models.TMDBMovie
 }
  
 
@@ -175,4 +176,69 @@ func (c *TMDBMovieService) TMDBGetMovieByIDAddToLocalDatabase(movieID string) (e
     }
 
 	return nil
+}
+
+// GET request to TMDB API. Query is the {movie_id} - returns the YouTube video ID which is stored as "key" in the model
+func (c *TMDBMovieService) TMDBGetMovieTrailerByID(query string) (*string, error) {
+	apiUrl := baseMovieAPIUrl + query + "/videos" + "?api_key=" + APIKey
+
+	// Send GET request to TMDB
+	resp, err := http.Get(apiUrl)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusInternalServerError {
+		return nil, errors.New("TMDB API is unavailable at this time")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		var errorResponse models.TMDBError
+		err := json.NewDecoder(resp.Body).Decode(&errorResponse)
+
+		if err != nil {
+			// This is a JSON decoding issue related to decoding to TMDBError model
+			return nil, errors.New("error decoding TMDB error response")
+		}
+
+		// TMDB API returns a 'success : false' response if any errors
+		if !errorResponse.Success {
+			return nil, errors.New(errorResponse.StatusMessage)
+		}
+
+		// Catch all for TMDB API error for non StatusOK
+		return nil, errors.New("error with TMDB API")
+	}
+
+    dec := json.NewDecoder(resp.Body)
+    var trailerData struct { // Response struct to store results into a array as TMDB json response is set up the same way
+        Results []models.TMDBMovieTrailer `json:"results"`
+    }
+
+    // Decode the response
+    if err := dec.Decode(&trailerData); err != nil {
+        return nil, errors.New("error decoding TMDB trailer response")
+    }
+
+    // Filter for older trailer as a movie may have more than 1
+    var oldestMatchingTrailer *models.TMDBMovieTrailer
+    oldestPublishedAt := time.Now() // Initialize a max time value (almost like infinity)
+
+    // Filter trailers based on criteria and find oldest match
+    for i := range trailerData.Results {
+		trailer := &trailerData.Results[i]
+        if trailer.Site == "YouTube" && trailer.Type == "Trailer" && trailer.PublishedAt.Before(oldestPublishedAt) {
+            oldestPublishedAt = trailer.PublishedAt
+            oldestMatchingTrailer = trailer
+        }
+    }
+
+    // Check if a matching trailer was found, else return nil for frontend to handle
+    if oldestMatchingTrailer == nil {
+        return nil, nil
+    }
+
+    // Return desired data from the oldest matching trailer
+    return &oldestMatchingTrailer.Key, nil
 }

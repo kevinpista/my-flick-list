@@ -1,5 +1,9 @@
 package models
 
+import (
+	"time"
+)
+
 type TMDBMovie struct {
 
 	/*
@@ -74,4 +78,13 @@ type TMDBMovieForDatabaseEntry struct {
 	} `json:"genres"`
 	// (Handled in services) CreatedAt     time.Time `json:"created_at"`
 	// (Handled in services) UpdatedAt     time.Time `json:"updated_at"`
+}
+
+type TMDBMovieTrailer struct {
+	Key         string    `json:"key"` // The actual YouTube Video ID
+	Site        string    `json:"site"`
+	Type        string    `json:"type"`
+	Official    bool      `json:"official"`
+	PublishedAt time.Time `json:"published_at"`
+	ID          string    `json:"id"`
 }

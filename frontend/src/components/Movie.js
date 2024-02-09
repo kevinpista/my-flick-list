@@ -200,11 +200,19 @@ const MoviePage = () => {
 
     function CircularProgressWithLabel({ progressVoteAverage, movieVoteAverage }) {
         const color = getProgressColor(progressVoteAverage);
-        console.log(progressVoteAverage)
         const largeScreen = useMediaQuery('(min-width:1280px)');
-        const size = largeScreen ? 80 : 50; // Size based on screen width
+        const size = largeScreen ? 70 : 50; // Size based on screen width
         return (
-            <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+            <Box sx={{ 
+                position: 'relative', 
+                display: 'inline-flex', 
+                borderRadius: '50%', 
+                backgroundColor: '#081c22', 
+                padding: '4px',
+                width: `${size + 8}px`, // Need this exact padding for size to have background centered with bar
+                height: `${size + 8}px`
+            }}>
+
               <CircularProgress variant="determinate" value={progressVoteAverage} size={size} sx={{ color }} />
               <Box
                 sx={{
@@ -216,6 +224,7 @@ const MoviePage = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  textAlign: 'center',
                 }}
               >
                 <div className="progress-label">
