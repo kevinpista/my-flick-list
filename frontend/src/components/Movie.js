@@ -1,10 +1,11 @@
 import React, { useState, useEffect} from 'react';
 import { Paper, Typography, Button, InputLabel, Link, TextField } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import NavBar from './NavBar';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/Movie.css';
 import { getMovieDataTMDB } from '../api/movieDataTMDB';
 import { formatReleaseDate, formatReleaseYear, formatRuntime, formatVoteCount, formatFinancialData } from '../utils/formatUtils';
@@ -13,6 +14,7 @@ import { fetchWatchlistsByUserIDWithMovieIDCheckAPI, addWatchlistItemAPI } from 
 import { useNavigate } from 'react-router-dom';
 import { createWatchlistAPI } from '../api/watchlistAPI.js'
 import * as errorConstants from '../api/errorConstants';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -53,6 +55,7 @@ const MoviePage = () => {
     const [movieRevenue, setMovieRevenue] = useState('');
     const [movieBudget, setMovieBudget] = useState('');
     const [movieVoteAverage, setMovieVoteAverage] = useState(0);
+    const [progressVoteAverage, setProgressVoteAverage] = useState(null);
     const [movieVoteCount, setMovieVoteCount] = useState(0);
     const [validMovie, setValidMovie] = useState(null);
     const [movieError, setMovieError] = useState(null);
@@ -157,6 +160,7 @@ const MoviePage = () => {
                 setMovieRuntime(formattedRuntime);
                 setMovieVoteCount(formattedVoteCount);
                 setMovieVoteAverage(formattedVoteAverage);
+                setProgressVoteAverage(Math.round(formattedVoteAverage * 10));
                 setMovieGenres(movieGenresFromTMDBAPI);
                 setMovieTagline(movieTaglineFromTMDBAPI);
                 setMovieOverview(movieOverviewFromTMDBAPI);
@@ -185,7 +189,43 @@ const MoviePage = () => {
 
         fetchData();
         }, [movieID]);
-      
+
+    function getProgressColor(value){
+        if (value <= 40) return 'error.main';
+        if (value <= 60) return 'warning.main';
+        if (value <= 78) return 'yellow';
+        if (value <= 100) return 'success.main';
+        return 'info.main'; // Fallback to primary color.
+    }
+
+    function CircularProgressWithLabel({ progressVoteAverage, movieVoteAverage }) {
+        const color = getProgressColor(progressVoteAverage);
+        console.log(progressVoteAverage)
+        const largeScreen = useMediaQuery('(min-width:1280px)');
+        const size = largeScreen ? 80 : 50; // Size based on screen width
+        return (
+            <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+              <CircularProgress variant="determinate" value={progressVoteAverage} size={size} sx={{ color }} />
+              <Box
+                sx={{
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  position: 'absolute',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <div className="progress-label">
+                    {`${(progressVoteAverage)}%`}
+                </div>
+              </Box>
+            </Box>
+          );
+    }
+
     const moviePosterBaseUrl = "https://image.tmdb.org/t/p/w600_and_h900_bestv2";
     const movieBackdropBaseUrl = "https://image.tmdb.org/t/p/w1920_and_h800_multi_faces";
     const finalMoviePosterUrl = moviePosterPath === "" ? no_image_placeholder : moviePosterBaseUrl + "" + moviePosterPath;
@@ -300,6 +340,13 @@ const MoviePage = () => {
                             <Typography variant="body3" >
                                 Ratings: {movieVoteAverage} out of 10 | ({movieVoteCount})
                             </Typography>
+                        </div>
+
+                        <div className="movie-rating-progress-circle">
+                            <CircularProgressWithLabel 
+                            progressVoteAverage={progressVoteAverage} 
+                            movieVoteAverage={movieVoteAverage}                      
+                            />
                         </div>
 
                         <Typography variant="body4" gutterBottom className="movie-tagline">

@@ -80,7 +80,7 @@
 }
 
 .release-year {
-  font-weight: 350;
+  font-weight: 300;
   opacity: 0.8;
   margin-left: 0.5rem;
 }
@@ -111,4 +111,20 @@
   display: inline-flex;
   align-items: center;
   z-index: 1;
+}
+
+/*
+.movie-rating-progress-circle {
+  margin-bottom: 0.5rem;
+}
+*/
+
+.progress-label {
+  font-size: 0.7rem;
+
+}
+@media (min-width: 1280px) {
+  .progress-label {
+    font-size: 1.1rem;
+  }
 }
