@@ -89,17 +89,22 @@ const MoviePage = () => {
     const handleCreateWatchlistDialogSubmit = async () => {
         setLoading(true)
         try {
-        const response = await createWatchlistAPI(newWatchlistName, newWatchlistDescription);
-        if (response) {
-            const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheckAPI(movieID);
-            setCreateWatchlistDialogOpen(false);
-            setUserWatchlists(fetchedWatchlists);
-            // Calculate the longest watchlist name for proper styling in watchlist dropdown menu dialog
-            setLongestWatchlistNameLength(fetchedWatchlists['watchlists'].reduce((max, watchlist) => {
-                return Math.max(max, watchlist.name.length, 30);
-              }, 0));
-            setCreateWatchlistDialogOpen(false);
-            handleWatchlistCreateSuccessAlertOpen();
+            const response = await createWatchlistAPI(newWatchlistName, newWatchlistDescription);
+            if (response) {
+                const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheckAPI(movieID);
+                setTimeout(() => {
+                    setCreateWatchlistDialogOpen(false);
+                    setLoading(false)
+                    setNewWatchlistName('')
+                    setNewWatchlistDescription('')
+                }, 1200);
+                setUserWatchlists(fetchedWatchlists);
+                // Calculate the longest watchlist name for proper styling in watchlist dropdown menu dialog
+                setLongestWatchlistNameLength(fetchedWatchlists['watchlists'].reduce((max, watchlist) => {
+                    return Math.max(max, watchlist.name.length, 30);
+                }, 0));
+                handleWatchlistCreateSuccessAlertOpen();
+
         }
         } catch (error) {
             if (error.message === errorConstants.ERROR_BAD_REQUEST) {
@@ -612,14 +617,98 @@ const MoviePage = () => {
                         )}
                     </Select>
                 </DialogContent>
-                <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
-                    <Button variant="contained" onClick={handleCloseWatchlistDropdownDialog} color="primary">
-                        Cancel
-                    </Button>
-                    <Button variant="contained" onClick={handleAddMovieToWatchlist} color="primary" disabled={!selectedWatchlistID || selectedWatchlistID === 'placeholder'}>
-                        Add Movie
-                    </Button>
+                <DialogActions style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '20px', paddingRight: '18px' }}>
+                    <div style={{paddingLeft: '18px'}}>
+                        <Button variant="contained" color="primary" onClick={handleCreateWatchlistButtonClick}>
+                            Create Watchlist
+                        </Button>
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.6rem' }}>
+                        <Button variant="contained" onClick={handleCloseWatchlistDropdownDialog} color="primary">
+                            Cancel
+                        </Button>
+                        <Button variant="contained" onClick={handleAddMovieToWatchlist} color="primary" disabled={!selectedWatchlistID || selectedWatchlistID === 'placeholder'}>
+                            Add Movie
+                        </Button>
+                    </div>
                 </DialogActions>
+
+                {/* Modal creating a watchlist */}
+                <Dialog
+                    open={isCreateWatchlistDialogOpen}
+                    onClose={handleCreateWatchlistButtonClose}
+                    maxWidth="md"
+                    fullWidth={true}
+                >
+                    <DialogTitle><b>Create a New Watchlist</b></DialogTitle>
+                    <DialogContent>
+                    <TextField
+                        autoFocus
+                        id="watchlist-name"
+                        label="Watchlist Name"
+                        value={newWatchlistName}
+                        onChange={(e) => setNewWatchlistName(e.target.value)}
+                        multiline
+                        fullWidth
+                        margin="dense"
+                        variant="standard"
+                        // Display character limit and changes text to red if user goes over limit
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                <span style={{ color: newWatchlistName.length > 60 ? 'red' : 'inherit' }}>
+                                {newWatchlistName.length}/{60}
+                                </span>
+                            </InputAdornment>
+                            ),
+                        }}
+                    />
+                    <TextField
+                        autoFocus
+                        id="watchlist-description"
+                        label="Watchlist Description"
+                        value={newWatchlistDescription}
+                        onChange={(e) => setNewWatchlistDescription(e.target.value)}
+                        multiline
+                        fullWidth
+                        margin="dense"
+                        variant="standard"
+                        // Display character limit and changes text to red if user goes over limit
+                        InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                            <span style={{ color: newWatchlistDescription.length > 500 ? 'red' : 'inherit' }}>
+                            {newWatchlistDescription.length}/{500}
+                            </span>
+                        </InputAdornment>
+                        ),
+                        }}
+                    />
+                    {createWatchlistDialogErrorMessage && (
+                        <Typography color="error" variant="body2">
+                        {createWatchlistDialogErrorMessage}
+                        </Typography>
+                    )}
+                    </DialogContent>
+                    <DialogActions style={{ paddingBottom: '20px', paddingRight: '18px' }}>
+                    <Button variant="contained" onClick={handleCreateWatchlistButtonClose}>
+                        Exit</Button>
+
+                    <LoadingButton 
+                    variant="contained"
+                    loading={loading}
+                    onClick={handleCreateWatchlistDialogSubmit}
+                    disabled={
+                        newWatchlistName.length > 60 || // Character limit for watchlist name
+                        newWatchlistDescription.length > 500 // Character limit for watchlist description
+                    }
+                    >
+                        Create
+                    </LoadingButton>
+
+                    </DialogActions>
+                </Dialog>
+
             </Dialog>
             )}
         </React.Fragment>
