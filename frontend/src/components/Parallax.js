@@ -5,11 +5,19 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import '../css/Parallax.css';
 // import fullImage from '../static/image-full.png';
 import bottomImage from '../static/image-bottom.png';
+import { easeIn } from "framer-motion"
 
 // import SC7 from '../static/2.png';
-// import SC8 from '../static/4.png';
+import MovieCollage from '../static/MovieCollage.png';
 import SC10 from '../static/high.png';
 // import SC13 from '../static/low4.png';
+import SC14 from '../static/wat.png';
+
+import Guy1 from '../static/Guy1.png';
+import Guy2 from '../static/Guy2.png';
+import Crowd1 from '../static/Crowd1.png'; // close to content
+import Crowd from '../static/Crowd5.png';
+
 
 import { ThemeProvider } from '@mui/material/styles';
 import { muiTheme } from '../css/MuiThemeProvider.js';
@@ -28,7 +36,7 @@ function Parallax() {
     offset: ["start start", "end start"],
   });
   
-  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]); // given to full image
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"], { ease: easeIn });
   const textY = useTransform(scrollYProgress, [0, 1], ["0%", "300%"]); // given to text
   // const foregroundY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
@@ -59,7 +67,7 @@ function Parallax() {
       <motion.div
         className="full-image "
         style={{
-          backgroundImage: `url(${SC10})`,
+          backgroundImage: `url(${MovieCollage})`,
           backgroundPosition: "bottom",
           backgroundSize: "cover",
           y: backgroundY,
@@ -90,13 +98,10 @@ function Parallax() {
           </Button>
         </motion.div>
 
-      <motion.div
+        <motion.img
         className="bottom-image"
-        style={{
-          backgroundImage: `url(${SC10})`,
-          backgroundPosition: "bottom",
-          backgroundSize: "cover",
-        }}
+        src={Crowd}
+
       />
       
     </div>
