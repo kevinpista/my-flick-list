@@ -368,7 +368,7 @@ const MoviePage = () => {
                                 Play Trailer
                             </button>
                         )}
-                        { isYouTubeModalOpen && <YouTubeModal isOpen={isYouTubeModalOpen} videoId={movieTrailerYouTubeID} /> }
+                        { isYouTubeModalOpen && <YouTubeModal isOpen={isYouTubeModalOpen} setIsOpen={setIsYouTubeModalOpen} videoId={movieTrailerYouTubeID} /> }
 
                         <Typography variant="body4" gutterBottom className="movie-tagline">
                             {movieTagline}
