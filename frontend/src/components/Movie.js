@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import NavBar from './NavBar';
 import '../css/Movie.css';
 import { getMovieDataTMDB, getMovieTrailerTMDB } from '../api/movieDataTMDB.js';
@@ -350,24 +351,42 @@ const MoviePage = () => {
                         </Typography>
                         </div>
 
-                        <div className="movie-ratings">
-                            <Typography variant="body3" >
-                                Ratings: {movieVoteAverage} out of 10 | ({movieVoteCount})
-                            </Typography>
+                        <div className="ratings-trailer-row">
+                            <div className="use-ratings">
+                                <div className="movie-rating-progress-circle">
+                                    <CircularProgressWithLabel 
+                                    progressVoteAverage={progressVoteAverage} 
+                                    movieVoteAverage={movieVoteAverage}                      
+                                    />
+                                </div>
+                    
+                                <div className="user-score-text">
+                                    Based on<br/>{movieVoteCount}
+                                </div>
+                            </div>
+
+                            { movieTrailerYouTubeID && (
+                                <Button
+                                    variant="outline"
+                                    onClick={handleOnClickPlayTrailer}
+                                    size="large"
+                                    sx={{
+                                        '&:hover': {
+                                          opacity: '0.7',
+                                          '& .MuiButton-startIcon': {
+                                            opacity: '0.7',
+                                          },
+                                        },
+                                        border: 'solid',
+                                        height: '2.5rem'
+                                      }}
+                                >
+                                    <PlayArrowIcon />
+                                    Play Trailer
+                                </Button>
+                            )}
                         </div>
 
-                        <div className="movie-rating-progress-circle">
-                            <CircularProgressWithLabel 
-                            progressVoteAverage={progressVoteAverage} 
-                            movieVoteAverage={movieVoteAverage}                      
-                            />
-                        </div>
-
-                        { movieTrailerYouTubeID && (
-                            <button onClick={handleOnClickPlayTrailer}>
-                                Play Trailer
-                            </button>
-                        )}
                         { isYouTubeModalOpen && <YouTubeModal isOpen={isYouTubeModalOpen} setIsOpen={setIsYouTubeModalOpen} videoId={movieTrailerYouTubeID} /> }
 
                         <Typography variant="body4" gutterBottom className="movie-tagline">

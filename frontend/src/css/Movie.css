@@ -85,6 +85,33 @@
   margin-left: 0.5rem;
 }
 
+.ratings-trailer-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.4rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.use-ratings{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.user-score-text {
+  font-size: 0.7rem;
+}
+
+
+@media (min-width: 1280px) {
+  .user-score-text {
+    font-size: 1rem;
+  }
+}
+
 .error {
   font-family: 'Source Sans Pro', Arial, sans-serif;
   font-size: 2em;

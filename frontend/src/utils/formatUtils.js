@@ -27,13 +27,13 @@ export const formatRuntime = (minutes) => {
 // Function to format the vote_count data from "integer" into "12.1k" if value was 12100
 export const formatVoteCount = (voteCount) => {
     if (voteCount >= 1e9) {
-        return `${voteCount >= 1e10 ? (voteCount / 1e9).toFixed(1) : (voteCount / 1e9).toFixed(2)}b votes`;
+        return `${voteCount >= 1e10 ? (voteCount / 1e9).toFixed(1) : (voteCount / 1e9).toFixed(2)}b Votes`;
     } else if (voteCount >= 1e6) {
-        return `${voteCount >= 1e7 ? (voteCount / 1e6).toFixed(1) : (voteCount / 1e6).toFixed(2)}m votes`;
+        return `${voteCount >= 1e7 ? (voteCount / 1e6).toFixed(1) : (voteCount / 1e6).toFixed(2)}m Votes`;
     } else if (voteCount >= 1e3) {
-        return `${voteCount >= 1e4 ? (voteCount / 1e3).toFixed(1) : (voteCount / 1e3).toFixed(2)}k votes`;
+        return `${voteCount >= 1e4 ? (voteCount / 1e3).toFixed(1) : (voteCount / 1e3).toFixed(2)}k Votes`;
     } else {
-        return `${voteCount} votes`;
+        return `${voteCount} Votes`;
     }
 };
 
