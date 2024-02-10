@@ -54,3 +54,13 @@
 .page-indicator {
   color: white;
 }
+
+.fullHeightWrapper {
+  min-height: 100vh;
+  background: 
+  linear-gradient(to right, 
+      rgba(10.5, 31.5, 31.5, .98) calc((40vw - 170px) - 100px),
+      rgba(10.5, 31.5, 31.5, 0.90) 50%,
+      rgba(10.5, 31.5, 31.5, 0.98) 100%);
+  padding-bottom: 1rem;
+}

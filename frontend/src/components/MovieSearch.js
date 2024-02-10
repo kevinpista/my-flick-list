@@ -77,6 +77,7 @@ const MovieSearch = () => {
   // Renders No Results message if no movies found by TMDB API
     if (noMoviesFound) {
         return (
+            <div className='fullHeightWrapper'>
             <React.Fragment>
                 <NavBar />
                 <Container >
@@ -98,16 +99,15 @@ const MovieSearch = () => {
 
                 </Container>
             </React.Fragment>
+            </div>
         );
     };
         
     // RENDER COMPONENT
     return (
+        <div className='fullHeightWrapper'>
         <React.Fragment>
             <NavBar />
-            <section className='background-overlay'
-                  style={{backgroundImage: `linear-gradient(to right, rgba(10.5, 31.5, 31.5, 1) calc((40vw - 170px) - 100px), rgba(10.5, 31.5, 31.5, 0.90) 40%, rgba(10.5, 31.5, 31.5, 0.98) 100%)`}}
-             >
             <Container >
             <MovieSearchBar sizeSx={"lg"}/>
             {query === null ? (
@@ -160,8 +160,8 @@ const MovieSearch = () => {
                 )
                 )}
             </Container>
-            </section>
         </React.Fragment>
+        </div>
   );
 };
 export default MovieSearch;
