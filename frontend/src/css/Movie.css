@@ -14,6 +14,18 @@
   padding: 50px 30px;
 }
 
+.error {
+  font-family: 'Source Sans Pro', Arial, sans-serif;
+  font-size: 2em;
+  text-align: center;
+  color: white;
+  background-color: gray;
+  padding: 0.5em 1em;
+  border: 5px solid black;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
 .movie-content {
   display: flex;
   flex-direction: row;
@@ -41,38 +53,6 @@
   flex: 2;
 }
 
-.movie-paper {
-  height: 100%;
-  padding: 40px;
-  max-width: 100%;
-  overflow: auto; 
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-.movie-tagline {
-  font-style: italic;
-  opacity: 0.7;
-}
-
-.movie-description {
-  margin-bottom: 3px;
-}
-
-.overview {
-  margin-top: 20px;
-  font-size: 1.5rem;
-}
-
-.movie-financials {
-  margin-bottom: 15px;
-}
-
-.movie-ratings {
-  margin-bottom: 15px;
-}
-
 .movie-title {
   font-weight: 600;
   font-size: 2.2rem;
@@ -85,6 +65,16 @@
   margin-left: 0.5rem;
 }
 
+.movie-paper {
+  height: 100%;
+  padding: 40px;
+  max-width: 100%;
+  overflow: auto; 
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
 .ratings-trailer-row {
   display: flex;
   flex-direction: row;
@@ -94,34 +84,48 @@
   margin-bottom: 1rem;
 }
 
-.use-ratings{
+.user-ratings{
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 0.9rem;
 }
 
+.progress-label {
+  font-size: 0.7rem;
+  padding-left: 2px;
+}
+@media (min-width: 1280px) {
+  .progress-label {
+    font-size: 1rem;
+  }
+}
+
 .user-score-text {
   font-size: 0.7rem;
 }
-
-
 @media (min-width: 1280px) {
   .user-score-text {
     font-size: 1rem;
   }
 }
 
-.error {
-  font-family: 'Source Sans Pro', Arial, sans-serif;
-  font-size: 2em;
-  text-align: center;
-  color: white;
-  background-color: gray;
-  padding: 0.5em 1em;
-  border: 5px solid black;
-  border-radius: 10px;
-  margin-top: 20px;
+.movie-tagline {
+  font-style: italic;
+  margin-top: 10px;
+  opacity: 0.7;
+  font-size: 1rem;
+}
+
+.overview {
+  margin-top: 1rem;
+  margin-bottom: 8px;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.movie-description {
+  margin-bottom: 3px;
 }
 
 .movie-description span+span {     
@@ -140,18 +144,17 @@
   z-index: 1;
 }
 
-/*
-.movie-rating-progress-circle {
-  margin-bottom: 0.5rem;
+.release-genres-runtime-row {
+  font-size: 1rem;
 }
-*/
 
-.progress-label {
-  font-size: 0.7rem;
-  padding-left: 2px;
+.movie-financials {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 0.8rem;
 }
-@media (min-width: 1280px) {
-  .progress-label {
-    font-size: 1rem;
-  }
+
+.movie-overview-text {
+  font-size: 1rem;
 }

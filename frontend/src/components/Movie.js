@@ -6,6 +6,9 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import AddIcon from '@mui/icons-material/Add';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PointOfSaleSharpIcon from '@mui/icons-material/PointOfSaleSharp';
+import MonetizationOnSharpIcon from '@mui/icons-material/MonetizationOnSharp';
+
 import NavBar from './NavBar';
 import '../css/Movie.css';
 import { getMovieDataTMDB, getMovieTrailerTMDB } from '../api/movieDataTMDB.js';
@@ -344,19 +347,19 @@ const MoviePage = () => {
                         </h2>
 
                         <div className="movie-description">
-                        <Typography variant="body4">
-                            <span className="release">{movieReleaseDate}</span>
-                            <span className="genres">{movieGenres.join(', ')}</span> 
-                            <span className="runtime">{movieRuntime}</span>            
-                        </Typography>
-                        </div>
+                            <div className="release-genres-runtime-row">
+                                <span className="release">{movieReleaseDate}</span>
+                                <span className="genres">{movieGenres.join(', ')}</span> 
+                                <span className="runtime">{movieRuntime}</span>            
+                            </div>
+                        </div>                      
 
                         <div className="ratings-trailer-row">
-                            <div className="use-ratings">
+                            <div className="user-ratings">
                                 <div className="movie-rating-progress-circle">
                                     <CircularProgressWithLabel 
-                                    progressVoteAverage={progressVoteAverage} 
-                                    movieVoteAverage={movieVoteAverage}                      
+                                        progressVoteAverage={progressVoteAverage} 
+                                        movieVoteAverage={movieVoteAverage}                      
                                     />
                                 </div>
                     
@@ -389,24 +392,25 @@ const MoviePage = () => {
 
                         { isYouTubeModalOpen && <YouTubeModal isOpen={isYouTubeModalOpen} setIsOpen={setIsYouTubeModalOpen} videoId={movieTrailerYouTubeID} /> }
 
-                        <Typography variant="body4" gutterBottom className="movie-tagline">
+                        <div className="movie-tagline">
                             {movieTagline}
-                        </Typography>
-
-                        <h5 className="overview">
-                            Overview
-                        </h5>
-                        
-                        <Typography variant="body1" paragraph>
-                            {movieOverview}
-                        </Typography>
-                        
-                        <div className="movie-financials">
-                            <Typography variant="body1" gutterBottom>
-                                Revenue: {movieRevenue} || Budget: {movieBudget}
-                            </Typography>
                         </div>
+
+                        <h3 className="overview">
+                            Overview
+                        </h3>
                         
+                        <div className="movie-overview-text">
+                            <p>
+                                {movieOverview}
+                            </p>
+                        </div>
+
+                        <div className="movie-financials">
+                            <div className="revenue"><MonetizationOnSharpIcon/>   Revenue: {movieRevenue}</div>
+                            <div className="budget"><PointOfSaleSharpIcon/>  Budget: {movieBudget}</div>
+                        </div>
+
                         <Button
                             onClick={handleOpenWatchlistDropdownDialog} 
                             variant="contained"
