@@ -15,7 +15,7 @@ const COOKIE_NAME = 'jwtToken'; // Key name
 
 export function setTokenInCookie(token) {
   const expires = new Date(); // Initialize the expires variable
-  expires.setDate(expires.getDate() + 1); // Expiration of 1 for now
+  expires.setDate(expires.getDate() + 14);
   Cookies.set(COOKIE_NAME, token, { expires, secure: true});
 }
 
