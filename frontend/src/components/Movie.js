@@ -9,6 +9,15 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PointOfSaleSharpIcon from '@mui/icons-material/PointOfSaleSharp';
 import MonetizationOnSharpIcon from '@mui/icons-material/MonetizationOnSharp';
 
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
+
 import NavBar from './NavBar';
 import '../css/Movie.css';
 import { getMovieDataTMDB, getMovieTrailerTMDB } from '../api/movieDataTMDB.js';
@@ -21,23 +30,9 @@ import { createWatchlistAPI } from '../api/watchlistAPI.js'
 import * as errorConstants from '../api/errorConstants';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
-
 import { ThemeProvider } from '@mui/material/styles';
 import { muiTheme } from '../css/MuiThemeProvider.js';
 import no_image_placeholder from '../static/no_image_placeholder.jpg';
-
-// TODO
-
-// 1. Make revenue and budget side by side with nicer icons.
-
 
 const MoviePage = () => {
     // Movie data variables
@@ -46,7 +41,7 @@ const MoviePage = () => {
     const [movieTitle, setMovieTitle] = useState('');
     const [movieReleaseDate, setMovieReleaseDate] = useState('');
     const [movieReleaseYear, setMovieReleaseYear] = useState(null);
-    const [movieGenres, setMovieGenres] = useState([]); // Possibly more than 1 genre
+    const [movieGenres, setMovieGenres] = useState([]); // Possibly contains than 1 genre
     const [movieRuntime, setMovieRuntime] = useState('');
     const [movieTagline, setMovieTagline] = useState('');
     const [movieOverview, setMovieOverview] = useState('');
@@ -79,7 +74,7 @@ const MoviePage = () => {
     const [newWatchlistName, setNewWatchlistName] = useState('');
     const [newWatchlistDescription, setNewWatchlistDescription] = useState('');
     const [createWatchlistDialogErrorMessage, setCreateWatchlistDialogErrorMessage] = useState('');
-    const [loading, setLoading] = useState(false); // Loading state for Creatch Watchlist button
+    const [loading, setLoading] = useState(false); // Loading state for Create Watchlist button
 
     // Handle Create Watchlist
     const handleCreateWatchlistButtonClick = () => {
@@ -96,7 +91,8 @@ const MoviePage = () => {
         try {
         const response = await createWatchlistAPI(newWatchlistName, newWatchlistDescription);
         if (response) {
-            const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheckAPI(movieID);           setCreateWatchlistDialogOpen(false);
+            const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheckAPI(movieID);
+            setCreateWatchlistDialogOpen(false);
             setUserWatchlists(fetchedWatchlists);
             // Calculate the longest watchlist name for proper styling in watchlist dropdown menu dialog
             setLongestWatchlistNameLength(fetchedWatchlists['watchlists'].reduce((max, watchlist) => {
@@ -120,7 +116,6 @@ const MoviePage = () => {
         const fetchData = async () => {
             try {
                 const data = await getMovieDataTMDB(movieID)
-                console.log(data)
                 // Extract the movie data from the single JSON response
                 const moviePosterPathFromTMDBAPI = data.movie.poster_path;
                 const movieBackdropPathFromTMDBAPI = data.movie.backdrop_path;
@@ -171,7 +166,6 @@ const MoviePage = () => {
                 // Fetch movie's trailer video
                 const trailerData = await getMovieTrailerTMDB(movieID);
                 setMovieTrailerYouTubeID(trailerData.youtube_video_id)
-                console.log(trailerData)
 
                 // Fetch user's watchlist on mount
                 const fetchedWatchlists = await fetchWatchlistsByUserIDWithMovieIDCheckAPI(movieID)
@@ -188,8 +182,7 @@ const MoviePage = () => {
                 }
 
             } catch (error) {
-                setMovieError(error); // Note, may be an error related to fetchWatchlistsByUserIDWithMovieIDCheckAPI()
-                // But will display it with general error message of "Error loading movie"
+                setMovieError(error);
             }
         };
 
@@ -199,7 +192,7 @@ const MoviePage = () => {
     function getProgressColor(value){
         if (value <= 40) return 'error.main';
         if (value <= 60) return 'warning.main';
-        if (value <= 78) return 'yellow';
+        if (value <= 75) return 'yellow';
         if (value <= 100) return 'success.main';
         return 'info.main'; // Fallback to primary color.
     }
@@ -215,30 +208,30 @@ const MoviePage = () => {
                 borderRadius: '50%', 
                 backgroundColor: '#081c22', 
                 padding: '4px',
-                width: `${size + 8}px`, // Need this exact padding for size to have background centered with bar
+                width: `${size + 8}px`, // Need this exact padding for size to have background centered with circular bar
                 height: `${size + 8}px`
-            }}>
-
-              <CircularProgress variant="determinate" value={progressVoteAverage} size={size} sx={{ color }} />
-              <Box
-                sx={{
-                  top: 0,
-                  left: 0,
-                  bottom: 0,
-                  right: 0,
-                  position: 'absolute',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  textAlign: 'center',
                 }}
-              >
+            >
+                <CircularProgress variant="determinate" value={progressVoteAverage} size={size} sx={{ color }} />
+                <Box
+                sx={{
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    position: 'absolute',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                }}
+                >
                 <div className="progress-label">
                     {`${(progressVoteAverage)}%`}
                 </div>
-              </Box>
+                </Box>
             </Box>
-          );
+        );
     }
 
     const moviePosterBaseUrl = "https://image.tmdb.org/t/p/w600_and_h900_bestv2";
@@ -299,6 +292,7 @@ const MoviePage = () => {
         setAlertMessage('Watchlist created sucessfully!');
         setSuccessAlertOpen(true);
     };
+
     // RENDER COMPONENT
     return (
         <ThemeProvider theme={muiTheme}>
@@ -485,6 +479,7 @@ const MoviePage = () => {
                     </Typography>
                     </Paper>
                 </Dialog>
+                
                 {/* Modal creating a watchlist */}
                 <Dialog
                     open={isCreateWatchlistDialogOpen}
