@@ -570,12 +570,16 @@ const MoviePage = () => {
                 <DialogTitle>Select a Watchlist</DialogTitle>
                 <DialogContent>
                 <InputLabel id="watchlist-placeholder">Watchlist</InputLabel>
-                    {/* Need renderValue prop to correctly show selected item on one line due to using 2 divs for MenuItem */}
                     <Select
                         id="select-watchlist"
                         value={selectedWatchlist}
                         onChange={handleWatchlistChange}
                         fullWidth
+                        MenuProps={{
+                            style: {
+                                maxHeight: 400,
+                              },
+                        }}
                         renderValue={(selectedValue) => (
                             <div>
                             {selectedValue === 'placeholder' ? (
