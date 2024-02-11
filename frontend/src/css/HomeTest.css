@@ -3,15 +3,11 @@
     background-image: linear-gradient(180deg, rgba(11, 29, 38, 0), #0b1d26 20%);
     z-index: 60;
     margin:auto;
-
 }
-
 
 :root {
     --white-color: white;
-    --black-color: black;
     --first-color: #0b1d26;
-    --second-color: #333;
     --thirdh-color: #fbd784;
   }
 
@@ -21,25 +17,16 @@
     max-width: 1920px;
 }
 
-/*
-
-`linear-gradient(
-            to right,
-            rgba(10, 31, 31, 0.78) calc((40vw - 170px) - 100px),
-            rgba(10, 31, 31, 0.74) 50%,
-            rgba(10, 31, 31, 0.78) 100%
-          )`,
-*/
 .features {
     width: 90%;
     margin: auto;
     margin-top: 3rem;
     display: flex;
     flex-direction: column;
-    gap: 4rem;
+    gap: 6rem;
 }
 
-.first-feature {
+.feature {
     display: flex;
     width: 100%;
 
@@ -53,7 +40,7 @@
     -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center;
-    gap: 6rem;
+    gap: 8rem;
 }
 
 .feature-info {
@@ -63,11 +50,30 @@
     gap: 1rem;
 }
 
+.number-step-bg {
+    font-weight: 700;
+    font-size: 15rem;
+    color: var(--white-color);
+    opacity: 0.1;
+}
+  
+#first-number-step {
+    bottom: 16.5rem;
+    left: -4.5rem;
+    position: relative;
+}
+  
+#second-number-step {
+    bottom: 16.5rem;
+    left: -4.5rem;
+    position: relative;
+}
+
 .feature-subtitle {
     color: var(--thirdh-color);
     font-weight: 800;
     font-size: 1.125rem;
-  }
+}
 
 
 .feature-headline {
@@ -82,14 +88,7 @@
     font-size: 1.125rem;
     font-weight: 400;
     line-height: 2rem;
-    margin-bottom: 1rem;
 }
-
-/*
-.feature-image {
-    width: 100%;
-}
-*/
 
 .feature-info-footer a {
     text-decoration: none;
@@ -99,7 +98,6 @@
     color: var(--thirdh-color);
 }
   
-
 .feature-info-footer:hover,
 .feature-info-footer a:hover,
 .feature-info-footer a button:hover,
@@ -113,11 +111,12 @@
     height: 1.5rem;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: left;
     gap: 0.5rem;
     border: none;
     background: transparent;
     font-size: 1.125rem;
     cursor: pointer;
     font-weight: 700;
+    margin-left: -3px;
 }
