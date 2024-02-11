@@ -14,14 +14,10 @@ import { muiTheme } from '../css/MuiThemeProvider.js';
 import Parallax from './Parallax.js';
 
 
-import SC1 from '../static/Showcase_1_big.jpg';
-import SC2 from '../static/Showcase_2_big.jpg';
-import SC3 from '../static/Showcase_3_small.jpg';
-import SC4 from '../static/Showcase_11_small.jpg';
-import SC5 from '../static/Showcase_12_small.jpg';
-import SC6 from '../static/Showcase_13_small.jpg';
 import SC7 from '../static/first-image.png';
-
+import SC13 from '../static/Feature2.png'; // transparent bar
+import SC14 from '../static/Feature5.png'; // white bar
+import SC15 from '../static/Feature6.png'; // yellow bar
 
 function HomeTest() {
   const navigate = useNavigate();
@@ -60,7 +56,7 @@ function HomeTest() {
                     </div>
             
                     <div className="feature-image">
-                        <img src={SC7} />
+                        <img src={SC13} />
                     </div>
 
                 </div>

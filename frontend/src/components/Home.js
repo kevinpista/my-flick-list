@@ -12,12 +12,7 @@ import Square from '../static/Square.jpg';
 import { ThemeProvider } from '@mui/material/styles';
 import { muiTheme } from '../css/MuiThemeProvider.js';
 
-import SC1 from '../static/Showcase_1_big.jpg';
-import SC2 from '../static/Showcase_2_big.jpg';
-import SC3 from '../static/Showcase_3_small.jpg';
-import SC4 from '../static/Showcase_11_small.jpg';
-import SC5 from '../static/Showcase_12_small.jpg';
-import SC6 from '../static/Showcase_13_small.jpg';
+import SC6 from '../static/first-image.png';
 
 
 function Home() {
