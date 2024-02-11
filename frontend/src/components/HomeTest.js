@@ -71,20 +71,20 @@ function HomeTest() {
 
                     <div className="feature-info">
                         <div class="feature-subtitle">
-                            Make It Yours
+                            Info On Every Film
                         </div>
                         <div class="feature-headline">
-                            Create Your Watchlist
+                            Movie Details & Video Trailer
                         </div>
                         <div class="feature-body">
-                            Curate a watchlist and add any movie to it. Personalize by mood,
-                            genre, favorite director, actors, or anything that sparks your desire
-                            to organize all your movies into one place.
+                            Quickly view in-depth details on any movie all in one place. See user ratings, runtime, 
+                            revenue, budget, and its trailer. Add to your watchlists once you decide it's a movie
+                            worth watching!
                         </div>
                         <div class="feature-info-footer">
                             <a href="#">
                                 <button>
-                                    Get Started
+                                    Try Search Tool
                                 </button>
                             </a>
                         </div>   
@@ -94,14 +94,16 @@ function HomeTest() {
                 <div className="first-feature">
                     <div className="feature-info">
                         <div class="feature-subtitle">
-                            Jot Down Your Thoughts
-                        </div>
-                        <div class="feature-headline">
                             Take Notes & Check Off
                         </div>
+                        <div class="feature-headline">
+                            Create a Watchlist
+                        </div>
                         <div class="feature-body">
-                            Add notes to each movie before or after you watch with timestamps on when you
-                            last updated them. Stay organized by easily checking off when you finished watching a movie.
+                            Curate a watchlist and personalize it by mood,
+                            genre, actors, or anything that sparks your desire.
+                            Add notes to each movie with timestamps.
+                            Stay organized by easily checking off when you finish watching a movie.
                         </div>
                         <div class="feature-info-footer">
                             <a href="#">
