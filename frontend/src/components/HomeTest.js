@@ -19,6 +19,7 @@ import SC14 from '../static/Feature5.png'; // white bar
 import SC15 from '../static/Feature6.png'; // yellow bar
 import movies_search_img from '../static/Movie-Search.png';
 import watchlist_img from '../static/Watchlist.png'; 
+import arrow_right from '../static/arrow-right.png'; 
 
 
 
@@ -53,6 +54,7 @@ function HomeTest() {
                             <a href="#">
                                 <button>
                                     Find a Movie
+                                    <img src={arrow_right} />
                                 </button>
                             </a>
                         </div>   
@@ -84,7 +86,8 @@ function HomeTest() {
                         <div class="feature-info-footer">
                             <a href="#">
                                 <button>
-                                    Try Search Tool
+                                    Try a Search
+                                    <img src={arrow_right} />
                                 </button>
                             </a>
                         </div>   
@@ -108,7 +111,8 @@ function HomeTest() {
                         <div class="feature-info-footer">
                             <a href="#">
                                 <button>
-                                    Personalize Now
+                                    Personalize
+                                    <img src={arrow_right} />
                                 </button>
                             </a>
                         </div>   
