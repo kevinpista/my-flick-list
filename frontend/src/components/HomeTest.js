@@ -14,10 +14,13 @@ import { muiTheme } from '../css/MuiThemeProvider.js';
 import Parallax from './Parallax.js';
 
 
-import SC7 from '../static/first-image.png';
-import SC13 from '../static/Feature2.png'; // transparent bar
+import movies_page_img from '../static/Movies-Page.png'; // transparent bar
 import SC14 from '../static/Feature5.png'; // white bar
 import SC15 from '../static/Feature6.png'; // yellow bar
+import movies_search_img from '../static/Movie-Search.png';
+import watchlist_img from '../static/Watchlist.png'; 
+
+
 
 function HomeTest() {
   const navigate = useNavigate();
@@ -56,14 +59,14 @@ function HomeTest() {
                     </div>
             
                     <div className="feature-image">
-                        <img src={SC13} />
+                        <img src={movies_search_img} />
                     </div>
 
                 </div>
 
                 <div className="first-feature">
                     <div className="feature-image">
-                        <img src={SC7} />
+                        <img src={movies_page_img} />
                     </div>
 
                     <div className="feature-info">
@@ -109,7 +112,7 @@ function HomeTest() {
                         </div>   
                     </div>
                     <div className="feature-image">
-                        <img src={SC7} />
+                        <img src={watchlist_img} />
                     </div>
                 </div>
 
