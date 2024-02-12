@@ -2,7 +2,7 @@
     position: relative;
     background-image: linear-gradient(180deg, rgba(11, 29, 38, 0), #0b1d26 20%);
     z-index: 60;
-    margin:auto;
+    margin: auto;
 }
 
 :root {
@@ -11,10 +11,11 @@
     --thirdh-color: #fbd784;
   }
 
-  .home {
+.home {
     background-color: #0b1d26;
     box-shadow: 28px 28px 80px 0 rgba(11, 29, 38, 0.4);
     max-width: 1920px;
+    padding-bottom: 1rem;
 }
 
 .features {
