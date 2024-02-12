@@ -90,6 +90,11 @@
     line-height: 2rem;
 }
 
+.feature-body img {
+    width: 10rem;
+    height: 2rem;
+}
+
 .feature-info-footer a {
     text-decoration: none;
 }
