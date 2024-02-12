@@ -12,6 +12,7 @@ import ListOfWatchlistsTable from './ListOfWatchlistsTable.js';
 import { ThemeProvider } from '@mui/material/styles';
 import { muiTheme } from '../../css/MuiThemeProvider.js';
 import { getJwtTokenFromCookies } from '../../utils/authTokenUtils'
+import Footer from '../Footer.js';
 
 
 // List of Watchlists; states name of watchlist, its description, and how many movies inside
@@ -363,7 +364,9 @@ const handleCreateWatchlistDialogSubmit = async () => {
 
       </DialogActions>
     </Dialog>
-
+    <div className="home">
+        <Footer />
+    </div>
     </React.Fragment>
     </ThemeProvider>
   );

@@ -1,8 +1,10 @@
 .footer {
     width: 90%;
-    margin: 8rem auto 1rem auto;
+    margin: 3cqb auto 1rem auto;
     display: flex;
     justify-content: space-between;
+    background-color: #0b1d26;
+    padding-top: 2rem;
   }
 
 .footer-logo {

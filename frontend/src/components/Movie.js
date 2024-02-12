@@ -8,6 +8,7 @@ import AddIcon from '@mui/icons-material/Add';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PointOfSaleSharpIcon from '@mui/icons-material/PointOfSaleSharp';
 import MonetizationOnSharpIcon from '@mui/icons-material/MonetizationOnSharp';
+import Footer from './Footer.js';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -301,7 +302,7 @@ const MoviePage = () => {
     // RENDER COMPONENT
     return (
         <ThemeProvider theme={muiTheme}>
-        <React.Fragment>
+        <div className="home">
         <NavBar />
             <Snackbar
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
@@ -712,10 +713,10 @@ const MoviePage = () => {
 
                     </DialogActions>
                 </Dialog>
-
             </Dialog>
             )}
-        </React.Fragment>
+            <Footer/>
+        </div>
         </ThemeProvider>
   );
 };

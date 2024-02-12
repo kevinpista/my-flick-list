@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import MovieSearchBar from './MovieSearchBar.js';
 import MovieSearchResults from './MovieSearchResults';
+import Footer from './Footer.js';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { muiTheme } from '../css/MuiThemeProvider.js';
@@ -77,6 +78,7 @@ const MovieSearch = () => {
   // Renders No Results message if no movies found by TMDB API
     if (noMoviesFound) {
         return (
+            <div className="home">
             <div className='fullHeightWrapper'>
             <React.Fragment>
                 <NavBar />
@@ -100,11 +102,14 @@ const MovieSearch = () => {
                 </Container>
             </React.Fragment>
             </div>
+                <Footer />
+            </div>
         );
     };
         
     // RENDER COMPONENT
     return (
+        <div className="home">
         <div className='fullHeightWrapper'>
         <React.Fragment>
             <NavBar />
@@ -161,6 +166,8 @@ const MovieSearch = () => {
                 )}
             </Container>
         </React.Fragment>
+        </div>
+            <Footer />
         </div>
   );
 };
