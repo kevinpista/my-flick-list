@@ -40,7 +40,7 @@ function Footer() {
                 </div>
 
             <div className="footer-privacy">
-                <a href="#"> Copyright 2024 My Flick List, Inc. Terms & Privacy</a>
+                <a href="#"> Copyright © 2024 My Flick List, Inc. Terms & Privacy</a>
             </div>
             </div>
             <div className="lists">
@@ -59,7 +59,9 @@ function Footer() {
                 <div class="footer-section-2">
                     <div className="tmdb-footer-logo">
                     {/* Logo Icon + Name */}
-                    <img href="https://www.themoviedb.org/" target="_blank" src={tmdb_logo_long } />
+                    <a href="https://www.themoviedb.org/" target="_blank" >
+                        <img src={tmdb_logo_long } />
+                    </a>
                     </div>
                     <div className="tmdb-footer-body">
                         This web app uses TMDb API but is not endorsed or certified by TMDb.

@@ -9,6 +9,7 @@ import JwtTest from './components/JwtTest';
 import Watchlist from './components/watchlist/Watchlist';
 import ListOfWatchlists from './components/watchlist/ListOfWatchlists';
 import MovieSearch from './components/MovieSearch';
+import About from './components/About';
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route exact ={true} path="/watchlist" element={<ListOfWatchlists />} />
         <Route exact={true} path="/watchlist/:watchlistID" element={<Watchlist />} />        
         <Route path="/movie-search" element={<MovieSearch />} />
+        <Route path="/about" element={<About />} />
       </Routes>
     </BrowserRouter>
   );

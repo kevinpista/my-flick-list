@@ -1,0 +1,43 @@
+.about-wrapper {
+    background-color: #0b1d26;
+}
+
+.about-container {
+    min-height: 60vh;
+    text-align: center;
+    padding-top: 2rem;
+}
+
+.about-container h1 {
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: white;
+}
+
+.about-container h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white;
+    margin-top: 2rem;
+}
+
+.about-text {
+    width: 60%; 
+    display: block;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.about-text p {
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.about-text a {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.about-text img {
+    width: 12rem;
+}

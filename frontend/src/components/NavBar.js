@@ -105,6 +105,19 @@ function NavBar() {
             >
               Watchlists
             </Button>
+            <Button
+              onClick={() => navigate('/about')}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              About
+            </Button>
+
+            <Button
+              onClick={() => { window.open('https://github.com/kevinpista/my-flick-list', '_blank'); }}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Git Repo
+            </Button>
             {!isLoggedIn &&
               <Button
                 onClick={() => navigate('/user-login')}
@@ -113,13 +126,6 @@ function NavBar() {
                 Demo
               </Button>
             }
-
-            <Button
-              onClick={() => { window.open('https://github.com/kevinpista/my-flick-list', '_blank'); }}
-              sx={{ my: 2, color: 'white', display: 'block' }}
-            >
-              Git Repo
-            </Button>
           </Box>
 
           {/* Right side of nav */}
