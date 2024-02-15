@@ -1,0 +1,19 @@
+.demo-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.demo-container h3 {
+    font-size: 1.5rem;
+    margin-top: 1rem;
+    text-decoration: underline;
+}
+
+.demo-container h5 {
+    font-size: 0.6rem;
+}
+
+.demo-container p {
+    font-size: 1.1rem;
+}

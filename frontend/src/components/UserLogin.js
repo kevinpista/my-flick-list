@@ -10,15 +10,17 @@ import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import NavBar from './NavBar';
+import { Container, Typography, Button, Tooltip } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { ThemeProvider } from '@mui/material/styles';
 import { loginUser } from '../api/userLoginAPI';
 import * as errorConstants from '../api/errorConstants';
 import * as themeStyles from '../styling/ThemeStyles';
 import Alert from '@mui/material/Alert';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import '../css/UserLogin.css';
 
 function Copyright(props) {
     return (
@@ -46,6 +48,11 @@ export default function UserLogin() {
 
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [errorAlertMessage, setErrorAlertMessage] = useState('');
+
+  const demoEmail = 'demo@test.com';
+  const demoPassword = 'demo123!';
+
+  const [tooltipMessage, setTooltipMessage] = useState('Click to copy');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -114,6 +121,20 @@ export default function UserLogin() {
 
   };
 
+  const handleCopy = (text) => {
+    copyToClipboard(text);
+    setTooltipMessage('Copied!');
+    setTimeout(() => setTooltipMessage('Click to copy'), 1000);
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      // Clipboard writing successful
+    }, (err) => {
+      console.error('Failed to copy text:', err);
+    });
+  };
+
   return (
     <ThemeProvider theme={themeStyles.formTheme}>
       <NavBar/>
@@ -134,7 +155,7 @@ export default function UserLogin() {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: 4,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -200,7 +221,59 @@ export default function UserLogin() {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 5}} />
+        <Copyright sx={{ mt: 2.5}} />
+
+        <Box
+          sx={{
+            marginTop: 3,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            border: '2px solid #0b1d26',
+          }}
+        >
+          <div className="demo-container">
+            <h3>
+              Demo Account
+            </h3>
+            <h6>
+              Use these credentials to log in.
+            </h6>
+
+            <div className="demo-credentials">
+              <p style={{marginBottom: '12px'}}>
+                <b>Email:</b> {demoEmail}
+                <span style={{marginLeft: '10px'}}>
+                <CopyToClipboard text={demoEmail} onCopy={() => handleCopy(demoEmail)}>
+                <Tooltip title={tooltipMessage}>
+                  <Button 
+                    style={{maxWidth: '20px', maxHeight: '20px', minWidth: '20px', minHeight: '20px', padding: '10px', marginLeft: '0.30rem'}}
+                  >
+                    <ContentCopyIcon />
+                  </Button>
+                </Tooltip>
+                </CopyToClipboard>
+                </span>
+              </p>
+
+              <p>
+                <b style={{marginTop: '20px'}}>Password:</b> {demoPassword} 
+                <span style={{marginLeft: '10px'}}>
+                  <CopyToClipboard text={demoPassword} onCopy={() => handleCopy(demoPassword)}>
+                  <Tooltip title={tooltipMessage}>
+                    <Button 
+                      style={{maxWidth: '20px', maxHeight: '20px', minWidth: '20px', minHeight: '20px', padding: '10px', marginLeft: '1.2rem'}}
+                    >
+                      <ContentCopyIcon />
+                    </Button>
+                  </Tooltip>
+                  </CopyToClipboard>
+                </span>
+              </p>
+
+            </div>
+          </div>
+        </Box>
       </Container>
     </ThemeProvider>
   );
