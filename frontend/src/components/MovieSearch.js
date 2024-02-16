@@ -1,7 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import { Container, Paper, Typography, Button } from '@mui/material';
 import NavBar from './NavBar';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/MovieSearch.css';
 import { movieSearchTMDBAPI } from '../api/movieSearchTMDB';
 import { useLocation, useNavigate } from 'react-router-dom';

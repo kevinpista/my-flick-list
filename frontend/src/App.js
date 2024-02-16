@@ -1,16 +1,12 @@
 import {BrowserRouter, Route, Routes} from 'react-router-dom'; 
 import Home from './components/Home'
 import Movie from './components/Movie'
-import Test from './components/Test'
-import TestTwo from './components/TestTwo'
 import UserRegistration from './components/UserRegistration'
 import UserLogin from './components/UserLogin'
-import JwtTest from './components/JwtTest';
 import Watchlist from './components/watchlist/Watchlist';
 import ListOfWatchlists from './components/watchlist/ListOfWatchlists';
 import MovieSearch from './components/MovieSearch';
 import About from './components/About';
-
 
 function App() {
   return (
@@ -18,11 +14,8 @@ function App() {
       <Routes>
         <Route exact ={true} path="/" element={<Home />} />      
         <Route exact ={true} path="/movie/:movieID" element={<Movie />} />       
-        <Route path="/test" element={<Test />} />  
-        <Route exact ={true} path="/test-two" element={<TestTwo />} />  
         <Route exact ={true} path="/user-registration" element={<UserRegistration />} />                 
         <Route exact ={true} path="/user-login" element={<UserLogin />} />           
-        <Route exact ={true} path="/jwt-test" element={<JwtTest />} />
         <Route exact ={true} path="/watchlist" element={<ListOfWatchlists />} />
         <Route exact={true} path="/watchlist/:watchlistID" element={<Watchlist />} />        
         <Route path="/movie-search" element={<MovieSearch />} />
@@ -31,7 +24,4 @@ function App() {
     </BrowserRouter>
   );
 }
-
 export default App;
-
-//        <Route exact ={true} path="/watchlist" element={<ListOfWatchlists />} />     

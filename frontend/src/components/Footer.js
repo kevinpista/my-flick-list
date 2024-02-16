@@ -1,6 +1,3 @@
-
-
-import tmdb_logo from '../static/tmdb-short-logo.svg';
 import tmdb_logo_long from '../static/tmdb-logo-long.svg';
 
 import Typography from '@mui/material/Typography';

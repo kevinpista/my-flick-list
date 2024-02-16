@@ -3,14 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { motion, useScroll, useTransform } from "framer-motion";
 import '../css/Parallax.css';
-// import fullImage from '../static/image-full.png';
-import bottomImage from '../static/image-bottom.png';
+
 import { easeIn } from "framer-motion"
 
-// import SC7 from '../static/2.png';
 import MovieCollage from '../static/MovieCollage.png';
 import SC10 from '../static/high.png';
-// import SC13 from '../static/low4.png';
 import SC14 from '../static/wat.png';
 
 import Guy1 from '../static/Guy1.png';

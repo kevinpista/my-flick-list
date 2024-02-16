@@ -42,7 +42,7 @@ const Watchlist = () => {
     const fetchData = async () => {
       try {
         const response = await fetchWatchlistAndItemsAPI(watchlistID);
-        console.log(response)
+
         // Still want to render Name + Description if there are no items added yet
         if (response['watchlist-items'] === null) {
           setWatchlistName(response['name']);

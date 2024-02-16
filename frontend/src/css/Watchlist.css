@@ -36,16 +36,16 @@
 .watchlist-root {
   display: flex;
   /* gap: 20px; /* Gap between buttons table & container div */
-  align-items: flex-start; /* Align items at the(top) of the flex  div */
+  align-items: flex-start;
 }
 
 .watchlist-buttons-table {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Gap between buttons */
-  justify-content: center; /* Center items vertically within the table */
-  margin: auto; /* Center the container horizontally within parent */
-  margin-top: 9%; /* Place buttons always fixed towards top of page */
+  gap: 10px;
+  justify-content: center;
+  margin: auto;
+  margin-top: 9%; 
   padding: 20px;
   min-width: 18%;
 }

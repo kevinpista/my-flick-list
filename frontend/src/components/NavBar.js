@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import Container from 'react-bootstrap/Container';
-// import Nav from 'react-bootstrap/Nav';
-// import Navbar from 'react-bootstrap/Navbar';
-// import '../css/NavBar.css'; // Import the CSS file
+
 import { removeTokenFromCookie, getJwtTokenFromCookies } from '../utils/authTokenUtils';
 
 import { ThemeProvider } from '@mui/material/styles';
