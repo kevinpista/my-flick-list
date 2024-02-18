@@ -12,7 +12,6 @@ type GenreService struct {
     Genre models.Genre
 }
 
-// TODO - Genre data is taken from 3rd party data base. Handle case where 3rd party DB does not have genre data
 func (c *GenreService) GetGenreByMovieID(id int) (*models.Genre, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()

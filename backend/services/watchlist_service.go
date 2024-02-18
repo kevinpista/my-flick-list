@@ -189,7 +189,6 @@ func (c *WatchlistService) GetWatchlistsByUserIDWithMovieIDCheck(userID uuid.UUI
 	return watchlists, nil
 }
 
-// TODO possibly remove id from query as we don't need that
 func (c *WatchlistService) GetWatchlistByID(id int) (*models.Watchlist, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()

@@ -14,53 +14,6 @@ import (
 )
 
 var watchlistItem services.WatchlistItemService
-/* testing purposes only 
-// GET/watchlist-items?watchlistID={watchlistID} -- only returns the movie_id within each watchlist-item -- testing purposes only
-func GetAllWatchlistItemsByWatchListID(w http.ResponseWriter, r *http.Request) {
-    watchlistID := r.URL.Query().Get("watchlistID")
-
-	// Check if watchlistID is empty or not provided in the URL
-	if watchlistID == "" {
-		http.Error(w, "watchlistID parameter is missing", http.StatusBadRequest)
-		return
-	}
-	watchlistIDInt, err := strconv.Atoi(watchlistID)
-	if err != nil {
-		helpers.MessageLogs.ErrorLog.Println(err)
-		helpers.ErrorJSON(w, errors.New("watchlistID parameter must be an integer"), http.StatusBadRequest)
-		return
-	}
-	// Check if the particular watchlist even exists in the watchlist DB table
-	exists, err := watchlistItem.CheckIfWatchlistExists(watchlistIDInt)
-	if err != nil {
-		helpers.MessageLogs.ErrorLog.Println(err)
-		helpers.ErrorJSON(w, err, http.StatusBadRequest)
-		return
-	}
-
-	if !exists {
-		helpers.MessageLogs.ErrorLog.Println("Queried watchlist not found in DB")
-		helpers.ErrorJSON(w, errors.New("watchlist not found"), http.StatusBadRequest)
-		return
-	}
-
-	// Service function call
-	all, err := watchlistItem.GetAllWatchlistItemsByWatchlistID(watchlistIDInt)
-	if err != nil {
-		helpers.MessageLogs.ErrorLog.Println(err)
-		helpers.ErrorJSON(w, err, http.StatusBadRequest)
-		return
-	}
-
-	// Watchlist may have no items. Services will return "null"
-	if all == nil {
-		helpers.MessageLogs.ErrorLog.Println("Watchlist has no watchlist_items")
-		helpers.WriteJSON(w, http.StatusNoContent, helpers.Envelope{})
-		return
-	}
-	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlist-items": all})
-}
-*/
 
 // GET/watchlist-items-with-movies?watchlistID={watchlistID} 
 // -- returns watchlist title and description + full movie_data for each watchlist-item
@@ -217,14 +170,6 @@ func CreateWatchlistItemByWatchlistID(w http.ResponseWriter, r *http.Request) {
 	// Service function call to create watchlist_item and link to movie from local database. If movie in DB, query TMDB API for the movie to add, then link.
 	watchlistItemCreated, err := watchlistItemData.CreateWatchlistItemByWatchlistID(watchlistItemData.WatchlistItem)
 	if err != nil {
-		/*
-		movieNotInDataBase := strings.Contains(strings.ToLower(err.Error()), "watchlist_item_movie_id_fkey")
-		if movieNotInDataBase {
-			helpers.MessageLogs.ErrorLog.Println("Movie data with this ID not yet added to DB")
-			helpers.ErrorJSON(w, errors.New("movie not yet added to database "), http.StatusBadRequest)
-			return
-		} 
-		*/
 		helpers.MessageLogs.ErrorLog.Println(err)
 		helpers.ErrorJSON(w, err, http.StatusBadRequest)
 		return

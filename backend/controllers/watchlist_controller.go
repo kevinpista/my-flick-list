@@ -27,32 +27,6 @@ func GetAllWatchlists(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlists": all})
 }
 
-/* Original GET endpoint that does not return watchlist_item count
-// GET/watchlists-by-user-id - user_id fetched from JWT token - returns list of watchlists.
-// Used for watchlist page
-func GetWatchlistsByUserID(w http.ResponseWriter, r *http.Request) {
-	// Verify JWT token sent in by user and fetch their UserID
-	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)
-	if tokenErr != nil {
-		helpers.ErrorJSON(w, tokenErr, http.StatusUnauthorized) // tokenErr will be a errors.New(error_constants) object
-		return
-	}
-
-	results, err := watchlist.GetAllWatchlistsByUserID(userID)
-	if err != nil {
-		helpers.MessageLogs.ErrorLog.Println(err)
-		return
-	}
-
-	// User may not have any watchlists yet. Services wil return "null"
-	if results == nil {
-		helpers.MessageLogs.ErrorLog.Println("User has no watchlists created yet")
-		helpers.WriteJSON(w, http.StatusNoContent, helpers.Envelope{})
-		return
-	}
-	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"watchlists": results})
-}
-*/
 
 // GET/watchlists-by-user-id : user_id fetched from JWT token - returns list of watchlists along with item count for each
 // Used for list of watchlists page
@@ -155,7 +129,6 @@ func CreateWatchlist(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Checks for empty or invalid names + descriptions & trim trailing space
-
 	watchlistData.Watchlist.Name = strings.TrimSpace(watchlistData.Watchlist.Name)
 	if watchlistData.Watchlist.Name == "" {
 		helpers.MessageLogs.ErrorLog.Println("empty watchlist name field")
