@@ -7,12 +7,12 @@ import '../css/Parallax.css';
 import { easeIn } from "framer-motion"
 
 import MovieCollage from '../static/MovieCollage.png';
-import SC10 from '../static/high.png';
-import SC14 from '../static/wat.png';
+// import SC10 from '../static/high.png';
+// import SC14 from '../static/wat.png';
 
-import Guy1 from '../static/Guy1.png';
-import Guy2 from '../static/Guy2.png';
-import Crowd1 from '../static/Crowd1.png'; // close to content
+// import Guy1 from '../static/Guy1.png';
+//import Guy2 from '../static/Guy2.png';
+// import Crowd1 from '../static/Crowd1.png'; // close to content
 import Crowd from '../static/Crowd5.png';
 
 
