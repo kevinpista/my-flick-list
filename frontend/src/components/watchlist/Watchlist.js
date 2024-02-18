@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Paper, Typography } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import NavBar from '../NavBar.js';
@@ -37,6 +37,7 @@ const Watchlist = () => {
   const [errorAlertOpen, setErrorAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,6 +56,9 @@ const Watchlist = () => {
         }
       } catch (error) {
         setError(error);
+        if (error.message === 'TokenMissing' || error.message === 'token_expired') { 
+          navigate('/user-login');
+        }
         if (error.message === errorConstants.ERROR_BAD_REQUEST) {
           handleErrorAlertOpen(`Request failed: ${error.message}`);
         } else {
@@ -81,6 +85,9 @@ const handleDeleteWatchlistItem = async (watchlistItemId) => {
       handleSuccessAlertOpen('Movie successfully deleted.');
     }
   } catch (error) {
+    if (error.message === 'TokenMissing' || error.message === 'token_expired') { 
+      navigate('/user-login');
+    }
     handleErrorAlertOpen(`Error deleting movie: ${error}`);
     console.error('Error deleting movie:', error);
   }
@@ -106,6 +113,9 @@ const handleEditNameDialogSubmit = async () => {
       handleSuccessAlertOpen('Name successfully updated.');
     }
   } catch (error) {
+    if (error.message === 'TokenMissing' || error.message === 'token_expired') { 
+          navigate('/user-login');
+    }
     if (error.message === errorConstants.ERROR_INVALID_NAME) {
       setDialogErrorMessage('Error: Name cannot be empty.');
     } else if (error.message === errorConstants.ERROR_BAD_REQUEST) {
@@ -135,6 +145,9 @@ const handleEditDescriptionDialogSubmit = async () => {
       handleSuccessAlertOpen('Description successfully updated.');
     }
   } catch (error) {
+    if (error.message === 'TokenMissing' || error.message === 'token_expired') { 
+      navigate('/user-login');
+    }
     if (error.message === errorConstants.ERROR_INVALID_NAME) {
       setDialogErrorMessage('Error: Description cannot be empty.');
     } else if (error.message === errorConstants.ERROR_BAD_REQUEST) {

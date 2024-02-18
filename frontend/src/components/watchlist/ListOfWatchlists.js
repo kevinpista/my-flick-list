@@ -44,9 +44,8 @@ const ListOfWatchlists = () => {
       if (error.message === errorConstants.ERROR_BAD_REQUEST) {
         console.log('Bad request');
         setError(Error('Bad request. Try again'));
-    }
-    else if (error.message === errorConstants.TOKEN_EXPIRED) {
-        console.error('Token expired!!!');
+    } else if (error.message === errorConstants.TOKEN_EXPIRED) {
+        console.error('Token expired!');
         setError(Error('Token expired or missing. Redirecting you to login ... '));
         setTimeout(() => {
           navigate('/user-login');
@@ -85,13 +84,9 @@ const handleDeleteWatchlist = async (watchlistID) => {
   } catch (error) {
     if (error.message === errorConstants.ERROR_BAD_REQUEST) {
       console.error('Bad request:', error);
-    } 
-    else if (error.message === errorConstants.TOKEN_EXPIRED) {
+    } else if (error.message === 'TokenMissing' || error.message === errorConstants.TOKEN_EXPIRED) {
       console.error('Token expired!!!');
-      setError(Error('Token expired or missing. Redirecting you to login ... '));
-      setTimeout(() => {
-        navigate('/user-login');
-      }, 2500); // Redirect to login
+      navigate('/user-login');
     } else {
       console.error('An unexpected error occured');
     }
@@ -124,6 +119,9 @@ const handleCreateWatchlistDialogSubmit = async () => {
     if (error.message === errorConstants.ERROR_BAD_REQUEST) {
       setLoading(false)
       setDialogErrorMessage('Error: Bad request. Please try again.');
+    } else if (error.message === 'TokenMissing' || error.message === errorConstants.TOKEN_EXPIRED) {
+      console.error('Token expired!!!');
+      navigate('/user-login');
     } else {
       setLoading(false)
       setDialogErrorMessage(`Error: ${error.message}`);

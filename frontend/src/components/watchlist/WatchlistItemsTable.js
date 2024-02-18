@@ -6,6 +6,7 @@ import { getJwtTokenFromCookies } from '../../utils/authTokenUtils';
 import { editWatchlistItemNoteAPI, createWatchlistItemNoteAPI } from '../../api/watchlistAPI';
 import * as errorConstants from '../../api/errorConstants';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Typography } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -46,13 +47,15 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   const [editRowsModel, setEditRowsModel] = useState({});
   const [selectedWatchlistItemId, setSelectedWatchlistItemId] = useState(null);
 
+  const navigate = useNavigate();
+
   const handleToWatchClick = async (event, row) => {
     event.stopPropagation();
     try {
       const token = getJwtTokenFromCookies();
       if (!token) {
-        console.error('Token not available or expired');
-        return Promise.reject('Token not available or expired');
+        console.error('Token expired!!!');
+        navigate('/user-login');
       }
   
       const headers = {
@@ -159,6 +162,9 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     } catch (error) {
     if (error.message === errorConstants.ERROR_BAD_REQUEST) {
         setDialogNoteErrorMessage('Bad request, please try again.');
+      } else if (error.message === 'TokenMissing' || error.message === errorConstants.TOKEN_EXPIRED) {
+        console.error('Token expired!!!');
+        navigate('/user-login');
       } else {
         setDialogNoteErrorMessage(`Error creating note: ${error.message}`);
       }
@@ -187,6 +193,9 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
     } catch (error) {
     if (error.message === errorConstants.ERROR_BAD_REQUEST) {
         setDialogNoteErrorMessage('Bad request, please try again.');
+      } else if (error.message === 'TokenMissing' || error.message === errorConstants.TOKEN_EXPIRED) {
+        console.error('Token expired!!!');
+        navigate('/user-login');
       } else {
         setDialogNoteErrorMessage(`Error updating note: ${error.message}`);
       }

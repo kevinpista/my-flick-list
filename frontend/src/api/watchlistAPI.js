@@ -11,9 +11,8 @@ export function fetchWatchlistAndItemsAPI (watchlistID) {
     const token = getJwtTokenFromCookies();
     if (!token) {
         console.error('Token not available or expired');
-        // For now, will use a Promise.reject method instead of redirect
-        return Promise.reject('Token not available or expired');
-        }
+        throw new Error('TokenMissing');
+    }
 
     const headers = {
         Authorization: `Bearer ${token}`,
@@ -47,9 +46,8 @@ export function deleteWatchlistItemAPI (watchlistItemID) {
     const token = getJwtTokenFromCookies();
     if (!token) {
         console.error('Token not available or expired');
-        // For now, will use a Promise.reject method instead of redirect
-        return Promise.reject('Token not available or expired');
-        }
+        throw new Error('TokenMissing');
+    }
 
     const headers = {
         Authorization: `Bearer ${token}`,
@@ -83,9 +81,8 @@ export function fetchWatchlistsAPI () {
     const token = getJwtTokenFromCookies();
     if (!token) {
         console.error('Token not available or expired');
-        // For now, will use a Promise.reject method instead of redirect
-        return Promise.reject('Token not available or expired');
-        }
+        throw new Error('TokenMissing');
+    }
 
     const headers = {
         Authorization: `Bearer ${token}`,
@@ -151,7 +148,7 @@ export function deleteWatchlistAPI (watchlistID) {
     if (!token) {
         console.error('Token not available or expired');
         // For now, will use a Promise.reject method instead of redirect
-        return Promise.reject('Token not available or expired');
+        throw new Error('TokenMissing');
         }
 
     const headers = {
@@ -186,9 +183,8 @@ export function editWatchlistNameAPI (watchlistID, newWatchlistName) {
     const token = getJwtTokenFromCookies();
     if (!token) {
         console.error('Token not available or expired');
-        // For now, will use a Promise.reject method instead of redirect
-        return Promise.reject('Token not available or expired');
-        }
+        throw new Error('TokenMissing');
+    }
 
     const headers = {
         Authorization: `Bearer ${token}`,
@@ -225,9 +221,8 @@ export function editWatchlistDescriptionAPI (watchlistID, newWatchlistDescriptio
     const token = getJwtTokenFromCookies();
     if (!token) {
         console.error('Token not available or expired');
-        // For now, will use a Promise.reject method instead of redirect
-        return Promise.reject('Token not available or expired');
-        }
+        throw new Error('TokenMissing');
+    }
 
     const headers = {
         Authorization: `Bearer ${token}`,
@@ -263,9 +258,8 @@ export function createWatchlistAPI(newWatchlistName, newWatchlistDescription) {
     const token = getJwtTokenFromCookies();
     if (!token) {
         console.error('Token not available or expired');
-        // For now, will use a Promise.reject method instead of redirect
-        return Promise.reject('Token not available or expired');
-        }
+        throw new Error('TokenMissing');
+    }
 
     const headers = {
         Authorization: `Bearer ${token}`,
@@ -300,9 +294,8 @@ export function addWatchlistItemAPI(watchlistID, movieID) {
     const token = getJwtTokenFromCookies();
     if (!token) {
         console.error('Token not available or expired');
-        // For now, will use a Promise.reject method instead of redirect
-        return Promise.reject('Token not available or expired');
-        }
+        throw new Error('TokenMissing');
+    }
 
     const headers = {
         Authorization: `Bearer ${token}`,
@@ -341,9 +334,8 @@ export function createWatchlistItemNoteAPI (watchlistItemId, newItemNote) {
     const token = getJwtTokenFromCookies();
     if (!token) {
         console.error('Token not available or expired');
-        // For now, will use a Promise.reject method instead of redirect
-        return Promise.reject('Token not available or expired');
-        }
+        throw new Error('TokenMissing');
+    }
 
     const headers = {
         Authorization: `Bearer ${token}`,
@@ -377,9 +369,8 @@ export function editWatchlistItemNoteAPI (watchlistItemId, editedItemNote) {
     const token = getJwtTokenFromCookies();
     if (!token) {
         console.error('Token not available or expired');
-        // For now, will use a Promise.reject method instead of redirect
-        return Promise.reject('Token not available or expired');
-        }
+        throw new Error('TokenMissing');
+    }
 
     const headers = {
         Authorization: `Bearer ${token}`,
