@@ -17,7 +17,7 @@ import * as errorConstants from '../api/errorConstants';
 import * as themeStyles from '../styling/ThemeStyles';
 import Alert from '@mui/material/Alert';
 import LoadingButton from '@mui/lab/LoadingButton';
-
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 
 function Copyright(props) {
   return (
@@ -206,9 +206,21 @@ export default function UserRegistration() {
                     </Link>
                     </Grid>
                 </Grid>
+                <Grid container justifyContent="center">
+                    <Grid item 
+                        style={{marginTop: "12px"}}
+                    >
+                    <Link 
+                    href="http://localhost:3000/user-login" 
+                    variant="body2"
+                    >
+                        Demo account<ArrowRightAltIcon/>
+                    </Link>
+                    </Grid>
+                </Grid>
                 </Box>
             </Box>
-            <Copyright sx={{ mt: 5 }} />
+            <Copyright sx={{ mt: 3 }} />
             </Container>
         </ThemeProvider>
     );

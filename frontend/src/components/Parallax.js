@@ -24,7 +24,7 @@ function Parallax() {
   const navigate = useNavigate();
 
   const handleGetStartedClick = () => {
-    navigate('/user-registration')
+    navigate('/user-login')
   };
 
   const ref = useRef(null);
