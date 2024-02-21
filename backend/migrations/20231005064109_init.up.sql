@@ -39,7 +39,7 @@ CREATE TABLE movie (
 CREATE TABLE watchlist (
   id SERIAL PRIMARY KEY,
   users_id UUID REFERENCES users(id), 
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(60) NOT NULL,
   description TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

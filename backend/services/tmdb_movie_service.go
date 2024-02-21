@@ -6,6 +6,7 @@ import (
 	"errors"
 	"context"
 	"time"
+	"os"
 
 	"github.com/kevinpista/my-flick-list/backend/models"
 
@@ -19,7 +20,8 @@ type TMDBMovieService struct {
 
 // GET request to TMDB API. Query is the {movie_id}
 func (c *TMDBMovieService) TMDBGetMovieByID(query string) (*models.TMDBMovie, error) {
-	apiUrl := baseMovieAPIUrl + query + "?api_key=" + APIKey
+	tmdbAPIKey := os.Getenv("APIKey")
+	apiUrl := baseMovieAPIUrl + query + "?api_key=" + tmdbAPIKey
 	// Send GET request to TMDB
 	resp, err := http.Get(apiUrl)
 	if err != nil {
@@ -66,7 +68,8 @@ func (c *TMDBMovieService) TMDBGetMovieByID(query string) (*models.TMDBMovie, er
 // Received movie data from TMDB API is decoded into a models.TMDBMovieDatabaseEntry struct which was required to accomodate for TMDB's json name
 // field difference of 'Rating' and 'Votes'. Also adds genre into 'genre' table.
 func (c *TMDBMovieService) TMDBGetMovieByIDAddToLocalDatabase(movieID string) (error) {
-	apiUrl := baseMovieAPIUrl + movieID + "?api_key=" + APIKey
+	tmdbAPIKey := os.Getenv("APIKey")
+	apiUrl := baseMovieAPIUrl + movieID + "?api_key=" + tmdbAPIKey
 	// Send GET request to TMDB
 	resp, err := http.Get(apiUrl)
 	if err != nil {
@@ -180,7 +183,8 @@ func (c *TMDBMovieService) TMDBGetMovieByIDAddToLocalDatabase(movieID string) (e
 
 // GET request to TMDB API. Query is the {movie_id} - returns the YouTube video ID which is stored as "key" in the model
 func (c *TMDBMovieService) TMDBGetMovieTrailerByID(query string) (*string, error) {
-	apiUrl := baseMovieAPIUrl + query + "/videos" + "?api_key=" + APIKey
+	tmdbAPIKey := os.Getenv("APIKey")
+	apiUrl := baseMovieAPIUrl + query + "/videos" + "?api_key=" + tmdbAPIKey
 
 	// Send GET request to TMDB
 	resp, err := http.Get(apiUrl)

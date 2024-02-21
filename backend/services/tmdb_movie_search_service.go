@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"errors"
+	"os"
 
 	
 	"github.com/kevinpista/my-flick-list/backend/models"
@@ -14,7 +15,8 @@ type TMDBMovieSearchService struct {
 }
 
 func (c *TMDBMovieSearchService) TMDBSearchMovieByKeywords(query string, page string) (*models.TMDBSearchResponse, error) {
-	apiUrl := baseAPIUrl + query + "&api_key=" + APIKey + "&page=" + page
+	tmdbAPIKey := os.Getenv("APIKey")
+	apiUrl := baseAPIUrl + query + "&api_key=" + tmdbAPIKey + "&page=" + page
 	// Send GET request to TMDB
 	resp, err := http.Get(apiUrl)
 	if err != nil {

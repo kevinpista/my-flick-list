@@ -9,7 +9,7 @@ import (
     "github.com/kevinpista/my-flick-list/backend/db"
 	"github.com/kevinpista/my-flick-list/backend/services"
 	"github.com/kevinpista/my-flick-list/backend/router"
-	"github.com/joho/godotenv"
+	// github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -22,10 +22,12 @@ type Application struct{
 }
 
 func (app *Application) Serve() error {
+	/*
 	err := godotenv.Load()
 	if err != nil{
 		log.Fatal("Error loading .env file")
 	}
+	*/
 	port := os.Getenv("PORT")
 	fmt.Println("Backend server is now listening on port", port)
 
@@ -37,16 +39,18 @@ func (app *Application) Serve() error {
 }
 
 func main () {
+	/*
 	err := godotenv.Load()
 	if err != nil{
 		log.Fatal("Error loading .env file")
 	}
+	*/
 
 	cfg := Config {
 		Port: os.Getenv("PORT"),
 	}
 
-	dsn := os.Getenv("DSN")
+	dsn := os.Getenv("DSN") ///
     dbConn, err := db.ConnectPostgres(dsn)
     if err != nil {
         log.Fatal("Cannot connect to database")

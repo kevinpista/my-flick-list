@@ -4,6 +4,7 @@ node_modules
 
 /backend/services/tmdb_constants.go
 
+testing
 
 /src/components/Test.js
 /src/components/TestTwo.js
