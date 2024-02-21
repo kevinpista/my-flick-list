@@ -3,8 +3,10 @@
 import axios from 'axios';
 import { extractTokenFromHeader, setTokenInCookie } from '../utils/authTokenUtils'
 
+const apiUrl = process.env.REACT_APP_API_URL; // Backend API URL loaded via environment variable
+
 export function registerUser(formData) {
-return axios.post('http://localhost:8080/api/user-registration', formData)
+return axios.post(`${apiUrl}/api/user-registration`, formData)
     .then(response => { // this block of code gets executed of status code is a 2xx code
         // Set JWT token in user's cookies
         const token = extractTokenFromHeader(response);

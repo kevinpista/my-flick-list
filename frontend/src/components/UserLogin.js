@@ -214,7 +214,7 @@ export default function UserLogin() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="http://localhost:3000/user-registration" variant="body2">
+                <Link href="https://myflicklist-fa78f7f017a1.herokuapp.com/user-registration" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>

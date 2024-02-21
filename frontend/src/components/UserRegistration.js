@@ -201,7 +201,7 @@ export default function UserRegistration() {
                 </LoadingButton>
                 <Grid container justifyContent="center">
                     <Grid item>
-                    <Link href="http://localhost:3000/user-login" variant="body2">
+                    <Link href="https://myflicklist-fa78f7f017a1.herokuapp.com/user-login" variant="body2">
                         Already have an account? Sign in
                     </Link>
                     </Grid>
@@ -211,7 +211,7 @@ export default function UserRegistration() {
                         style={{marginTop: "12px"}}
                     >
                     <Link 
-                    href="http://localhost:3000/user-login" 
+                    href="https://myflicklist-fa78f7f017a1.herokuapp.com/user-login" 
                     variant="body2"
                     >
                         Demo account<ArrowRightAltIcon/>

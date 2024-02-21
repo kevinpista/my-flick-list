@@ -3,6 +3,7 @@
 import axios from 'axios';
 import { getJwtTokenFromCookies } from '../utils/authTokenUtils'
 
+const apiUrl = process.env.REACT_APP_API_URL; // Backend API URL loaded via environment variable
 
 // Returns watchlist name, description and its watchlist items
 // router.GET("/api/watchlist-items-with-movies, controllers.GetAllWatchlistItemsWithMoviesByWatchListID) 
@@ -17,8 +18,7 @@ export function fetchWatchlistAndItemsAPI (watchlistID) {
     const headers = {
         Authorization: `Bearer ${token}`,
     };
-    
-    return axios.get('http://localhost:8080/api/watchlist-items-with-movies', {
+    return axios.get(`${apiUrl}/api/watchlist-items-with-movies`, {
         headers, 
         params: {
             watchlistID: watchlistID,
@@ -53,7 +53,7 @@ export function deleteWatchlistItemAPI (watchlistItemID) {
         Authorization: `Bearer ${token}`,
     };
     
-    return axios.delete('http://localhost:8080/api/watchlist-item', {
+    return axios.delete(`${apiUrl}/api/watchlist-item`, {
         headers, 
         params: {
             id: watchlistItemID,
@@ -87,8 +87,7 @@ export function fetchWatchlistsAPI () {
     const headers = {
         Authorization: `Bearer ${token}`,
     };
-    
-    return axios.get('http://localhost:8080/api/watchlists-by-user-id', { headers })
+    return axios.get(`${apiUrl}/api/watchlists-by-user-id`, { headers })
         .then(response => {
             return response; // Returning entire response so that component can check status code
         })
@@ -119,7 +118,7 @@ export function fetchWatchlistsByUserIDWithMovieIDCheckAPI (movieID) {
         Authorization: `Bearer ${token}`,
     };
     
-    const url = `http://localhost:8080/api/watchlists/movie/${movieID}`
+    const url = `${apiUrl}/api/watchlists/movie/${movieID}`
     return axios.get(url, { headers })
         .then(response => {
             if (response.status === 204) {
@@ -154,8 +153,7 @@ export function deleteWatchlistAPI (watchlistID) {
     const headers = {
         Authorization: `Bearer ${token}`,
     };
-    
-    return axios.delete('http://localhost:8080/api/watchlist', {
+    return axios.delete(`${apiUrl}/api/watchlist`, {
         headers, 
         params: {
             id: watchlistID,
@@ -189,7 +187,7 @@ export function editWatchlistNameAPI (watchlistID, newWatchlistName) {
     const headers = {
         Authorization: `Bearer ${token}`,
     };
-    const url = 'http://localhost:8080/api/watchlist-name';
+    const url = `${apiUrl}/api/watchlist-name`;
     const params = {
         id: watchlistID,
     };
@@ -227,7 +225,7 @@ export function editWatchlistDescriptionAPI (watchlistID, newWatchlistDescriptio
     const headers = {
         Authorization: `Bearer ${token}`,
     };
-    const url = 'http://localhost:8080/api/watchlist-description';
+    const url = `${apiUrl}/api/watchlist-description`;
     const params = {
         id: watchlistID,
     };
@@ -251,7 +249,7 @@ export function editWatchlistDescriptionAPI (watchlistID, newWatchlistDescriptio
         });
     }
 
-// router.Post("/api/watchlists", controllers.CreateWatchlist)    // POST a watchlist; user_id retrieved from JWT token
+// router.Post("/api/watchlist", controllers.CreateWatchlist)    // POST a watchlist; user_id retrieved from JWT token
 // Watchlist data passed in json body. Returns {message: "Watchlist created successfully!"}.
 export function createWatchlistAPI(newWatchlistName, newWatchlistDescription) {
     // Fetch the user's stored JWT token from cookies
@@ -265,7 +263,7 @@ export function createWatchlistAPI(newWatchlistName, newWatchlistDescription) {
         Authorization: `Bearer ${token}`,
     };
 
-    const url = 'http://localhost:8080/api/watchlist';
+    const url = `${apiUrl}/api/watchlist`;
 
     const data = {
         'name': newWatchlistName,
@@ -301,7 +299,7 @@ export function addWatchlistItemAPI(watchlistID, movieID) {
         Authorization: `Bearer ${token}`,
     };
 
-    const url = 'http://localhost:8080/api/watchlist-item';
+    const url = `${apiUrl}/api/watchlist-item`;
 
     const parsedMovieID = parseInt(movieID, 10); // Convert string movieID into an int for backend 
     const data = {
@@ -340,7 +338,7 @@ export function createWatchlistItemNoteAPI (watchlistItemId, newItemNote) {
     const headers = {
         Authorization: `Bearer ${token}`,
     };
-    const url = 'http://localhost:8080/api/watchlist-item-note';
+    const url = `${apiUrl}/api/watchlist-item-note`;
     const data = {
         'watchlist_item_id': watchlistItemId,
         'item_notes': newItemNote,
@@ -375,7 +373,7 @@ export function editWatchlistItemNoteAPI (watchlistItemId, editedItemNote) {
     const headers = {
         Authorization: `Bearer ${token}`,
     };
-    const url = 'http://localhost:8080/api/watchlist-item-note';
+    const url = `${apiUrl}/api/watchlist-item-note`;
     const data = {
         'watchlist_item_id': watchlistItemId,
         'item_notes': editedItemNote,

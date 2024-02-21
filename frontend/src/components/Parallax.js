@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -15,6 +15,7 @@ import MovieCollage from '../static/MovieCollage.png';
 // import Crowd1 from '../static/Crowd1.png'; // close to content
 import Crowd from '../static/Crowd5.png';
 
+import { getJwtTokenFromCookies } from '../utils/authTokenUtils';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { muiTheme } from '../css/MuiThemeProvider.js';
@@ -26,6 +27,11 @@ function Parallax() {
   const handleGetStartedClick = () => {
     navigate('/user-login')
   };
+
+  const handleSearchMoviesClick = () => {
+    navigate('/movie-search')
+  };
+  const [isLoggedIn, setIsLoggedIn] = useState(getJwtTokenFromCookies() !== undefined);
 
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -80,19 +86,35 @@ function Parallax() {
           <p>
             Create endless watchlists of your favorite movies, add notes, and track when you finish watching.
           </p>
-          <Button
-            variant="contained"
-            onClick={handleGetStartedClick}
-            back="primary"
-            sx={{
-              boxShadow: `0px 0px 2px rgba(255, 255, 255, 1),
-                          0px 0px 6px rgba(255, 255, 255, 0.1),
-                          0px 0px 10px rgba(255, 255, 255, 0.05)`,
-              border: `1px solid rgba(255, 255, 255, 0.25)`,
+          {isLoggedIn ? (
+            <Button
+              variant="contained"
+              onClick={handleSearchMoviesClick}
+              back="primary"
+              sx={{
+                boxShadow: `0px 0px 2px rgba(255, 255, 255, 1),
+                            0px 0px 6px rgba(255, 255, 255, 0.1),
+                            0px 0px 10px rgba(255, 255, 255, 0.05)`,
+                border: `1px solid rgba(255, 255, 255, 0.25)`,
+            }}
+          >
+            Search Movies
+          </Button>
+          ) : (
+            <Button
+              variant="contained"
+              onClick={handleGetStartedClick}
+              back="primary"
+              sx={{
+                boxShadow: `0px 0px 2px rgba(255, 255, 255, 1),
+                            0px 0px 6px rgba(255, 255, 255, 0.1),
+                            0px 0px 10px rgba(255, 255, 255, 0.05)`,
+                border: `1px solid rgba(255, 255, 255, 0.25)`,
             }}
           >
             Get Started
           </Button>
+          )}
         </motion.div>
 
         <motion.img

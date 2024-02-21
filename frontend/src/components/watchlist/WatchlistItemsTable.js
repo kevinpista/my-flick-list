@@ -47,6 +47,8 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
   const [editRowsModel, setEditRowsModel] = useState({});
   const [selectedWatchlistItemId, setSelectedWatchlistItemId] = useState(null);
 
+  const apiUrl = process.env.REACT_APP_API_URL; // Backend API URL loaded via environment variable
+
   const navigate = useNavigate();
 
   const handleToWatchClick = async (event, row) => {
@@ -61,9 +63,8 @@ const WatchlistItemsTable = ({ watchlistItems, onDeleteWatchlistItem, setWatchli
       const headers = {
         Authorization: `Bearer ${token}`,
       };
-  
       const response = await axios.put(
-        `http://localhost:8080/api/watchlist-item-checkmarked?id=${row.id}`, // row.id is the watchlistItemID
+        `${apiUrl}/api/watchlist-item-checkmarked?id=${row.id}`, // row.id is the watchlistItemID
         { checkmarked: !row.toWatch },
         { headers }
       );
