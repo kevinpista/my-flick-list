@@ -2,6 +2,7 @@ package tokens
 
 import (
     "time"
+    "os"
 
     "github.com/golang-jwt/jwt/v4"
     "github.com/google/uuid"
@@ -14,8 +15,8 @@ type Claims struct {
     jwt.RegisteredClaims
 }
 
-// TODO - Secret key for signing tokens -- will load from environment variable
-var jwtSecret = []byte("custom_secret_key_change_later")
+var JWT_SECRET_KEY = os.Getenv("JWT_SECRET_KEY")
+var jwtSecret = []byte(JWT_SECRET_KEY)
 
 // Generate a new JWT token
 func GenerateToken(userID uuid.UUID) (string, error) {
