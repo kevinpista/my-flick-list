@@ -20,7 +20,7 @@
     <br />
   </p>
   <p>
-    This project implements a Go backend and a React.js frontend with the <a href="#mvc-implementation">Model-View-Controller (MVC)</a> architecture pattern. Additionally, it utilizes a Heroku PostgreSQL
+    This project implements a Go backend and a React.js frontend with the <a href="#Model--View--Controller-Implementation">Model-View-Controller (MVC)</a> architecture pattern. Additionally, it utilizes a Heroku PostgreSQL
     database and is fully hosted on Heroku. 
   </p>
   
