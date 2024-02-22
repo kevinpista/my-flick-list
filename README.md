@@ -20,7 +20,8 @@
     <br />
   </p>
   <p>
-    This project utilizes a Go backend along with a React.js frontend and is hosted on Heroku. 
+    This project implements a Go backend and a React.js frontend with the <a href="#mvc-implementation">Model-View-Controller (MVC)</a> architecture pattern. Additionally, it utilizes a Heroku PostgreSQL
+    database and is fully hosted on Heroku. 
   </p>
   
   <p>
@@ -28,7 +29,7 @@
   </p>
   
   <p>
-     <a href="https://myflicklist-fa78f7f017a1.herokuapp.com/">>> View Demo <<< </a>
+     <a href="https://myflicklist-fa78f7f017a1.herokuapp.com/"> >> View Demo << </a>
   </p>
   
 </div>
@@ -57,8 +58,17 @@
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+### Model-View-Controller Implementation
 
+This application implements the Model-View-Controller (MVC) architectural pattern across its entire stacking using a Go backend and a React.js frontend.
 
+* **Controller:** The Go backend serves as the Model and Controller layer. I used a routing framework called Chi router to direct incoming API requests to the appropriate controllers. Each controller focuses on a specific RESTful API endpoint or set of related endpoints. The controllers then validate the request and data and makes the respective service function calls. Afterwards, the controllers will return a response for the frontend to update its view for the user accordingly.
+* **Model:** The backend also contains models utilized by the controller to decode JSON data. The models are utilized by service functions to handle the core business logic and interactions with the PostgreSQL database in order to provide a level of abstraction from the controllers and database specifics. 
+* **View:** The React.js frontend serves as the View layer, presenting the user interface and facilitating user interactions in sending CRUD requests to the Go backend. It receives and displays the appropriate data and success or error messages based on the backend's response.
+
+By leveraging the MVC pattern, this project aims to promote separation of concerns, modularity, and maintainability throughout the entire application.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
