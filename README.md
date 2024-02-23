@@ -52,6 +52,7 @@
 * [![MUI][MUI.com]][MUI-url]
 * [![React Router][ReactRouter.com]][ReactRouter-url]
 * [![Framer Motion][Framer.com]][Framer-url]
+* [![Postman][Postman]][Postman-url]
 * [![Heroku][Heroku.com]][Heroku-url]
 * [![TMDbAPI][TMDbAPI.com]][TMDbAPI-url]
 
@@ -105,7 +106,8 @@ By leveraging the MVC pattern, this project aims to promote separation of concer
 [Heroku-url]: https://www.heroku.com/
 [TMDbAPI.com]: https://img.shields.io/static/v1?style=for-the-badge&message=The+Movie+Database&color=222222&logo=The+Movie+Database&logoColor=01B4E4&label=TMDb%20API
 [TMDbAPI-url]: https://www.themoviedb.org/
-
+[Postman]: https://img.shields.io/static/v1?style=for-the-badge&message=Postman&color=FF6C37&logo=Postman&logoColor=FFFFFF&label=
+[Postman-url]: https://www.postman.com/
 
 [Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
 [Bootstrap-url]: https://getbootstrap.com
