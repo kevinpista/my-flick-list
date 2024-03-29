@@ -7,7 +7,9 @@
   </a>
 
 <h3 align="center">My Flick List</h3>
-
+  <p>
+     <a href="https://myflicklist-fa78f7f017a1.herokuapp.com/"> > VIEW LIVE DEMO < </a>
+  </p>
   <p align="center">
       <b>'My Flick List'</b> is a web application created as a personal project. It allows a registered user to organize movies within
       personalized watchlists, track what they've watched, and add personal notes for each movie.
@@ -29,7 +31,7 @@
   </p>
   
   <p>
-     <a href="https://myflicklist-fa78f7f017a1.herokuapp.com/"> >> View Demo << </a>
+     <a href="https://myflicklist-fa78f7f017a1.herokuapp.com/"> > VIEW LIVE DEMO < </a>
   </p>
   
 </div>
