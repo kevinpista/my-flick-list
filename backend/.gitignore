@@ -1,4 +1,5 @@
 .env
+.env.test
 Makefile
 migrations
 my_flick_list_api

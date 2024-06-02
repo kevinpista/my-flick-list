@@ -141,7 +141,7 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	}
 	helpers.WriteJSON(w, http.StatusOK, userData)
 }
-
+/*
 // GET/users -- testing purposes only -- with JWT header check
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	tokenErr := tokens.VerifyUserJWT(r)
@@ -157,3 +157,4 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"users": all})
 }
+*/

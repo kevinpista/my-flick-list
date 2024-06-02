@@ -99,7 +99,7 @@ func (c *UserService) HandleLogin(receivedUserData models.User) (*LoginResponse,
 	err := bcrypt.CompareHashAndPassword([]byte(fetchedUserData.Password), []byte(receivedUserData.Password))
 	if err != nil {
 		// Incorrect password
-		return nil, err // TODO - Not sure if this returns a true or false as idk what err holds based on comparehashandpassword data
+		return nil, err
 	}
 
 	// Password matches, return login response
@@ -145,7 +145,7 @@ func (c *UserService) GetUserByID(id uuid.UUID) (*models.User, error) {
 		return nil, sql.ErrNoRows // Case where query did not find any matching rows
 	}
 }
-
+/*
 // Get all Users --- testing purposes only
 func (c *UserService) GetAllUsers() ([]*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
@@ -180,3 +180,4 @@ func (c *UserService) GetAllUsers() ([]*models.User, error) {
 
 	return users, nil
 }
+*/
