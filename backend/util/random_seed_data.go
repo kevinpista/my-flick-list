@@ -37,6 +37,45 @@ func RandomName() string {
 	return RandomString(length)
 }
 
+// Generates a random paragraph of made-up words of at least 10-14 words; word lengths between 2-14 chars
+func RandomParagraph() string {
+	// Mnimum and maximum number of sentences
+	minSentences := 1
+	maxSentences := 3
+  
+	// Minimum and maximum number of words per sentence
+	minWords := 10
+	maxWords := 14
+  
+	// Generate random number of sentences
+	numSentences := rand.Intn(maxSentences - minSentences +1) + minSentences
+  
+	paragraph := ""
+	for i := 0; i < numSentences; i++ {
+	  // Generate random number of words for the current sentence
+	  numWords := rand.Intn(maxWords - minWords +1) + minWords
+  
+	  sentence := ""
+	  for j := 0; j < numWords; j++ {
+		// Generate random word length between 2 and 14 characters
+		wordLength := rand.Intn(14-2) + 2
+		word := RandomString(wordLength)
+		sentence += word + " "
+	  }
+  
+	  // Remove trailing space from the sentence
+	  sentence = strings.TrimSpace(sentence)
+  
+	  // Add a period and a space to the end of the sentence
+	  sentence += "."
+  
+	  paragraph += sentence + " "
+	}
+  
+	// Remove trailing space from the paragraph
+	return strings.TrimSpace(paragraph)
+}
+
 /*
 func RandomInt64() int64 {
 	return RandomInt(0, 1000)
