@@ -63,10 +63,10 @@
 
 ### Model-View-Controller Implementation
 
-This application implements the Model-View-Controller (MVC) architectural pattern across its entire stacking using a Go backend and a React.js frontend.
+This application implements the Model-View-Controller (MVC) architectural pattern across its entire stack using a Go backend and a React.js frontend.
 
-* **Controller:** The Go backend serves as the Model and Controller layer. I used a routing framework called Chi router to direct incoming API requests to the appropriate controllers. Each controller focuses on a specific RESTful API endpoint or set of related endpoints. The controllers then validate the request and data and makes the respective service function calls. Afterwards, the controllers will return a response for the frontend to update its view for the user accordingly.
-* **Model:** The backend also contains models utilized by the controller to decode JSON data. The models are utilized by service functions to handle the core business logic and interactions with the PostgreSQL database in order to provide a level of abstraction from the controllers and database specifics. 
+* **Controller:** The Go backend serves as the Model and Controller layer. I used a routing framework called Chi router to direct incoming API requests to the appropriate controllers. Each controller focuses on a specific RESTful API endpoint or set of related endpoints. The controllers then validate the request and data and makes the respective service function calls. Afterwards, the controllers will return a response for the frontend to update its View for the user accordingly.
+* **Model:** The backend utilizes structs (models) to represent data entities. These Models are used by the Controller to decode incoming JSON data. The Models then serve as a layer of abstraction, providing a clean interface for the service functions to handle the core business logic & interactions with the PostgreSQL database.
 * **View:** The React.js frontend serves as the View layer, presenting the user interface and facilitating user interactions in sending CRUD requests to the Go backend. It receives and displays the appropriate data and success or error messages based on the backend's response.
 
 By leveraging the MVC pattern, this project aims to promote separation of concerns, modularity, and maintainability throughout the entire application.
