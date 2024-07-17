@@ -27,7 +27,7 @@
   </p>
   
   <p>
-     <b>NOTE:</b> This project has NOT been optimized for mobile screens. For the best experience, view it on a laptop or computer.
+     <b>NOTE:</b> This project has NOT been optimized for mobile screens. For the best experience, view it on a desktop or laptop.
   </p>
   
   <p>
@@ -58,11 +58,10 @@
 * [![Heroku][Heroku.com]][Heroku-url]
 * [![TMDbAPI][TMDbAPI.com]][TMDbAPI-url]
 
+  <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 [![My Flick List Screen Shot 2][movie-page-screenshot]](https://myflicklist-fa78f7f017a1.herokuapp.com/)
 
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Model-View-Controller Implementation
 
@@ -74,10 +73,16 @@ This application implements the Model-View-Controller (MVC) architectural patter
 
 By leveraging the MVC pattern, this project aims to promote separation of concerns, modularity, and maintainability throughout the entire application.
 
+  <p align="center">
+     <a href="https://myflicklist-fa78f7f017a1.herokuapp.com/"> > VIEW LIVE DEMO < </a>
+  </p>
+       
+  <p align="right">(<a href="#readme-top">back to top</a>)</p>
+       
 [![My Flick List Screen Shot 3][watchlist-page-screenshot]](https://myflicklist-fa78f7f017a1.herokuapp.com/)
 
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
