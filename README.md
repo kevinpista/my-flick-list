@@ -41,7 +41,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![My Flick List Screen Shot][product-screenshot]](https://myflicklist-fa78f7f017a1.herokuapp.com/)
+[![My Flick List Screen Shot 1][home-page-screenshot]](https://myflicklist-fa78f7f017a1.herokuapp.com/)
 
 
 
@@ -59,6 +59,9 @@
 * [![TMDbAPI][TMDbAPI.com]][TMDbAPI-url]
 
 
+[![My Flick List Screen Shot 2][movie-page-screenshot]](https://myflicklist-fa78f7f017a1.herokuapp.com/)
+
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Model-View-Controller Implementation
@@ -70,6 +73,9 @@ This application implements the Model-View-Controller (MVC) architectural patter
 * **View:** The React.js frontend serves as the View layer, presenting the user interface and facilitating user interactions in sending CRUD requests to the Go backend. It receives and displays the appropriate data and success or error messages based on the backend's response.
 
 By leveraging the MVC pattern, this project aims to promote separation of concerns, modularity, and maintainability throughout the entire application.
+
+[![My Flick List Screen Shot 3][watchlist-page-screenshot]](https://myflicklist-fa78f7f017a1.herokuapp.com/)
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -87,7 +93,11 @@ By leveraging the MVC pattern, this project aims to promote separation of concer
 [license-url]: https://github.com/github_username/repo_name/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
-[product-screenshot]: frontend/public/website_preview.png
+[home-page-screenshot]: frontend/public/home_page.png
+[movie-page-screenshot]: frontend/public/movie_page.png
+[watchlist-page-screenshot]: frontend/public/watchlist_page.png
+
+
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
