@@ -24,7 +24,7 @@ func TestTMDBGetMovieByID(t *testing.T) {
 func TestTMDBGetMovieByIDAddToLocalDatabase(t *testing.T) {
 	tmdbMovieService := TMDBMovieService{}
 
-	movieIDQuery:= "1841"
+	movieIDQuery:= "1791"
 
 	err := tmdbMovieService.TMDBGetMovieByIDAddToLocalDatabase(movieIDQuery)
 
