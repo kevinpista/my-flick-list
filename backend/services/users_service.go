@@ -145,6 +145,7 @@ func (c *UserService) GetUserByID(id uuid.UUID) (*models.User, error) {
 		return nil, sql.ErrNoRows // Case where query did not find any matching rows
 	}
 }
+
 /*
 // Get all Users --- testing purposes only
 func (c *UserService) GetAllUsers() ([]*models.User, error) {

@@ -9,7 +9,7 @@ import (
     "github.com/kevinpista/my-flick-list/backend/db"
 	"github.com/kevinpista/my-flick-list/backend/services"
 	"github.com/kevinpista/my-flick-list/backend/router"
-	// github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -22,12 +22,12 @@ type Application struct{
 }
 
 func (app *Application) Serve() error {
-	/*
+	// LOCAL DEV
 	err := godotenv.Load()
 	if err != nil{
 		log.Fatal("Error loading .env file")
 	}
-	*/
+	// LOCAL DEV
 	port := os.Getenv("PORT")
 	fmt.Println("Backend server is now listening on port", port)
 
@@ -39,12 +39,12 @@ func (app *Application) Serve() error {
 }
 
 func main () {
-	/*
+	// LOCAL DEV
 	err := godotenv.Load()
 	if err != nil{
 		log.Fatal("Error loading .env file")
 	}
-	*/
+	// LOCAL DEV
 
 	cfg := Config {
 		Port: os.Getenv("PORT"),

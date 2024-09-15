@@ -3,3 +3,5 @@
 Makefile
 migrations
 my_flick_list_api
+*_test.go
+/util/random_seed_data.go
