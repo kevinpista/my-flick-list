@@ -253,6 +253,8 @@ func (c *WatchlistService) DeleteWatchlistByID(watchlistID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
+	userID, userIDErr := c.GetWatchlistOwnerUserID(watchlistID)
+
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -282,6 +284,15 @@ func (c *WatchlistService) DeleteWatchlistByID(watchlistID int) error {
 	// Commit the transaction
 	if err := tx.Commit(); err != nil {
 		return err
+	}
+	// Invalidate Redis Cache
+	if userIDErr != nil {
+		fmt.Println("Failed to get watchlist owner userID from watchlistID")
+	} else {
+		delErr := c.DeleteAllWatchlistsFromCache(userID)
+		if delErr != nil {
+			fmt.Println("Warning: Cache DELETE query failed. Continuing with exiting DeleteWatchlistByID service function. Error:", delErr)
+		}
 	}
 
 	return nil
@@ -332,9 +343,10 @@ func (c *WatchlistService) UpdateWatchlistName(watchlistID int, watchlist models
 		return nil, err
 	}
 
+	// Invalidate Redis Cache
 	userID, err := c.GetWatchlistOwnerUserID(watchlistID)
 	if err != nil {
-		fmt.Println("Failed to get watchlist owner userID from watchlist ID")
+		fmt.Println("Failed to get watchlist owner userID from watchlistID")
 	} else {
 		delErr := c.DeleteAllWatchlistsFromCache(userID)
 		if delErr != nil {
@@ -377,13 +389,13 @@ func (c *WatchlistService) UpdateWatchlistDescription(watchlistID int, watchlist
 
 	userID, err := c.GetWatchlistOwnerUserID(watchlistID)
 	if err != nil {
-		fmt.Println("Failed to get watchlist owner userID from watchlist ID")
+		fmt.Println("Failed to get watchlist owner userID from watchlistID")
 	} else {
 		delErr := c.DeleteAllWatchlistsFromCache(userID)
 		if delErr != nil {
 			fmt.Println("Warning: Cache DELETE query failed. Continuing with returning data. Error:", delErr)
 		}
 	}
-	
+
 	return &updatedWatchlist, nil
 }
