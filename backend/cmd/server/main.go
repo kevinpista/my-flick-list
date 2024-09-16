@@ -3,20 +3,24 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"net/http"
+	"os"
 
-    "github.com/kevinpista/my-flick-list/backend/db"
-	"github.com/kevinpista/my-flick-list/backend/services"
-	"github.com/kevinpista/my-flick-list/backend/router"
 	"github.com/joho/godotenv"
+
+	"github.com/kevinpista/my-flick-list/backend/cache"
+	"github.com/kevinpista/my-flick-list/backend/db"
+	"github.com/kevinpista/my-flick-list/backend/router"
+	"github.com/kevinpista/my-flick-list/backend/services"
 )
 
 type Config struct {
-	Port string
+	Port      string
+	RedisHost string
+	RedisPort string
 }
 
-type Application struct{
+type Application struct {
 	Config Config
 	Models services.Models
 }
@@ -24,43 +28,53 @@ type Application struct{
 func (app *Application) Serve() error {
 	// LOCAL DEV
 	err := godotenv.Load()
-	if err != nil{
+	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 	// LOCAL DEV
 	port := os.Getenv("PORT")
 	fmt.Println("Backend server is now listening on port", port)
 
-	srv := &http.Server {
-		Addr: fmt.Sprintf(":%s", port),
-        Handler: router.Routes(), 
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", port),
+		Handler: router.Routes(),
 	}
 	return srv.ListenAndServe()
 }
 
-func main () {
+func main() {
 	// LOCAL DEV
 	err := godotenv.Load()
-	if err != nil{
+	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 	// LOCAL DEV
 
-	cfg := Config {
-		Port: os.Getenv("PORT"),
+	cfg := Config{
+		Port:      os.Getenv("PORT"),
+		RedisHost: os.Getenv("REDIS_HOST"),
+		RedisPort: os.Getenv("REDIS_PORT"),
 	}
 
-	dsn := os.Getenv("DSN") ///
-    dbConn, err := db.ConnectPostgres(dsn)
-    if err != nil {
-        log.Fatal("Cannot connect to database")
-    }
+	// Initialize DB
+	dsn := os.Getenv("DSN")
+	dbConn, err := db.ConnectPostgres(dsn)
+	if err != nil {
+		log.Fatal("Cannot connect to database. Error:", err)
+	}
 
-    defer dbConn.DB.Close()
+	defer dbConn.DB.Close()
 
-	app := &Application {
+	// Initialize Redis (graceful fallback)
+	cacheConn, err := cache.ConnectRedis(cfg.RedisHost, cfg.RedisPort)
+	if err != nil {
+		log.Fatal("Cannot connect to Redis cache. Error:", err)
+	}
+
+	// Initialize Models with both DB and Redis
+	app := &Application{
 		Config: cfg,
-        Models: services.New(dbConn.DB), // creates a connection with DB to get the models whenever we want to perform CRUD
+		Models: services.New(dbConn.DB, cacheConn.Client),
 	}
 
 	err = app.Serve()

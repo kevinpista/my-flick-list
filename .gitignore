@@ -3,6 +3,7 @@
 backend/.env
 node_modules
 node_modules
+.DS_Store
 
 /backend/services/tmdb_constants.go
 

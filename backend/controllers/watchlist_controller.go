@@ -30,6 +30,7 @@ func GetAllWatchlists(w http.ResponseWriter, r *http.Request) {
 
 // GET/watchlists-by-user-id : user_id fetched from JWT token - returns list of watchlists along with item count for each
 // Used for list of watchlists page
+// (REDIS CACHED)
 func GetWatchlistsByUserID(w http.ResponseWriter, r *http.Request) {
 	// Verify JWT token sent in by user and fetch their UserID
 	userID, tokenErr := tokens.VerifyUserJWTAndFetchUserId(r)

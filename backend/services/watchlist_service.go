@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -110,7 +111,18 @@ func (c *WatchlistService) GetAllWatchlistsByUserID(userID uuid.UUID) ([]*models
 }
 
 // Gets all watchlist data and returns count
+// (REDIS CACHED)
 func (c *WatchlistService) GetWatchlistsByUserIDWithMovieCount(userID uuid.UUID) ([]*models.WatchlistWithItemCount, error) {
+	// Check Redis cache first
+	cachedWatchlists, err := c.GetAllWatchlistsFromCache(userID)
+	if err != nil {
+		fmt.Println("Warning: Cache GET query failed. Continuing with database query. Error:", err)
+	}
+
+	if cachedWatchlists != nil {
+		return cachedWatchlists, nil
+	}
+	// Cache miss: fetch from database
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	query := `
@@ -135,7 +147,7 @@ func (c *WatchlistService) GetWatchlistsByUserIDWithMovieCount(userID uuid.UUID)
 	for rows.Next() {
 		var watchlist models.WatchlistWithItemCount
 		err := rows.Scan(
-            &watchlist.ID,
+			&watchlist.ID,
 			&watchlist.Name,
 			&watchlist.Description,
 			&watchlist.WatchlistItemCount,
@@ -147,10 +159,16 @@ func (c *WatchlistService) GetWatchlistsByUserIDWithMovieCount(userID uuid.UUID)
 		}
 		watchlists = append(watchlists, &watchlist)
 	}
+
+	// Update Redis Cache
+	err = c.SetAllWatchlistsInCache(userID, watchlists)
+	if err != nil {
+		fmt.Println("Warning: Cache SET query failed. Continuing with returning data. Error:", err)
+	}
 	return watchlists, nil
 }
 
-// Fetches all watchlists belonging to a user. Takes a movieID parameter. 
+// Fetches all watchlists belonging to a user. Takes a movieID parameter.
 // Returns all watchlists with the count of all watchlist_items belonging to each watchlist
 // and also a boolean of "contains_movie" on whether or not there are any watchlists that
 // have a watchlist item that contain the movieID parameter
@@ -176,10 +194,10 @@ func (c *WatchlistService) GetWatchlistsByUserIDWithMovieIDCheck(userID uuid.UUI
 	for rows.Next() {
 		var watchlist models.WatchlistWithCountAndContainsMovie
 		err := rows.Scan(
-            &watchlist.ID,
-            &watchlist.Name,
-            &watchlist.WatchlistItemCount,
-            &watchlist.ContainsQueriedMovie,
+			&watchlist.ID,
+			&watchlist.Name,
+			&watchlist.WatchlistItemCount,
+			&watchlist.ContainsQueriedMovie,
 		)
 		if err != nil {
 			return nil, err
@@ -230,35 +248,35 @@ func (c *WatchlistService) DeleteWatchlistByID(watchlistID int) error {
 	defer cancel()
 
 	tx, err := db.BeginTx(ctx, nil)
-    if err != nil {
-        return err
-    }
-	
-    // Delete associated watchlist_item_notes first
-    _, err = tx.ExecContext(ctx, "DELETE FROM watchlist_item_note WHERE watchlist_item_id IN (SELECT id FROM watchlist_item WHERE watchlist_id = $1)", watchlistID)
-    if err != nil {
-        tx.Rollback()
-        return err
-    }
-	
-    // Delete associated watchlist_items
-    _, err = tx.ExecContext(ctx, "DELETE FROM watchlist_item WHERE watchlist_id = $1", watchlistID)
-    if err != nil {
-        tx.Rollback()
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
-    // Delete watchlist itself
-    _, err = tx.ExecContext(ctx, "DELETE FROM watchlist WHERE id = $1", watchlistID)
-    if err != nil {
-        tx.Rollback()
-        return err
-    }
+	// Delete associated watchlist_item_notes first
+	_, err = tx.ExecContext(ctx, "DELETE FROM watchlist_item_note WHERE watchlist_item_id IN (SELECT id FROM watchlist_item WHERE watchlist_id = $1)", watchlistID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
 
-    // Commit the transaction
-    if err := tx.Commit(); err != nil {
-        return err
-    }
+	// Delete associated watchlist_items
+	_, err = tx.ExecContext(ctx, "DELETE FROM watchlist_item WHERE watchlist_id = $1", watchlistID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Delete watchlist itself
+	_, err = tx.ExecContext(ctx, "DELETE FROM watchlist WHERE id = $1", watchlistID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Commit the transaction
+	if err := tx.Commit(); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -280,10 +298,10 @@ func (c *WatchlistService) GetWatchlistOwnerUserID(watchlistID int) (uuid.UUID, 
 
 // Updates name of Watchlist. Returns the watchlist name for the frontend
 func (c *WatchlistService) UpdateWatchlistName(watchlistID int, watchlist models.Watchlist) (*models.Watchlist, error) {
-	
+
 	// Update the timestamp for the updated_at field
 	watchlist.UpdatedAt = time.Now()
-	
+
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -302,7 +320,7 @@ func (c *WatchlistService) UpdateWatchlistName(watchlistID int, watchlist models
 		watchlistID,
 	).Scan(
 		&updatedWatchlist.Name,
-	) 
+	)
 	// populates model's name only
 	if err != nil {
 		return nil, err
@@ -310,13 +328,12 @@ func (c *WatchlistService) UpdateWatchlistName(watchlistID int, watchlist models
 	return &updatedWatchlist, nil
 }
 
-
 // Updates description of Watchlist. Returns the watchlist description for the frontend
 func (c *WatchlistService) UpdateWatchlistDescription(watchlistID int, watchlist models.Watchlist) (*models.Watchlist, error) {
-	
+
 	// Update the timestamp for the updated_at field
 	watchlist.UpdatedAt = time.Now()
-	
+
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -335,7 +352,7 @@ func (c *WatchlistService) UpdateWatchlistDescription(watchlistID int, watchlist
 		watchlistID,
 	).Scan(
 		&updatedWatchlist.Description,
-	) 
+	)
 	// Populates model's description only
 	if err != nil {
 		return nil, err

@@ -9,15 +9,25 @@ stop_containers:
 		echo "no containers running..."; \
 	fi
 
+# Create PSQL Container
 create_container:
 	docker run --name ${DB_DOCKER_CONTAINER} -p 5434:5432 -e POSTGRES_USER=${USER} -e POSTGRES_PASSWORD=${PASSWORD} -d postgres:12-alpine
 # setting our container port to 5434. Postgresql inside container using default 5432 port so we help map it to our intended 5434 local port
 
+# Creates Redis container
+create_redis_container:
+	docker run --name ${REDIS_DOCKER_CONTAINER} -p 6379:6379 -v redis-data:/data -d redis:latest
+
 create_db:
 	docker exec -it ${DB_DOCKER_CONTAINER} createdb --username=${USER} --owner=${USER} ${DB_NAME}
 
+# Start PSQL container
 start_container:
 	docker start ${DB_DOCKER_CONTAINER}
+
+# Start Redis container
+start_redis_container:
+	docker start ${REDIS_DOCKER_CONTAINER}
 
 create_migrations:
 	sqlx migrate add -r init
