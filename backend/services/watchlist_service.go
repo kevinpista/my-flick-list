@@ -386,7 +386,8 @@ func (c *WatchlistService) UpdateWatchlistDescription(watchlistID int, watchlist
 	if err != nil {
 		return nil, err
 	}
-
+	
+	// Invalidate Redis Cache
 	userID, err := c.GetWatchlistOwnerUserID(watchlistID)
 	if err != nil {
 		fmt.Println("Failed to get watchlist owner userID from watchlistID")
