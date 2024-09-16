@@ -31,7 +31,7 @@ func ConnectRedis(redisHost, redisPort string) (*Cache, error) {
 		return nil, err
 	}
 
-	fmt.Println("*** Connected to Redis successfully ***")
+	fmt.Println("*** Pinged Redis cache successfully ***")
 	cacheConn.Client = client
 	return cacheConn, nil
 }

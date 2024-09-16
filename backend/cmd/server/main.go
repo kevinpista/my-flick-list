@@ -65,7 +65,7 @@ func main() {
 
 	defer dbConn.DB.Close()
 
-	// Initialize Redis (graceful fallback)
+	// Initialize Redis Cache
 	cacheConn, err := cache.ConnectRedis(cfg.RedisHost, cfg.RedisPort)
 	if err != nil {
 		log.Fatal("Cannot connect to Redis cache. Error:", err)
