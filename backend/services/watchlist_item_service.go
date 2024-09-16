@@ -18,6 +18,7 @@ type WatchlistItemService struct {
 
 var movieQuery TMDBMovieService
 var watchlistItemHelper WatchlistItemService
+var watchlistServiceRedis WatchlistService
 
 // Fetches all watchlist items that belongs to a specific watchlist via its watchlistID
 func (c *WatchlistItemService) GetAllWatchlistItemsByWatchlistID(watchlistID int) ([]*models.WatchlistItem, error) {
@@ -60,8 +61,8 @@ func (c *WatchlistItemService) GetWatchlistWithWatchlistItemsByWatchlistID(watch
 		fmt.Println("Warning: Cache GET query failed. Continuing with database query. Error:", cachedErr)
 	}
 
-	if cachedErr == nil && cachedName != ""{
-		// Cache hit; watchlist is not nil, check via name which is required
+	if cachedErr == nil && cachedName != "" {
+		// Cache hit; watchlist is not nil, verify by checking if watchlist name is empty
 		return cachedItems, cachedName, cachedDescription, nil
 	}
 
@@ -134,6 +135,7 @@ func (c *WatchlistItemService) GetWatchlistWithWatchlistItemsByWatchlistID(watch
 		watchlistItemsWithMovies = append(watchlistItemsWithMovies, &watchlistItemWithMovie)
 	}
 
+	// Update Redis Cache
 	updateErr := c.SetSingleWatchlistInCache(watchlistID, watchlistItemsWithMovies, watchlistName, watchlistDescription)
 	if updateErr != nil {
 		fmt.Println("Warning: Cache SET query failed. Continuing with returning data. Error:", updateErr)
@@ -236,6 +238,21 @@ func (c *WatchlistItemService) CreateWatchlistItemByWatchlistID(watchlistItem mo
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
+	// Invalidate Redis Cache of All User's Watchlists
+	userID, err := c.GetWatchlistOwnerUserID(watchlistItem.WatchlistID)
+	if err != nil {
+		fmt.Println("Failed to get watchlist owner userID from watchlistID. Could not invalidate Redis Cache of All User's Watchlists")
+	} else {
+		delAllErr := watchlistServiceRedis.DeleteAllWatchlistsFromCache(userID)
+		if delAllErr != nil {
+			fmt.Println("Warning: Cache DELETE ALL Watchlists query failed. Continuing to exit function. Error:", delAllErr)
+		}
+	}
+	// Invalidate Redis Cache of Single Watchlist
+	delSingleErr := c.DeleteSingleWatchlistFromCache(watchlistItem.WatchlistID)
+	if delSingleErr != nil {
+		fmt.Println("Warning: Cache DELETE SINGLE Watchlist query failed. Continuing to exit function. Error:", delSingleErr)
+	}
 
 	return &watchlistItem, nil
 }
@@ -291,6 +308,22 @@ func (c *WatchlistItemService) DeleteWatchlistItemByID(watchlistItemID int, watc
 		return err
 	}
 
+	// Invalidate Redis Cache of All User's Watchlists
+	userID, err := c.GetWatchlistOwnerUserID(watchlistID)
+	if err != nil {
+		fmt.Println("Failed to get watchlist owner userID from watchlistID. Could not invalidate Redis Cache of All User's Watchlists")
+	} else {
+		delAllErr := watchlistServiceRedis.DeleteAllWatchlistsFromCache(userID)
+		if delAllErr != nil {
+			fmt.Println("Warning: Cache DELETE ALL watchlists query failed. Continuing to exit function. Error:", delAllErr)
+		}
+	}
+	// Invalidate Redis Cache of Single Watchlist
+	delSingleErr := c.DeleteSingleWatchlistFromCache(watchlistID)
+	if delSingleErr != nil {
+		fmt.Println("Warning: Cache DELETE SINGLE atchlist query failed. Continuing to exit function. Error:", delSingleErr)
+	}
+
 	return nil
 }
 
@@ -342,6 +375,11 @@ func (c *WatchlistItemService) UpdateCheckmarkedBooleanByWatchlistItemByID(watch
 		return err
 	}
 
+	// Invalidate Redis Cache of Single Watchlist; Boolean update does not affect mfl:watchlist:all:{userID} cache
+	delSingleErr := c.DeleteSingleWatchlistFromCache(watchlistID)
+	if delSingleErr != nil {
+		fmt.Println("Warning: Cache DELETE SINGLE watchlist query failed. Continuing to exit function. Error:", delSingleErr)
+	}
 	return nil
 }
 

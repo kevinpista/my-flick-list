@@ -87,3 +87,22 @@ func (c *WatchlistItemService) GetSingleWatchlistFromCache(watchlistID int) ([]*
 	return watchlistData.Items, watchlistData.Name, watchlistData.Description, nil
 }
 
+// DELETE Single Watchlist for User in Redis
+// Key = 'mfl:watchlist:single:{watchlistID}'
+func (c *WatchlistItemService) DeleteSingleWatchlistFromCache(watchlistID int) error {
+	if cache == nil {
+		fmt.Println("Delete fail, Redis not available. Skipping delete operation")
+		return errors.New("redis not available. delete operation skipped")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), redisTimeout)
+	defer cancel()
+
+	key := fmt.Sprintf("mfl:watchlist:single:%d", watchlistID)
+
+	err := cache.Del(ctx, key).Err()
+	if err != nil {
+		return err
+	}
+	return nil
+}
