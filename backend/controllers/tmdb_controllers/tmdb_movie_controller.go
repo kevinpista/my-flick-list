@@ -12,6 +12,7 @@ import (
 var movieResult services.TMDBMovieService
 
 // GET/tmdb-movie?query={movie_id}
+// (REDIS CACHED)
 func TMDBGetMovieByID(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("query") // user passes movie ID
 
