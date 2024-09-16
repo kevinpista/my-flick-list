@@ -331,6 +331,17 @@ func (c *WatchlistService) UpdateWatchlistName(watchlistID int, watchlist models
 	if err != nil {
 		return nil, err
 	}
+
+	userID, err := c.GetWatchlistOwnerUserID(watchlistID)
+	if err != nil {
+		fmt.Println("Failed to get watchlist owner userID from watchlist ID")
+	} else {
+		delErr := c.DeleteAllWatchlistsFromCache(userID)
+		if delErr != nil {
+			fmt.Println("Warning: Cache DELETE query failed. Continuing with returning data. Error:", delErr)
+		}
+	}
+
 	return &updatedWatchlist, nil
 }
 
@@ -363,5 +374,16 @@ func (c *WatchlistService) UpdateWatchlistDescription(watchlistID int, watchlist
 	if err != nil {
 		return nil, err
 	}
+
+	userID, err := c.GetWatchlistOwnerUserID(watchlistID)
+	if err != nil {
+		fmt.Println("Failed to get watchlist owner userID from watchlist ID")
+	} else {
+		delErr := c.DeleteAllWatchlistsFromCache(userID)
+		if delErr != nil {
+			fmt.Println("Warning: Cache DELETE query failed. Continuing with returning data. Error:", delErr)
+		}
+	}
+	
 	return &updatedWatchlist, nil
 }
