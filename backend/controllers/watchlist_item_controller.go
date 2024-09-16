@@ -17,6 +17,7 @@ var watchlistItem services.WatchlistItemService
 
 // GET/watchlist-items-with-movies?watchlistID={watchlistID} 
 // -- returns watchlist title and description + full movie_data for each watchlist-item
+// (REDIS CACHED)
 func GetAllWatchlistItemsWithMoviesByWatchlistID(w http.ResponseWriter, r *http.Request) {
     watchlistID := r.URL.Query().Get("watchlistID")
 

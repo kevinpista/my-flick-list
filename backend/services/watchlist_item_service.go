@@ -2,7 +2,7 @@ package services
 
 import (
 	"context"
-	// "errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -53,7 +53,18 @@ func (c *WatchlistItemService) GetAllWatchlistItemsByWatchlistID(watchlistID int
 }
 
 // Fetches watchlist name & description + all watchlist items and its movie data + watchlist_item_note if exists
+// (REDIS CACHED)
 func (c *WatchlistItemService) GetWatchlistWithWatchlistItemsByWatchlistID(watchlistID int) ([]*models.WatchlistItemWithMovie, string, string, error) {
+	cachedItems, cachedName, cachedDescription, cachedErr := c.GetSingleWatchlistFromCache(watchlistID)
+	if cachedErr != nil {
+		fmt.Println("Warning: Cache GET query failed. Continuing with database query. Error:", cachedErr)
+	}
+
+	if cachedErr == nil && cachedName != ""{
+		// Cache hit; watchlist is not nil, check via name which is required
+		return cachedItems, cachedName, cachedDescription, nil
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -66,7 +77,7 @@ func (c *WatchlistItemService) GetWatchlistWithWatchlistItemsByWatchlistID(watch
 
 	// Fetch watchlist items belonging to the watchlist
 	// If a watchlist_item does not have a watchlist_note belonging to it, the COALESCE function will return
-	// the values of NULL to the item_notes, notes_created_at field etc.  
+	// the values of NULL to the item_notes, notes_created_at field etc.
 	query := `
 		SELECT 
 			wi.id, wi.watchlist_id, wi.movie_id, wi.checkmarked, wi.created_at, wi.updated_at,
@@ -112,9 +123,9 @@ func (c *WatchlistItemService) GetWatchlistWithWatchlistItemsByWatchlistID(watch
 			&watchlistItemWithMovie.Votes,
 			&watchlistItemWithMovie.MovieCreatedAt,
 			&watchlistItemWithMovie.MovieUpdatedAt,
-			&watchlistItemWithMovie.ItemNotes,        // WatchlistItemNote
-			&watchlistItemWithMovie.NoteCreatedAt,    // WatchlistItemNote
-			&watchlistItemWithMovie.NoteUpdatedAt,    // WatchlistItemNote
+			&watchlistItemWithMovie.ItemNotes,     // WatchlistItemNote
+			&watchlistItemWithMovie.NoteCreatedAt, // WatchlistItemNote
+			&watchlistItemWithMovie.NoteUpdatedAt, // WatchlistItemNote
 		)
 
 		if err != nil {
@@ -122,9 +133,14 @@ func (c *WatchlistItemService) GetWatchlistWithWatchlistItemsByWatchlistID(watch
 		}
 		watchlistItemsWithMovies = append(watchlistItemsWithMovies, &watchlistItemWithMovie)
 	}
+
+	updateErr := c.SetSingleWatchlistInCache(watchlistID, watchlistItemsWithMovies, watchlistName, watchlistDescription)
+	if updateErr != nil {
+		fmt.Println("Warning: Cache SET query failed. Continuing with returning data. Error:", updateErr)
+	}
+
 	return watchlistItemsWithMovies, watchlistName, watchlistDescription, nil
 }
-
 
 // Important TWO-PART service function
 // Creates a watchlist_item with a movie_id with the watchlist ID it belongs to.
@@ -194,7 +210,7 @@ func (c *WatchlistItemService) CreateWatchlistItemByWatchlistID(watchlistItem mo
 			// Error unrelated to 'movie not in database'
 			tx.Rollback()
 			return nil, err
-		} 
+		}
 	}
 
 	// Update Watchlist's updated_at time field
@@ -234,15 +250,15 @@ func (c *WatchlistItemService) DeleteWatchlistItemByID(watchlistItemID int, watc
 		return err
 	}
 
-    // Delete watchlist_item_note (if any) that references the watchlist_item
-    deleteWatchlistItemNoteQuery := `
+	// Delete watchlist_item_note (if any) that references the watchlist_item
+	deleteWatchlistItemNoteQuery := `
         DELETE FROM watchlist_item_note WHERE watchlist_item_id = $1
     `
-    _, err = tx.ExecContext(ctx, deleteWatchlistItemNoteQuery, watchlistItemID)
-    if err != nil {
-        tx.Rollback()
-        return err
-    }
+	_, err = tx.ExecContext(ctx, deleteWatchlistItemNoteQuery, watchlistItemID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
 
 	deleteWatchlistItemQuery := `
 		DELETE FROM watchlist_item WHERE id = $1
@@ -282,7 +298,7 @@ func (c *WatchlistItemService) DeleteWatchlistItemByID(watchlistItemID int, watc
 func (c *WatchlistItemService) UpdateCheckmarkedBooleanByWatchlistItemByID(watchlistItemID int, watchlistItem models.WatchlistItem, watchlistID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
-	
+
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -303,7 +319,7 @@ func (c *WatchlistItemService) UpdateCheckmarkedBooleanByWatchlistItemByID(watch
 		tx.Rollback()
 		return err
 	}
-	
+
 	// Update Watchlist's updated_at time field
 	updateWatchlistQuery := `
 		UPDATE watchlist
@@ -328,7 +344,6 @@ func (c *WatchlistItemService) UpdateCheckmarkedBooleanByWatchlistItemByID(watch
 
 	return nil
 }
-
 
 /*
 HELPER FUNCTIONS
