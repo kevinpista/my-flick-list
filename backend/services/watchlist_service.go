@@ -43,6 +43,12 @@ func (c *WatchlistService) CreateWatchlist(userID uuid.UUID, watchlist models.Wa
 		return nil, queryErr
 	}
 
+	// Delete User's All Watchlists Cache if any
+	err := c.DeleteAllWatchlistsFromCache(userID)
+	if err != nil {
+		fmt.Println("Warning: Cache DELETE query failed. Continuing with returning data. Error:", err)
+	}
+
 	return &createdWatchlist, nil
 }
 

@@ -25,7 +25,7 @@ const redisTimeout = time.Second * 4
 func (c *WatchlistService) SetAllWatchlistsInCache(userID uuid.UUID, watchlists []*models.WatchlistWithItemCount) error {
 	if cache == nil {
 		fmt.Println("Get fail, Redis not available. Skipping cache operation")
-		return errors.New("redis not available. fetch operation skipped")
+		return errors.New("redis not available. set operation skipped")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), redisTimeout)
@@ -69,4 +69,23 @@ func (c *WatchlistService) GetAllWatchlistsFromCache(userID uuid.UUID) ([]*model
 		return nil, err
 	}
 	return watchlists, nil
+}
+
+// DELETE ALL Watchlists for User in Redis
+func (c *WatchlistService) DeleteAllWatchlistsFromCache(userID uuid.UUID) error {
+	if cache == nil {
+		fmt.Println("Delete fail, Redis not available. Skipping delete operation")
+		return errors.New("redis not available. delete operation skipped")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), redisTimeout)
+	defer cancel()
+
+	key := fmt.Sprintf("mfl:watchlist:all:%s", userID.String())
+
+	err := cache.Del(ctx, key).Err()
+	if err != nil {
+		return err
+	}
+	return nil
 }
